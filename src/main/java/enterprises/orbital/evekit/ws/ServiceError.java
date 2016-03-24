@@ -1,4 +1,4 @@
-package enterprises.orbital.evekit.ws.common;
+package enterprises.orbital.evekit.ws;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

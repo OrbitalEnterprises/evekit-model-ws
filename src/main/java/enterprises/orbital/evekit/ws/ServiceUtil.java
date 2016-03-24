@@ -1,10 +1,13 @@
-package enterprises.orbital.evekit.ws.common;
+package enterprises.orbital.evekit.ws;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -18,6 +21,7 @@ import enterprises.orbital.evekit.account.AccountAccessMask;
 import enterprises.orbital.evekit.account.NoSuchKeyException;
 import enterprises.orbital.evekit.account.SynchronizedAccountAccessKey;
 import enterprises.orbital.evekit.account.SynchronizedEveAccount;
+import enterprises.orbital.evekit.model.AttributeSelector;
 import enterprises.orbital.evekit.model.CachedData;
 import enterprises.orbital.evekit.model.character.Capsuleer;
 import enterprises.orbital.evekit.model.corporation.Corporation;
@@ -48,19 +52,20 @@ public class ServiceUtil {
     public int                          accessKey;
     public String                       accessCred;
     public long                         when;
-    public long                         at;
+    public AttributeSelector            at;
     public AccountAccessMask            mask;
-    public boolean                      fail = false;
+    public boolean                      fail         = false;
     public Response                     response;
     public SynchronizedEveAccount       owner;
     public SynchronizedAccountAccessKey key;
+    public long                         presetExpiry = -1;
 
-    public AccessConfig(int accessKey, String accessMask, long at, AccountAccessMask mask) {
+    public AccessConfig(int accessKey, String accessMask, AttributeSelector at, AccountAccessMask mask) {
       super();
       this.accessKey = accessKey;
       this.accessCred = accessMask;
       this.when = OrbitalProperties.getCurrentTime();
-      this.at = at < 0 ? when : at;
+      this.at = at;
       this.mask = mask;
     }
 
@@ -69,7 +74,7 @@ public class ServiceUtil {
   public static AccessConfig start(
                                    int accessKey,
                                    String accessCred,
-                                   long at,
+                                   AttributeSelector at,
                                    AccountAccessMask mask) {
     AccessConfig cfg = new AccessConfig(accessKey, accessCred, at, mask);
     AuthenticationResult check = authenticate(cfg.accessKey, cfg.accessCred, cfg.when, cfg.at, cfg.mask);
@@ -87,7 +92,7 @@ public class ServiceUtil {
                                 AccessConfig cfg,
                                 CachedData result,
                                 HttpServletRequest request) {
-    updateLifeline(cfg.at, result);
+    // updateLifeline(cfg.at, result);
     long expiry = computeExpiry(cfg.when, cfg.owner, cfg.mask);
     auditAccess(cfg.key, cfg.mask, getSource(request), getRequestURI(request));
     return stamp(Response.ok().entity(result), cfg.when, expiry).build();
@@ -97,8 +102,8 @@ public class ServiceUtil {
                                                        AccessConfig cfg,
                                                        Collection<A> result,
                                                        HttpServletRequest request) {
-    updateLifeline(cfg.at, result);
-    long expiry = computeExpiry(cfg.when, cfg.owner, cfg.mask);
+    // updateLifeline(cfg.at, result);
+    long expiry = cfg.presetExpiry == -1 ? computeExpiry(cfg.when, cfg.owner, cfg.mask) : cfg.presetExpiry;
     auditAccess(cfg.key, cfg.mask, getSource(request), getRequestURI(request));
     return stamp(Response.ok().entity(result), cfg.when, expiry).build();
   }
@@ -117,7 +122,7 @@ public class ServiceUtil {
                                                   int id,
                                                   String hash,
                                                   long when,
-                                                  long at) {
+                                                  AttributeSelector at) {
     SynchronizedAccountAccessKey key;
     try {
       key = SynchronizedAccountAccessKey.checkHash(id, hash);
@@ -137,10 +142,36 @@ public class ServiceUtil {
       ServiceError errMsg = new ServiceError(Status.FORBIDDEN.getStatusCode(), "Access key expired, contact key owner for renewal");
       return new AuthenticationResult(Response.status(Status.FORBIDDEN).entity(errMsg).build());
     }
-    if (key.getLimit() > 0 && key.getLimit() > at) {
-      ServiceError errMsg = new ServiceError(
-          Status.FORBIDDEN.getStatusCode(), "Access key not authorized to access the model at the requested time in the lifeline, contact key owner");
-      return new AuthenticationResult(Response.status(Status.FORBIDDEN).entity(errMsg).build());
+    // Rather than reject "at" times below the key limit, we convert the at filter to not allow queries below the key limit
+    if (key.getLimit() > 0) {
+      switch (at.type()) {
+      case SET:
+        // Filter out all values below the key limit
+        Set<Long> start = at.getLongValues();
+        Set<Long> keep = new HashSet<Long>();
+        for (long next : start) {
+          if (next > key.getLimit()) keep.add(next);
+        }
+        at.values.clear();
+        for (long next : keep) {
+          at.values.add(String.valueOf(next));
+        }
+        break;
+      case RANGE:
+        // Ensure the bottom of the range is above the limit
+        if (at.getLongStart() <= key.getLimit()) {
+          at.start = String.valueOf(key.getLimit() + 1);
+        }
+        break;
+      case WILDCARD:
+      default:
+        // Convert to a range from one above the key limit to MAX_LONG
+        at.any = false;
+        at.values.clear();
+        at.start = String.valueOf(key.getLimit() + 1);
+        at.end = String.valueOf(Long.MAX_VALUE);
+        break;
+      }
     }
     return new AuthenticationResult(key);
   }
@@ -149,7 +180,7 @@ public class ServiceUtil {
                                                   int id,
                                                   String hash,
                                                   long when,
-                                                  long at,
+                                                  AttributeSelector at,
                                                   AccountAccessMask desiredOp) {
     AuthenticationResult result = authenticate(id, hash, when, at);
     if (result.isFail()) return result;
@@ -260,18 +291,30 @@ public class ServiceUtil {
     case ALLOW_METADATA_CHANGES:
       // Character Specific Resources
     case ACCESS_CALENDAR_EVENT_ATTENDEES:
+      return Math.max(when, caps.getCalendarEventAttendeesExpiry());
     case ACCESS_CHARACTER_SHEET:
+      return Math.max(when, caps.getCharacterSheetExpiry());
     case ACCESS_CHAT_CHANNELS:
+      return Math.max(when, caps.getChatChannelsExpiry());
     case ACCESS_CONTACT_NOTIFICATIONS:
+      return Math.max(when, caps.getContactNotificationsExpiry());
     case ACCESS_MAIL:
+      return Math.max(when, caps.getMailMessagesExpiry());
     case ACCESS_MAILING_LISTS:
+      return Math.max(when, caps.getMailingListsExpiry());
     case ACCESS_MEDALS:
+      return Math.max(when, caps.getMedalsExpiry());
     case ACCESS_NOTIFICATIONS:
+      return Math.max(when, caps.getNotificationsExpiry());
     case ACCESS_RESEARCH:
+      return Math.max(when, caps.getResearchExpiry());
     case ACCESS_SKILL_IN_TRAINING:
+      return Math.max(when, caps.getSkillInTrainingExpiry());
     case ACCESS_SKILL_QUEUE:
+      return Math.max(when, caps.getSkillQueueExpiry());
     case ACCESS_UPCOMING_CALENDAR_EVENTS:
-      // Corporation Specific Resources
+      return Math.max(when, caps.getUpcomingCalendarEventsExpiry());
+    // Corporation Specific Resources
     case ACCESS_CONTAINER_LOG:
     case ACCESS_CORPORATION_SHEET:
     case ACCESS_CORPORATION_MEDALS:
@@ -279,6 +322,7 @@ public class ServiceUtil {
     case ACCESS_MEMBER_SECURITY:
     case ACCESS_MEMBER_SECURITY_LOG:
     case ACCESS_MEMBER_TRACKING:
+      return Math.max(when, corp.getMemberTrackingExpiry());
     case ACCESS_OUTPOST_LIST:
     case ACCESS_SHAREHOLDERS:
     case ACCESS_STARBASE_LIST:
@@ -287,4 +331,29 @@ public class ServiceUtil {
       return when;
     }
   }
+
+  public static void sanitizeAttributeSelector(
+                                               AttributeSelector as) {
+    // restrict size of string parameters for all settings to less than 200 characters
+    if (as.start != null && as.start.length() > 200) as.start = as.start.substring(0, 200);
+    if (as.end != null && as.end.length() > 200) as.end = as.end.substring(0, 200);
+    // allow at most 500 set members for set selectors and verify strings are not too long
+    if (as.values.size() > 0) {
+      Set<String> newSet = new HashSet<String>();
+      Iterator<String> i = as.values.iterator();
+      for (int j = 0; j < 500 && i.hasNext(); j++) {
+        String next = i.next();
+        if (next.length() > 200) next = next.substring(0, 200);
+        newSet.add(next);
+      }
+      as.values = newSet;
+    }
+  }
+
+  public static void sanitizeAttributeSelector(
+                                               AttributeSelector... as) {
+    for (AttributeSelector next : as)
+      sanitizeAttributeSelector(next);
+  }
+
 }
