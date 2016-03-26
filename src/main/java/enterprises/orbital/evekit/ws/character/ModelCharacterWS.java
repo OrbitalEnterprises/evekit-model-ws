@@ -44,6 +44,7 @@ import enterprises.orbital.evekit.model.character.PlanetaryRoute;
 import enterprises.orbital.evekit.model.character.ResearchAgent;
 import enterprises.orbital.evekit.model.character.SkillInQueue;
 import enterprises.orbital.evekit.model.character.UpcomingCalendarEvent;
+import enterprises.orbital.evekit.model.common.AccountStatus;
 import enterprises.orbital.evekit.ws.ServiceError;
 import enterprises.orbital.evekit.ws.ServiceUtil;
 import enterprises.orbital.evekit.ws.ServiceUtil.AccessConfig;
@@ -67,6 +68,111 @@ import io.swagger.annotations.ApiResponses;
     produces = "application/json",
     consumes = "application/json")
 public class ModelCharacterWS {
+
+  @Path("/account_status")
+  @GET
+  @ApiOperation(
+      value = "Get account status(es)")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested account statuses",
+              response = AccountStatus.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+  })
+  public Response getAccountStatus(
+                                   @Context HttpServletRequest request,
+                                   @QueryParam("accessKey") @ApiParam(
+                                       name = "accessKey",
+                                       required = true,
+                                       value = "Model access key") int accessKey,
+                                   @QueryParam("accessCred") @ApiParam(
+                                       name = "accessCred",
+                                       required = true,
+                                       value = "Model access credential") String accessCred,
+                                   @QueryParam("at") @DefaultValue(
+                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+                                           name = "at",
+                                           required = false,
+                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+                                       name = "contid",
+                                       required = false,
+                                       defaultValue = "-1",
+                                       value = "Continuation ID for paged results") long contid,
+                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+                                       name = "maxresults",
+                                       required = false,
+                                       defaultValue = "1000",
+                                       value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("paidUntil") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                           name = "paidUntil",
+                                           required = false,
+                                           defaultValue = "{ any: true }",
+                                           value = "Account status paid until selector") AttributeSelector paidUntil,
+                                   @QueryParam("createDate") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                           name = "createDate",
+                                           required = false,
+                                           defaultValue = "{ any: true }",
+                                           value = "Account status create date selector") AttributeSelector createDate,
+                                   @QueryParam("logonCount") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                           name = "logonCount",
+                                           required = false,
+                                           defaultValue = "{ any: true }",
+                                           value = "Account status logon count selector") AttributeSelector logonCount,
+                                   @QueryParam("logonMinutes") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                           name = "logonMinutes",
+                                           required = false,
+                                           defaultValue = "{ any: true }",
+                                           value = "Account status logon minutes selector") AttributeSelector logonMinutes,
+                                   @QueryParam("multiCharacterTraining") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                           name = "multiCharacterTraining",
+                                           required = false,
+                                           defaultValue = "{ any: true }",
+                                           value = "Account status multi-character training selector") AttributeSelector multiCharacterTraining) {
+    // Verify access key and authorization for requested data
+    ServiceUtil.sanitizeAttributeSelector(at, paidUntil, createDate, logonCount, logonMinutes, multiCharacterTraining);
+    maxresults = Math.min(1000, maxresults);
+    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_ACCOUNT_STATUS);
+    if (cfg.fail) return cfg.response;
+    // Retrieve requested balance
+    try {
+      List<AccountStatus> result = AccountStatus.accessQuery(cfg.owner, contid, maxresults, at, paidUntil, createDate, logonCount, logonMinutes,
+                                                             multiCharacterTraining);
+      // Finish
+      return ServiceUtil.finish(cfg, result, request);
+    } catch (NumberFormatException e) {
+      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
+      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
+    }
+  }
 
   @Path("/calendar_events")
   @GET

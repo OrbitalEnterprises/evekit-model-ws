@@ -273,23 +273,36 @@ public class ServiceUtil {
       if (corp == null) return when;
     }
     switch (type) {
-    case ACCESS_ACCOUNT_STATUS:
     case ACCESS_ACCOUNT_BALANCE:
       return Math.max(when, isCap ? caps.getAccountBalanceExpiry() : corp.getAccountBalanceExpiry());
     case ACCESS_ASSETS:
-    case ACCESS_CONTACT_LIST:
+      return Math.max(when, isCap ? caps.getAssetListExpiry() : corp.getAssetListExpiry());
     case ACCESS_BLUEPRINTS:
+      return Math.max(when, isCap ? caps.getBlueprintsExpiry() : corp.getBlueprintsExpiry());
     case ACCESS_BOOKMARKS:
+      return Math.max(when, isCap ? caps.getBookmarksExpiry() : corp.getBookmarksExpiry());
+    case ACCESS_CONTACT_LIST:
+      return Math.max(when, isCap ? caps.getContactListExpiry() : corp.getContactListExpiry());
     case ACCESS_CONTRACTS:
+      return Math.max(when, isCap ? caps.getContractsExpiry() : corp.getContractsExpiry());
     case ACCESS_FAC_WAR_STATS:
+      return Math.max(when, isCap ? caps.getFacWarStatsExpiry() : corp.getFacWarStatsExpiry());
     case ACCESS_INDUSTRY_JOBS:
+      return Math.max(when, isCap ? caps.getIndustryJobsExpiry() : corp.getIndustryJobsExpiry());
     case ACCESS_KILL_LOG:
+      return Math.max(when, isCap ? caps.getKilllogExpiry() : corp.getKilllogExpiry());
     case ACCESS_MARKET_ORDERS:
+      return Math.max(when, isCap ? caps.getMarketOrdersExpiry() : corp.getMarketOrdersExpiry());
     case ACCESS_STANDINGS:
+      return Math.max(when, isCap ? caps.getStandingsExpiry() : corp.getStandingsExpiry());
     case ACCESS_WALLET_JOURNAL:
+      return Math.max(when, isCap ? caps.getWalletJournalExpiry() : corp.getWalletJournalExpiry());
     case ACCESS_WALLET_TRANSACTIONS:
+      return Math.max(when, isCap ? caps.getWalletTransactionsExpiry() : corp.getWalletTransactionsExpiry());
     case ALLOW_METADATA_CHANGES:
       // Character Specific Resources
+    case ACCESS_ACCOUNT_STATUS:
+      return Math.max(when, caps.getAccountStatusExpiry());
     case ACCESS_CALENDAR_EVENT_ATTENDEES:
       return Math.max(when, caps.getCalendarEventAttendeesExpiry());
     case ACCESS_CHARACTER_SHEET:
