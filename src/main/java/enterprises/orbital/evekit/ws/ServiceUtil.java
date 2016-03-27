@@ -329,17 +329,27 @@ public class ServiceUtil {
       return Math.max(when, caps.getUpcomingCalendarEventsExpiry());
     // Corporation Specific Resources
     case ACCESS_CONTAINER_LOG:
-    case ACCESS_CORPORATION_SHEET:
+      return Math.max(when, corp.getContainerLogExpiry());
     case ACCESS_CORPORATION_MEDALS:
+      return Math.max(when, corp.getMemberMedalsExpiry());
+    case ACCESS_CORPORATION_SHEET:
+      return Math.max(when, corp.getCorporationSheetExpiry());
+    case ACCESS_CORPORATION_TITLES:
+      return Math.max(when, corp.getTitlesExpiry());
     case ACCESS_MEMBER_MEDALS:
+      return Math.max(when, corp.getMemberMedalsExpiry());
     case ACCESS_MEMBER_SECURITY:
+      // Fall through
     case ACCESS_MEMBER_SECURITY_LOG:
+      return Math.max(when, corp.getMemberSecurityExpiry());
     case ACCESS_MEMBER_TRACKING:
       return Math.max(when, corp.getMemberTrackingExpiry());
     case ACCESS_OUTPOST_LIST:
+      return Math.max(when, corp.getOutpostListExpiry());
     case ACCESS_SHAREHOLDERS:
+      return Math.max(when, corp.getShareholdersExpiry());
     case ACCESS_STARBASE_LIST:
-    case ACCESS_CORPORATION_TITLES:
+      return Math.max(when, corp.getStarbaseListExpiry());
     default:
       return when;
     }
