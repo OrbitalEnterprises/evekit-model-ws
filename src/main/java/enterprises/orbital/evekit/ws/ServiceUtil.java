@@ -209,13 +209,24 @@ public class ServiceUtil {
     return result.header("Date", getServerTime(when)).expires(new Date(expiry)).header("EveKit-Version", versionString);
   }
 
+  protected static String join(
+                               String delim,
+                               String... args) {
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < args.length; i++) {
+      builder.append(args[i]);
+      if (i + 1 < args.length) builder.append(delim);
+    }
+    return builder.toString();
+  }
+
   public static void auditAccess(
                                  SynchronizedAccountAccessKey key,
                                  AccountAccessMask op,
                                  String src,
                                  String path) {
-    log.fine(String.join(", ", "AUDIT", "RESOURCEACCESS", "FROM", src, "USER", key.getSyncAccount().getUserAccount().getUid(), "ACCT",
-                         String.valueOf(key.getSyncAccount().getAid()), "KEY", String.valueOf(key.getAccessKey()), "OP", op.toString(), "PATH", path));
+    log.fine(join(", ", "AUDIT", "RESOURCEACCESS", "FROM", src, "USER", key.getSyncAccount().getUserAccount().getUid(), "ACCT",
+                  String.valueOf(key.getSyncAccount().getAid()), "KEY", String.valueOf(key.getAccessKey()), "OP", op.toString(), "PATH", path));
   }
 
   public static void auditAccess(
@@ -223,9 +234,9 @@ public class ServiceUtil {
                                  Collection<AccountAccessMask> op,
                                  String src,
                                  String path) {
-    log.fine(String.join(", ", "AUDIT", "RESOURCEACCESS", "FROM", src, "USER", key.getSyncAccount().getUserAccount().getUid(), "ACCT",
-                         String.valueOf(key.getSyncAccount().getAid()), "KEY", String.valueOf(key.getAccessKey()), "OP",
-                         Arrays.toString(op.toArray()).replace(", ", "|"), "PATH", path));
+    log.fine(join(", ", "AUDIT", "RESOURCEACCESS", "FROM", src, "USER", key.getSyncAccount().getUserAccount().getUid(), "ACCT",
+                  String.valueOf(key.getSyncAccount().getAid()), "KEY", String.valueOf(key.getAccessKey()), "OP",
+                  Arrays.toString(op.toArray()).replace(", ", "|"), "PATH", path));
   }
 
   public static void updateLifeline(
