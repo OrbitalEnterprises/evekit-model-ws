@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
@@ -60,10 +61,10 @@ public class ServiceUtil {
     public SynchronizedAccountAccessKey key;
     public long                         presetExpiry = -1;
 
-    public AccessConfig(int accessKey, String accessMask, AttributeSelector at, AccountAccessMask mask) {
+    public AccessConfig(int accessKey, String accessCred, AttributeSelector at, AccountAccessMask mask) {
       super();
       this.accessKey = accessKey;
-      this.accessCred = accessMask;
+      this.accessCred = accessCred;
       this.when = OrbitalProperties.getCurrentTime();
       this.at = at;
       this.mask = mask;
@@ -88,24 +89,45 @@ public class ServiceUtil {
     return cfg;
   }
 
+  public static AccessConfig start(
+                                   int accessKey,
+                                   String accessCred,
+                                   AttributeSelector at,
+                                   Collection<AccountAccessMask> mask) {
+    assert !mask.isEmpty();
+    // Arbitrarily use the first mask (usually the only mask) for expiry settings
+    AccessConfig cfg = new AccessConfig(accessKey, accessCred, at, mask.iterator().next());
+    AuthenticationResult check = authenticate(cfg.accessKey, cfg.accessCred, cfg.when, cfg.at, mask);
+    if (check.isFail()) {
+      cfg.response = check.response;
+      cfg.fail = true;
+    } else {
+      cfg.key = check.key;
+      cfg.owner = check.key.getSyncAccount();
+    }
+    return cfg;
+  }
+
   public static Response finish(
                                 AccessConfig cfg,
-                                CachedData result,
+                                Object result,
                                 HttpServletRequest request) {
-    // updateLifeline(cfg.at, result);
-    long expiry = computeExpiry(cfg.when, cfg.owner, cfg.mask);
+    long expiry = cfg.presetExpiry == -1 ? computeExpiry(cfg.when, cfg.owner, cfg.mask) : cfg.presetExpiry;
     auditAccess(cfg.key, cfg.mask, getSource(request), getRequestURI(request));
-    return stamp(Response.ok().entity(result), cfg.when, expiry).build();
+    ResponseBuilder rBuilder = Response.ok();
+    if (result != null) rBuilder = rBuilder.entity(result);
+    return stamp(rBuilder, cfg.when, expiry).build();
   }
 
   public static <A extends CachedData> Response finish(
                                                        AccessConfig cfg,
                                                        Collection<A> result,
                                                        HttpServletRequest request) {
-    // updateLifeline(cfg.at, result);
     long expiry = cfg.presetExpiry == -1 ? computeExpiry(cfg.when, cfg.owner, cfg.mask) : cfg.presetExpiry;
     auditAccess(cfg.key, cfg.mask, getSource(request), getRequestURI(request));
-    return stamp(Response.ok().entity(result), cfg.when, expiry).build();
+    ResponseBuilder rBuilder = Response.ok();
+    if (result != null) rBuilder = rBuilder.entity(result);
+    return stamp(rBuilder, cfg.when, expiry).build();
   }
 
   public static String getSource(
@@ -192,6 +214,22 @@ public class ServiceUtil {
     return result;
   }
 
+  public static AuthenticationResult authenticate(
+                                                  int id,
+                                                  String hash,
+                                                  long when,
+                                                  AttributeSelector at,
+                                                  Collection<AccountAccessMask> desiredOp) {
+    AuthenticationResult result = authenticate(id, hash, when, at);
+    if (result.isFail()) return result;
+    for (AccountAccessMask nextMask : desiredOp) {
+      if (nextMask.checkAccess(result.key.getAccessMask())) return result;
+    }
+    ServiceError errMsg = new ServiceError(
+        Status.FORBIDDEN.getStatusCode(), "Access key not authorized to access the requested model object, contact key owner");
+    return new AuthenticationResult(Response.status(Status.FORBIDDEN).entity(errMsg).build());
+  }
+
   private static SimpleDateFormat dateFormat              = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
   public static final long        DEFAULT_EXPIRY_INTERVAL = TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
   private static String           versionString           = "2.0";
@@ -205,8 +243,18 @@ public class ServiceUtil {
                                       ResponseBuilder result,
                                       long when,
                                       long expiry) {
-    if (expiry <= 0) expiry = when + DEFAULT_EXPIRY_INTERVAL;
-    return result.header("Date", getServerTime(when)).expires(new Date(expiry)).header("EveKit-Version", versionString);
+    // expiry = MIN_VALUE is a tag for no-cache
+    if (expiry <= 0 && expiry != Long.MIN_VALUE) expiry = when + DEFAULT_EXPIRY_INTERVAL;
+    if (expiry > 0) {
+      // valid expiry
+      result = result.expires(new Date(expiry));
+    } else {
+      // if expiry is Long.MIN_VALUE then we interpret as not cacheable
+      CacheControl noC = new CacheControl();
+      noC.setNoCache(true);
+      result = result.cacheControl(noC);
+    }
+    return result.header("Date", getServerTime(when)).header("EveKit-Version", versionString);
   }
 
   protected static String join(
