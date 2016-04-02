@@ -10,11 +10,18 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>EveKit Model Web Services</name>
   <description>Web services for accessing EveKit model data</description>
+  <url>https://github.com/OrbitalEnterprises/evekit-model-ws</url>
+  <scm>
+  	<url>https://github.com/OrbitalEnterprises/evekit-model-ws</url>
+  	<connection>scm:git:https://github.com/OrbitalEnterprises/evekit-model-ws.git</connection>
+  	<tag>rel_1_0_0</tag>
+  	<developerConnection>scm:git:git@github.com:OrbitalEnterprises/evekit-model-ws.git</developerConnection>
+  </scm>
   <dependencies>
     <dependency>
       <groupId>enterprises.orbital.evekit</groupId>
       <artifactId>model</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
