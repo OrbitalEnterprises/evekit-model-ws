@@ -7,21 +7,21 @@
   </parent>
   <groupId>enterprises.orbital.evekit</groupId>
   <artifactId>model-ws</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.2</version>
   <name>EveKit Model Web Services</name>
   <description>Web services for accessing EveKit model data</description>
   <url>https://github.com/OrbitalEnterprises/evekit-model-ws</url>
   <scm>
   	<url>https://github.com/OrbitalEnterprises/evekit-model-ws</url>
   	<connection>scm:git:https://github.com/OrbitalEnterprises/evekit-model-ws.git</connection>
-  	<tag>rel_1_0_0</tag>
+  	<tag>rel_1_0_2</tag>
   	<developerConnection>scm:git:git@github.com:OrbitalEnterprises/evekit-model-ws.git</developerConnection>
   </scm>
   <dependencies>
     <dependency>
       <groupId>enterprises.orbital.evekit</groupId>
       <artifactId>model</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.2</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -39,10 +39,10 @@
       <version>1.5.7</version>
     </dependency>
     <dependency>
-	    <groupId>org.hsqldb</groupId>
-	    <artifactId>hsqldb</artifactId>
-	    <version>2.3.3</version>
-	    <scope>test</scope>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>2.3.3</version>
+      <scope>test</scope>
     </dependency>    
     <dependency>
       <groupId>org.easymock</groupId>
