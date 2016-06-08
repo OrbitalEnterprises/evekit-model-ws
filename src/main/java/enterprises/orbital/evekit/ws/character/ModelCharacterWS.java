@@ -64,7 +64,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(
     tags = {
         "Character"
-},
+    },
     produces = "application/json",
     consumes = "application/json")
 public class ModelCharacterWS {
@@ -100,7 +100,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getAccountStatus(
                                    @Context HttpServletRequest request,
                                    @QueryParam("accessKey") @ApiParam(
@@ -205,7 +205,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getUpcomingCalendarEvents(
                                             @Context HttpServletRequest request,
                                             @QueryParam("accessKey") @ApiParam(
@@ -334,7 +334,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getCalendarEventAttendees(
                                             @Context HttpServletRequest request,
                                             @QueryParam("accessKey") @ApiParam(
@@ -432,7 +432,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getRoles(
                            @Context HttpServletRequest request,
                            @QueryParam("accessKey") @ApiParam(
@@ -524,7 +524,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getCharacterSheets(
                                      @Context HttpServletRequest request,
                                      @QueryParam("accessKey") @ApiParam(
@@ -587,12 +587,24 @@ public class ModelCharacterWS {
                                              required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Date of birth selector") AttributeSelector doB,
+                                     @QueryParam("bloodlineID") @DefaultValue(
+                                         value = "{ any: true }") @ApiParam(
+                                             name = "bloodlineID",
+                                             required = false,
+                                             defaultValue = "{ any: true }",
+                                             value = "Bloodline ID selector") AttributeSelector bloodlineID,
                                      @QueryParam("bloodline") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "bloodline",
                                              required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Bloodline selector") AttributeSelector bloodline,
+                                     @QueryParam("ancestryID") @DefaultValue(
+                                         value = "{ any: true }") @ApiParam(
+                                             name = "ancestryID",
+                                             required = false,
+                                             defaultValue = "{ any: true }",
+                                             value = "Ancestry ID selector") AttributeSelector ancestryID,
                                      @QueryParam("ancestry") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "ancestry",
@@ -696,18 +708,18 @@ public class ModelCharacterWS {
                                              defaultValue = "{ any: true }",
                                              value = "Remote station date selector") AttributeSelector remoteStationDate) {
     // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, characterID, name, corporationID, corporationName, race, doB, bloodline, ancestry, gender, allianceName,
-                                          allianceID, factionName, factionID, intelligence, memory, charisma, perception, willpower, homeStationID,
-                                          lastRespecDate, lastTimedRespec, freeRespecs, freeSkillPoints, remoteStationDate);
+    ServiceUtil.sanitizeAttributeSelector(at, characterID, name, corporationID, corporationName, race, doB, bloodlineID, bloodline, ancestryID, ancestry,
+                                          gender, allianceName, allianceID, factionName, factionID, intelligence, memory, charisma, perception, willpower,
+                                          homeStationID, lastRespecDate, lastTimedRespec, freeRespecs, freeSkillPoints, remoteStationDate);
     maxresults = Math.min(1000, maxresults);
     AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CHARACTER_SHEET);
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
       List<CharacterSheet> result = CharacterSheet.accessQuery(cfg.owner, contid, maxresults, at, characterID, name, corporationID, corporationName, race, doB,
-                                                               bloodline, ancestry, gender, allianceName, allianceID, factionName, factionID, intelligence,
-                                                               memory, charisma, perception, willpower, homeStationID, lastRespecDate, lastTimedRespec,
-                                                               freeRespecs, freeSkillPoints, remoteStationDate);
+                                                               bloodlineID, bloodline, ancestryID, ancestry, gender, allianceName, allianceID, factionName,
+                                                               factionID, intelligence, memory, charisma, perception, willpower, homeStationID, lastRespecDate,
+                                                               lastTimedRespec, freeRespecs, freeSkillPoints, remoteStationDate);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -747,7 +759,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getBalances(
                               @Context HttpServletRequest request,
                               @QueryParam("accessKey") @ApiParam(
@@ -827,7 +839,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getCloneJumpTimers(
                                      @Context HttpServletRequest request,
                                      @QueryParam("accessKey") @ApiParam(
@@ -907,7 +919,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getJumpTimers(
                                 @Context HttpServletRequest request,
                                 @QueryParam("accessKey") @ApiParam(
@@ -999,7 +1011,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getSkills(
                             @Context HttpServletRequest request,
                             @QueryParam("accessKey") @ApiParam(
@@ -1097,7 +1109,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getTitles(
                             @Context HttpServletRequest request,
                             @QueryParam("accessKey") @ApiParam(
@@ -1183,7 +1195,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getImplants(
                               @Context HttpServletRequest request,
                               @QueryParam("accessKey") @ApiParam(
@@ -1269,7 +1281,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getJumpClones(
                                 @Context HttpServletRequest request,
                                 @QueryParam("accessKey") @ApiParam(
@@ -1367,7 +1379,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getJumpCloneImplants(
                                        @Context HttpServletRequest request,
                                        @QueryParam("accessKey") @ApiParam(
@@ -1459,7 +1471,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getMedals(
                             @Context HttpServletRequest request,
                             @QueryParam("accessKey") @ApiParam(
@@ -1582,7 +1594,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getNotifications(
                                    @Context HttpServletRequest request,
                                    @QueryParam("accessKey") @ApiParam(
@@ -1687,7 +1699,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getNotificationBodies(
                                         @Context HttpServletRequest request,
                                         @QueryParam("accessKey") @ApiParam(
@@ -1786,7 +1798,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getChannels(
                               @Context HttpServletRequest request,
                               @QueryParam("accessKey") @ApiParam(
@@ -1903,7 +1915,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getChannelMembers(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
@@ -2014,7 +2026,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getContactNotifications(
                                           @Context HttpServletRequest request,
                                           @QueryParam("accessKey") @ApiParam(
@@ -2119,7 +2131,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getMailingLists(
                                   @Context HttpServletRequest request,
                                   @QueryParam("accessKey") @ApiParam(
@@ -2205,7 +2217,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getMailMessages(
                                   @Context HttpServletRequest request,
                                   @QueryParam("accessKey") @ApiParam(
@@ -2341,7 +2353,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getMailMessageBodies(
                                        @Context HttpServletRequest request,
                                        @QueryParam("accessKey") @ApiParam(
@@ -2433,7 +2445,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getPlanetaryColonies(
                                        @Context HttpServletRequest request,
                                        @QueryParam("accessKey") @ApiParam(
@@ -2576,7 +2588,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getPlanetaryLinks(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
@@ -2675,7 +2687,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getPlanetaryPins(
                                    @Context HttpServletRequest request,
                                    @QueryParam("accessKey") @ApiParam(
@@ -2843,7 +2855,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getPlanetaryRoutes(
                                      @Context HttpServletRequest request,
                                      @QueryParam("accessKey") @ApiParam(
@@ -2992,7 +3004,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getResearchAgents(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
@@ -3103,7 +3115,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getSkillsInTraining(
                                       @Context HttpServletRequest request,
                                       @QueryParam("accessKey") @ApiParam(
@@ -3228,7 +3240,7 @@ public class ModelCharacterWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getSkillsInQueue(
                                    @Context HttpServletRequest request,
                                    @QueryParam("accessKey") @ApiParam(
