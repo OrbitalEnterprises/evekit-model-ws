@@ -127,6 +127,11 @@ public class ModelCharacterWS {
                                        required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                       name = "reverse",
+                                       required = false,
+                                       defaultValue = "false",
+                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("paidUntil") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "paidUntil",
@@ -164,7 +169,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<AccountStatus> result = AccountStatus.accessQuery(cfg.owner, contid, maxresults, at, paidUntil, createDate, logonCount, logonMinutes,
+      List<AccountStatus> result = AccountStatus.accessQuery(cfg.owner, contid, maxresults, reverse, at, paidUntil, createDate, logonCount, logonMinutes,
                                                              multiCharacterTraining);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -232,6 +237,11 @@ public class ModelCharacterWS {
                                                 required = false,
                                                 defaultValue = "1000",
                                                 value = "Maximum number of results to retrieve") int maxresults,
+                                            @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                                name = "reverse",
+                                                required = false,
+                                                defaultValue = "false",
+                                                value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                             @QueryParam("duration") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "duration",
@@ -293,8 +303,8 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<UpcomingCalendarEvent> result = UpcomingCalendarEvent.accessQuery(cfg.owner, contid, maxresults, at, duration, eventDate, eventID, eventText,
-                                                                             eventTitle, ownerID, ownerName, response, important);
+      List<UpcomingCalendarEvent> result = UpcomingCalendarEvent.accessQuery(cfg.owner, contid, maxresults, reverse, at, duration, eventDate, eventID,
+                                                                             eventText, eventTitle, ownerID, ownerName, response, important);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -361,6 +371,11 @@ public class ModelCharacterWS {
                                                 required = false,
                                                 defaultValue = "1000",
                                                 value = "Maximum number of results to retrieve") int maxresults,
+                                            @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                                name = "reverse",
+                                                required = false,
+                                                defaultValue = "false",
+                                                value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                             @QueryParam("eventID") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "eventID",
@@ -392,7 +407,8 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CalendarEventAttendee> result = CalendarEventAttendee.accessQuery(cfg.owner, contid, maxresults, at, eventID, characterID, characterName, response);
+      List<CalendarEventAttendee> result = CalendarEventAttendee.accessQuery(cfg.owner, contid, maxresults, reverse, at, eventID, characterID, characterName,
+                                                                             response);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -459,6 +475,11 @@ public class ModelCharacterWS {
                                required = false,
                                defaultValue = "1000",
                                value = "Maximum number of results to retrieve") int maxresults,
+                           @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                               name = "reverse",
+                               required = false,
+                               defaultValue = "false",
+                               value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                            @QueryParam("roleCategory") @DefaultValue(
                                value = "{ any: true }") @ApiParam(
                                    name = "roleCategory",
@@ -484,7 +505,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterRole> result = CharacterRole.accessQuery(cfg.owner, contid, maxresults, at, roleCategory, roleID, roleName);
+      List<CharacterRole> result = CharacterRole.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleCategory, roleID, roleName);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -551,6 +572,11 @@ public class ModelCharacterWS {
                                          required = false,
                                          defaultValue = "1000",
                                          value = "Maximum number of results to retrieve") int maxresults,
+                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                         name = "reverse",
+                                         required = false,
+                                         defaultValue = "false",
+                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                      @QueryParam("characterID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "characterID",
@@ -716,10 +742,10 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterSheet> result = CharacterSheet.accessQuery(cfg.owner, contid, maxresults, at, characterID, name, corporationID, corporationName, race, doB,
-                                                               bloodlineID, bloodline, ancestryID, ancestry, gender, allianceName, allianceID, factionName,
-                                                               factionID, intelligence, memory, charisma, perception, willpower, homeStationID, lastRespecDate,
-                                                               lastTimedRespec, freeRespecs, freeSkillPoints, remoteStationDate);
+      List<CharacterSheet> result = CharacterSheet.accessQuery(cfg.owner, contid, maxresults, reverse, at, characterID, name, corporationID, corporationName,
+                                                               race, doB, bloodlineID, bloodline, ancestryID, ancestry, gender, allianceName, allianceID,
+                                                               factionName, factionID, intelligence, memory, charisma, perception, willpower, homeStationID,
+                                                               lastRespecDate, lastTimedRespec, freeRespecs, freeSkillPoints, remoteStationDate);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -786,6 +812,11 @@ public class ModelCharacterWS {
                                   required = false,
                                   defaultValue = "1000",
                                   value = "Maximum number of results to retrieve") int maxresults,
+                              @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                  name = "reverse",
+                                  required = false,
+                                  defaultValue = "false",
+                                  value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                               @QueryParam("balance") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "balance",
@@ -799,7 +830,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterSheetBalance> result = CharacterSheetBalance.accessQuery(cfg.owner, contid, maxresults, at, balance);
+      List<CharacterSheetBalance> result = CharacterSheetBalance.accessQuery(cfg.owner, contid, maxresults, reverse, at, balance);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -866,6 +897,11 @@ public class ModelCharacterWS {
                                          required = false,
                                          defaultValue = "1000",
                                          value = "Maximum number of results to retrieve") int maxresults,
+                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                         name = "reverse",
+                                         required = false,
+                                         defaultValue = "false",
+                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                      @QueryParam("cloneJumpDate") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "cloneJumpDate",
@@ -879,7 +915,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterSheetClone> result = CharacterSheetClone.accessQuery(cfg.owner, contid, maxresults, at, cloneJumpDate);
+      List<CharacterSheetClone> result = CharacterSheetClone.accessQuery(cfg.owner, contid, maxresults, reverse, at, cloneJumpDate);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -946,6 +982,11 @@ public class ModelCharacterWS {
                                     required = false,
                                     defaultValue = "1000",
                                     value = "Maximum number of results to retrieve") int maxresults,
+                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                    name = "reverse",
+                                    required = false,
+                                    defaultValue = "false",
+                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                 @QueryParam("jumpActivation") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "jumpActivation",
@@ -971,7 +1012,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterSheetJump> result = CharacterSheetJump.accessQuery(cfg.owner, contid, maxresults, at, jumpActivation, jumpFatigue, jumpLastUpdate);
+      List<CharacterSheetJump> result = CharacterSheetJump.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpActivation, jumpFatigue, jumpLastUpdate);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1038,6 +1079,11 @@ public class ModelCharacterWS {
                                 required = false,
                                 defaultValue = "1000",
                                 value = "Maximum number of results to retrieve") int maxresults,
+                            @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                name = "reverse",
+                                required = false,
+                                defaultValue = "false",
+                                value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                             @QueryParam("typeID") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "typeID",
@@ -1069,7 +1115,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterSkill> result = CharacterSkill.accessQuery(cfg.owner, contid, maxresults, at, typeID, level, skillpoints, published);
+      List<CharacterSkill> result = CharacterSkill.accessQuery(cfg.owner, contid, maxresults, reverse, at, typeID, level, skillpoints, published);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1136,6 +1182,11 @@ public class ModelCharacterWS {
                                 required = false,
                                 defaultValue = "1000",
                                 value = "Maximum number of results to retrieve") int maxresults,
+                            @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                name = "reverse",
+                                required = false,
+                                defaultValue = "false",
+                                value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                             @QueryParam("titleID") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "titleID",
@@ -1155,7 +1206,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterTitle> result = CharacterTitle.accessQuery(cfg.owner, contid, maxresults, at, titleID, titleName);
+      List<CharacterTitle> result = CharacterTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1222,6 +1273,11 @@ public class ModelCharacterWS {
                                   required = false,
                                   defaultValue = "1000",
                                   value = "Maximum number of results to retrieve") int maxresults,
+                              @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                  name = "reverse",
+                                  required = false,
+                                  defaultValue = "false",
+                                  value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                               @QueryParam("typeID") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "typeID",
@@ -1241,7 +1297,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<Implant> result = Implant.accessQuery(cfg.owner, contid, maxresults, at, typeID, typeName);
+      List<Implant> result = Implant.accessQuery(cfg.owner, contid, maxresults, reverse, at, typeID, typeName);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1308,6 +1364,11 @@ public class ModelCharacterWS {
                                     required = false,
                                     defaultValue = "1000",
                                     value = "Maximum number of results to retrieve") int maxresults,
+                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                    name = "reverse",
+                                    required = false,
+                                    defaultValue = "false",
+                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                 @QueryParam("jumpCloneID") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "jumpCloneID",
@@ -1339,7 +1400,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<JumpClone> result = JumpClone.accessQuery(cfg.owner, contid, maxresults, at, jumpCloneID, typeID, locationID, cloneName);
+      List<JumpClone> result = JumpClone.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpCloneID, typeID, locationID, cloneName);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1406,6 +1467,11 @@ public class ModelCharacterWS {
                                            required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
+                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                           name = "reverse",
+                                           required = false,
+                                           defaultValue = "false",
+                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                        @QueryParam("jumpCloneID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "jumpCloneID",
@@ -1431,7 +1497,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<JumpCloneImplant> result = JumpCloneImplant.accessQuery(cfg.owner, contid, maxresults, at, jumpCloneID, typeID, typeName);
+      List<JumpCloneImplant> result = JumpCloneImplant.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpCloneID, typeID, typeName);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1498,6 +1564,11 @@ public class ModelCharacterWS {
                                 required = false,
                                 defaultValue = "1000",
                                 value = "Maximum number of results to retrieve") int maxresults,
+                            @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                name = "reverse",
+                                required = false,
+                                defaultValue = "false",
+                                value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                             @QueryParam("description") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "description",
@@ -1553,8 +1624,8 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterMedal> result = CharacterMedal.accessQuery(cfg.owner, contid, maxresults, at, description, medalID, title, corporationID, issued, issuerID,
-                                                               reason, status);
+      List<CharacterMedal> result = CharacterMedal.accessQuery(cfg.owner, contid, maxresults, reverse, at, description, medalID, title, corporationID, issued,
+                                                               issuerID, reason, status);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1621,6 +1692,11 @@ public class ModelCharacterWS {
                                        required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                       name = "reverse",
+                                       required = false,
+                                       defaultValue = "false",
+                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("notificationID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "notificationID",
@@ -1658,8 +1734,8 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterNotification> result = CharacterNotification.accessQuery(cfg.owner, contid, maxresults, at, notificationID, typeID, senderID, sentDate,
-                                                                             msgRead);
+      List<CharacterNotification> result = CharacterNotification.accessQuery(cfg.owner, contid, maxresults, reverse, at, notificationID, typeID, senderID,
+                                                                             sentDate, msgRead);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1726,6 +1802,11 @@ public class ModelCharacterWS {
                                             required = false,
                                             defaultValue = "1000",
                                             value = "Maximum number of results to retrieve") int maxresults,
+                                        @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                            name = "reverse",
+                                            required = false,
+                                            defaultValue = "false",
+                                            value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                         @QueryParam("notificationID") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "notificationID",
@@ -1757,8 +1838,8 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterNotificationBody> result = CharacterNotificationBody.accessQuery(cfg.owner, contid, maxresults, at, notificationID, retrieved, text,
-                                                                                     missing);
+      List<CharacterNotificationBody> result = CharacterNotificationBody.accessQuery(cfg.owner, contid, maxresults, reverse, at, notificationID, retrieved,
+                                                                                     text, missing);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1825,6 +1906,11 @@ public class ModelCharacterWS {
                                   required = false,
                                   defaultValue = "1000",
                                   value = "Maximum number of results to retrieve") int maxresults,
+                              @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                  name = "reverse",
+                                  required = false,
+                                  defaultValue = "false",
+                                  value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                               @QueryParam("channelID") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "channelID",
@@ -1874,7 +1960,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<ChatChannel> result = ChatChannel.accessQuery(cfg.owner, contid, maxresults, at, channelID, ownerID, ownerName, displayName, comparisonKey,
+      List<ChatChannel> result = ChatChannel.accessQuery(cfg.owner, contid, maxresults, reverse, at, channelID, ownerID, ownerName, displayName, comparisonKey,
                                                          hasPassword, motd);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1942,6 +2028,11 @@ public class ModelCharacterWS {
                                         required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
+                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                        name = "reverse",
+                                        required = false,
+                                        defaultValue = "false",
+                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("channelID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "channelID",
@@ -1985,7 +2076,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<ChatChannelMember> result = ChatChannelMember.accessQuery(cfg.owner, contid, maxresults, at, channelID, category, accessorID, accessorName,
+      List<ChatChannelMember> result = ChatChannelMember.accessQuery(cfg.owner, contid, maxresults, reverse, at, channelID, category, accessorID, accessorName,
                                                                      untilWhen, reason);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2053,6 +2144,11 @@ public class ModelCharacterWS {
                                               required = false,
                                               defaultValue = "1000",
                                               value = "Maximum number of results to retrieve") int maxresults,
+                                          @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                              name = "reverse",
+                                              required = false,
+                                              defaultValue = "false",
+                                              value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                           @QueryParam("notificationID") @DefaultValue(
                                               value = "{ any: true }") @ApiParam(
                                                   name = "notificationID",
@@ -2090,7 +2186,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterContactNotification> result = CharacterContactNotification.accessQuery(cfg.owner, contid, maxresults, at, notificationID, senderID,
+      List<CharacterContactNotification> result = CharacterContactNotification.accessQuery(cfg.owner, contid, maxresults, reverse, at, notificationID, senderID,
                                                                                            senderName, sentDate, messageData);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2158,6 +2254,11 @@ public class ModelCharacterWS {
                                       required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
+                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                      name = "reverse",
+                                      required = false,
+                                      defaultValue = "false",
+                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("displayName") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "displayName",
@@ -2177,7 +2278,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<MailingList> result = MailingList.accessQuery(cfg.owner, contid, maxresults, at, displayName, listID);
+      List<MailingList> result = MailingList.accessQuery(cfg.owner, contid, maxresults, reverse, at, displayName, listID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2244,6 +2345,11 @@ public class ModelCharacterWS {
                                       required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
+                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                      name = "reverse",
+                                      required = false,
+                                      defaultValue = "false",
+                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("messageID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "messageID",
@@ -2312,8 +2418,8 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterMailMessage> result = CharacterMailMessage.accessQuery(cfg.owner, contid, maxresults, at, messageID, senderID, senderName, toCharacterID,
-                                                                           sentDate, title, corpOrAllianceID, toListID, msgRead, senderTypeID);
+      List<CharacterMailMessage> result = CharacterMailMessage.accessQuery(cfg.owner, contid, maxresults, reverse, at, messageID, senderID, senderName,
+                                                                           toCharacterID, sentDate, title, corpOrAllianceID, toListID, msgRead, senderTypeID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2380,6 +2486,11 @@ public class ModelCharacterWS {
                                            required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
+                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                           name = "reverse",
+                                           required = false,
+                                           defaultValue = "false",
+                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                        @QueryParam("messageID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "messageID",
@@ -2405,7 +2516,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterMailMessageBody> result = CharacterMailMessageBody.accessQuery(cfg.owner, contid, maxresults, at, messageID, retrieved, body);
+      List<CharacterMailMessageBody> result = CharacterMailMessageBody.accessQuery(cfg.owner, contid, maxresults, reverse, at, messageID, retrieved, body);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2472,6 +2583,11 @@ public class ModelCharacterWS {
                                            required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
+                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                           name = "reverse",
+                                           required = false,
+                                           defaultValue = "false",
+                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                        @QueryParam("planetID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "planetID",
@@ -2547,8 +2663,9 @@ public class ModelCharacterWS {
     cfg.presetExpiry = Capsuleer.getCapsuleer(cfg.owner).getPlanetaryColoniesExpiry();
     try {
       // Retrieve
-      List<PlanetaryColony> result = PlanetaryColony.accessQuery(cfg.owner, contid, maxresults, at, planetID, solarSystemID, solarSystemName, planetName,
-                                                                 planetTypeID, planetTypeName, ownerID, ownerName, lastUpdate, upgradeLevel, numberOfPins);
+      List<PlanetaryColony> result = PlanetaryColony.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, solarSystemID, solarSystemName,
+                                                                 planetName, planetTypeID, planetTypeName, ownerID, ownerName, lastUpdate, upgradeLevel,
+                                                                 numberOfPins);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2615,6 +2732,11 @@ public class ModelCharacterWS {
                                         required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
+                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                        name = "reverse",
+                                        required = false,
+                                        defaultValue = "false",
+                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("planetID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "planetID",
@@ -2647,7 +2769,7 @@ public class ModelCharacterWS {
     cfg.presetExpiry = Capsuleer.getCapsuleer(cfg.owner).getPlanetaryColoniesExpiry();
     try {
       // Retrieve
-      List<PlanetaryLink> result = PlanetaryLink.accessQuery(cfg.owner, contid, maxresults, at, planetID, sourcePinID, destinationPinID, linkLevel);
+      List<PlanetaryLink> result = PlanetaryLink.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, sourcePinID, destinationPinID, linkLevel);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2714,6 +2836,11 @@ public class ModelCharacterWS {
                                        required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                       name = "reverse",
+                                       required = false,
+                                       defaultValue = "false",
+                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("planetID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "planetID",
@@ -2813,8 +2940,8 @@ public class ModelCharacterWS {
     cfg.presetExpiry = Capsuleer.getCapsuleer(cfg.owner).getPlanetaryColoniesExpiry();
     try {
       // Retrieve
-      List<PlanetaryPin> result = PlanetaryPin.accessQuery(cfg.owner, contid, maxresults, at, planetID, pinID, typeID, typeName, schematicID, lastLaunchTime,
-                                                           cycleTime, quantityPerCycle, installTime, expiryTime, contentTypeID, contentTypeName,
+      List<PlanetaryPin> result = PlanetaryPin.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, pinID, typeID, typeName, schematicID,
+                                                           lastLaunchTime, cycleTime, quantityPerCycle, installTime, expiryTime, contentTypeID, contentTypeName,
                                                            contentQuantity, longitude, latitude);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2882,6 +3009,11 @@ public class ModelCharacterWS {
                                          required = false,
                                          defaultValue = "1000",
                                          value = "Maximum number of results to retrieve") int maxresults,
+                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                         name = "reverse",
+                                         required = false,
+                                         defaultValue = "false",
+                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                      @QueryParam("planetID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "planetID",
@@ -2963,7 +3095,7 @@ public class ModelCharacterWS {
     cfg.presetExpiry = Capsuleer.getCapsuleer(cfg.owner).getPlanetaryColoniesExpiry();
     try {
       // Retrieve
-      List<PlanetaryRoute> result = PlanetaryRoute.accessQuery(cfg.owner, contid, maxresults, at, planetID, routeID, sourcePinID, destinationPinID,
+      List<PlanetaryRoute> result = PlanetaryRoute.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, routeID, sourcePinID, destinationPinID,
                                                                contentTypeID, contentTypeName, quantity, waypoint1, waypoint2, waypoint3, waypoint4, waypoint5);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -3031,6 +3163,11 @@ public class ModelCharacterWS {
                                         required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
+                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                        name = "reverse",
+                                        required = false,
+                                        defaultValue = "false",
+                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("agentID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "agentID",
@@ -3074,7 +3211,7 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<ResearchAgent> result = ResearchAgent.accessQuery(cfg.owner, contid, maxresults, at, agentID, currentPoints, pointsPerDay, remainderPoints,
+      List<ResearchAgent> result = ResearchAgent.accessQuery(cfg.owner, contid, maxresults, reverse, at, agentID, currentPoints, pointsPerDay, remainderPoints,
                                                              researchStartDate, skillTypeID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -3142,6 +3279,11 @@ public class ModelCharacterWS {
                                           required = false,
                                           defaultValue = "1000",
                                           value = "Maximum number of results to retrieve") int maxresults,
+                                      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                          name = "reverse",
+                                          required = false,
+                                          defaultValue = "false",
+                                          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                       @QueryParam("skillInTraining") @DefaultValue(
                                           value = "{ any: true }") @ApiParam(
                                               name = "skillInTraining",
@@ -3198,9 +3340,9 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CharacterSkillInTraining> result = CharacterSkillInTraining.accessQuery(cfg.owner, contid, maxresults, at, skillInTraining, currentTrainingQueueTime,
-                                                                                   trainingStartTime, trainingEndTime, trainingStartSP, trainingDestinationSP,
-                                                                                   trainingToLevel, skillTypeID);
+      List<CharacterSkillInTraining> result = CharacterSkillInTraining.accessQuery(cfg.owner, contid, maxresults, reverse, at, skillInTraining,
+                                                                                   currentTrainingQueueTime, trainingStartTime, trainingEndTime,
+                                                                                   trainingStartSP, trainingDestinationSP, trainingToLevel, skillTypeID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -3267,6 +3409,11 @@ public class ModelCharacterWS {
                                        required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                       name = "reverse",
+                                       required = false,
+                                       defaultValue = "false",
+                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("endSP") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "endSP",
@@ -3316,7 +3463,8 @@ public class ModelCharacterWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<SkillInQueue> result = SkillInQueue.accessQuery(cfg.owner, contid, maxresults, at, endSP, endTime, level, queuePosition, startSP, startTime, typeID);
+      List<SkillInQueue> result = SkillInQueue.accessQuery(cfg.owner, contid, maxresults, reverse, at, endSP, endTime, level, queuePosition, startSP, startTime,
+                                                           typeID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {

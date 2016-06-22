@@ -55,7 +55,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(
     tags = {
         "Corporation"
-},
+    },
     produces = "application/json",
     consumes = "application/json")
 public class ModelCorporationWS {
@@ -91,7 +91,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getContainerLogs(
                                    @Context HttpServletRequest request,
                                    @QueryParam("accessKey") @ApiParam(
@@ -118,6 +118,11 @@ public class ModelCorporationWS {
                                        required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                       name = "reverse",
+                                       required = false,
+                                       defaultValue = "false",
+                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("logTime") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "logTime",
@@ -204,8 +209,8 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<ContainerLog> result = ContainerLog.accessQuery(cfg.owner, contid, maxresults, at, logTime, action, actorID, actorName, flag, itemID, itemTypeID,
-                                                           locationID, newConfiguration, oldConfiguration, passwordType, quantity, typeID);
+      List<ContainerLog> result = ContainerLog.accessQuery(cfg.owner, contid, maxresults, reverse, at, logTime, action, actorID, actorName, flag, itemID,
+                                                           itemTypeID, locationID, newConfiguration, oldConfiguration, passwordType, quantity, typeID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -245,7 +250,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getCorporationMedals(
                                        @Context HttpServletRequest request,
                                        @QueryParam("accessKey") @ApiParam(
@@ -272,6 +277,11 @@ public class ModelCorporationWS {
                                            required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
+                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                           name = "reverse",
+                                           required = false,
+                                           defaultValue = "false",
+                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                        @QueryParam("medalID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "medalID",
@@ -309,7 +319,7 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CorporationMedal> result = CorporationMedal.accessQuery(cfg.owner, contid, maxresults, at, medalID, description, title, created, creatorID);
+      List<CorporationMedal> result = CorporationMedal.accessQuery(cfg.owner, contid, maxresults, reverse, at, medalID, description, title, created, creatorID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -349,7 +359,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getMemberMedals(
                                   @Context HttpServletRequest request,
                                   @QueryParam("accessKey") @ApiParam(
@@ -376,6 +386,11 @@ public class ModelCorporationWS {
                                       required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
+                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                      name = "reverse",
+                                      required = false,
+                                      defaultValue = "false",
+                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("medalID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "medalID",
@@ -419,8 +434,8 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CorporationMemberMedal> result = CorporationMemberMedal.accessQuery(cfg.owner, contid, maxresults, at, medalID, characterID, issued, issuerID,
-                                                                               reason, status);
+      List<CorporationMemberMedal> result = CorporationMemberMedal.accessQuery(cfg.owner, contid, maxresults, reverse, at, medalID, characterID, issued,
+                                                                               issuerID, reason, status);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -460,7 +475,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getCorporationSheet(
                                       @Context HttpServletRequest request,
                                       @QueryParam("accessKey") @ApiParam(
@@ -487,6 +502,11 @@ public class ModelCorporationWS {
                                           required = false,
                                           defaultValue = "1000",
                                           value = "Maximum number of results to retrieve") int maxresults,
+                                      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                          name = "reverse",
+                                          required = false,
+                                          defaultValue = "false",
+                                          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                       @QueryParam("allianceID") @DefaultValue(
                                           value = "{ any: true }") @ApiParam(
                                               name = "allianceID",
@@ -628,10 +648,10 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CorporationSheet> result = CorporationSheet.accessQuery(cfg.owner, contid, maxresults, at, allianceID, allianceName, ceoID, ceoName, corporationID,
-                                                                   corporationName, description, logoColor1, logoColor2, logoColor3, logoGraphicID, logoShape1,
-                                                                   logoShape2, logoShape3, memberCount, memberLimit, shares, stationID, stationName, taxRate,
-                                                                   ticker, url);
+      List<CorporationSheet> result = CorporationSheet.accessQuery(cfg.owner, contid, maxresults, reverse, at, allianceID, allianceName, ceoID, ceoName,
+                                                                   corporationID, corporationName, description, logoColor1, logoColor2, logoColor3,
+                                                                   logoGraphicID, logoShape1, logoShape2, logoShape3, memberCount, memberLimit, shares,
+                                                                   stationID, stationName, taxRate, ticker, url);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -671,7 +691,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getCorporationTitles(
                                        @Context HttpServletRequest request,
                                        @QueryParam("accessKey") @ApiParam(
@@ -698,6 +718,11 @@ public class ModelCorporationWS {
                                            required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
+                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                           name = "reverse",
+                                           required = false,
+                                           defaultValue = "false",
+                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                        @QueryParam("titleID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "titleID",
@@ -766,8 +791,9 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<CorporationTitle> result = CorporationTitle.accessQuery(cfg.owner, contid, maxresults, at, titleID, titleName, grantableRoles, grantableRolesAtBase,
-                                                                   grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase, rolesAtHQ, rolesAtOther);
+      List<CorporationTitle> result = CorporationTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName, grantableRoles,
+                                                                   grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase,
+                                                                   rolesAtHQ, rolesAtOther);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -807,7 +833,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getCustomsOffices(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
@@ -834,6 +860,11 @@ public class ModelCorporationWS {
                                         required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
+                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                        name = "reverse",
+                                        required = false,
+                                        defaultValue = "false",
+                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("itemID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "itemID",
@@ -928,7 +959,7 @@ public class ModelCorporationWS {
     cfg.presetExpiry = Corporation.getCorporation(cfg.owner).getCustomsOfficeExpiry();
     try {
       // Retrieve
-      List<CustomsOffice> result = CustomsOffice.accessQuery(cfg.owner, contid, maxresults, at, itemID, solarSystemID, solarSystemName, reinforceHour,
+      List<CustomsOffice> result = CustomsOffice.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, solarSystemID, solarSystemName, reinforceHour,
                                                              allowAlliance, allowStandings, standingLevel, taxRateAlliance, taxRateCorp, taxRateStandingHigh,
                                                              taxRateStandingGood, taxRateStandingNeutral, taxRateStandingBad, taxRateStandingHorrible);
       // Finish
@@ -970,7 +1001,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getDivisions(
                                @Context HttpServletRequest request,
                                @QueryParam("accessKey") @ApiParam(
@@ -997,6 +1028,11 @@ public class ModelCorporationWS {
                                    required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
+                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                   name = "reverse",
+                                   required = false,
+                                   defaultValue = "false",
+                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("wallet") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "wallet",
@@ -1022,7 +1058,7 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<Division> result = Division.accessQuery(cfg.owner, contid, maxresults, at, wallet, accountKey, description);
+      List<Division> result = Division.accessQuery(cfg.owner, contid, maxresults, reverse, at, wallet, accountKey, description);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1062,7 +1098,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getFacilities(
                                 @Context HttpServletRequest request,
                                 @QueryParam("accessKey") @ApiParam(
@@ -1089,6 +1125,11 @@ public class ModelCorporationWS {
                                     required = false,
                                     defaultValue = "1000",
                                     value = "Maximum number of results to retrieve") int maxresults,
+                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                    name = "reverse",
+                                    required = false,
+                                    defaultValue = "false",
+                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                 @QueryParam("facilityID") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "facilityID",
@@ -1151,8 +1192,8 @@ public class ModelCorporationWS {
     cfg.presetExpiry = Corporation.getCorporation(cfg.owner).getFacilitiesExpiry();
     try {
       // Retrieve
-      List<Facility> result = Facility.accessQuery(cfg.owner, contid, maxresults, at, facilityID, typeID, typeName, solarSystemID, solarSystemName, regionID,
-                                                   regionName, starbaseModifier, tax);
+      List<Facility> result = Facility.accessQuery(cfg.owner, contid, maxresults, reverse, at, facilityID, typeID, typeName, solarSystemID, solarSystemName,
+                                                   regionID, regionName, starbaseModifier, tax);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1192,7 +1233,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getFuel(
                           @Context HttpServletRequest request,
                           @QueryParam("accessKey") @ApiParam(
@@ -1219,6 +1260,11 @@ public class ModelCorporationWS {
                               required = false,
                               defaultValue = "1000",
                               value = "Maximum number of results to retrieve") int maxresults,
+                          @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                              name = "reverse",
+                              required = false,
+                              defaultValue = "false",
+                              value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                           @QueryParam("itemID") @DefaultValue(
                               value = "{ any: true }") @ApiParam(
                                   name = "itemID",
@@ -1244,7 +1290,7 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<Fuel> result = Fuel.accessQuery(cfg.owner, contid, maxresults, at, itemID, typeID, quantity);
+      List<Fuel> result = Fuel.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, typeID, quantity);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1284,7 +1330,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getMemberSecurity(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
@@ -1311,6 +1357,11 @@ public class ModelCorporationWS {
                                         required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
+                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                        name = "reverse",
+                                        required = false,
+                                        defaultValue = "false",
+                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("characterID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "characterID",
@@ -1385,8 +1436,9 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<MemberSecurity> result = MemberSecurity.accessQuery(cfg.owner, contid, maxresults, at, characterID, name, grantableRoles, grantableRolesAtBase,
-                                                               grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase, rolesAtHQ, rolesAtOther, titles);
+      List<MemberSecurity> result = MemberSecurity.accessQuery(cfg.owner, contid, maxresults, reverse, at, characterID, name, grantableRoles,
+                                                               grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase, rolesAtHQ,
+                                                               rolesAtOther, titles);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1426,7 +1478,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getMemberSecurityLog(
                                        @Context HttpServletRequest request,
                                        @QueryParam("accessKey") @ApiParam(
@@ -1453,6 +1505,11 @@ public class ModelCorporationWS {
                                            required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
+                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                           name = "reverse",
+                                           required = false,
+                                           defaultValue = "false",
+                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                        @QueryParam("changeTime") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "changeTime",
@@ -1508,8 +1565,8 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<MemberSecurityLog> result = MemberSecurityLog.accessQuery(cfg.owner, contid, maxresults, at, changeTime, changedCharacterID, changedCharacterName,
-                                                                     issuerID, issuerName, roleLocationType, oldRoles, newRoles);
+      List<MemberSecurityLog> result = MemberSecurityLog.accessQuery(cfg.owner, contid, maxresults, reverse, at, changeTime, changedCharacterID,
+                                                                     changedCharacterName, issuerID, issuerName, roleLocationType, oldRoles, newRoles);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1549,7 +1606,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getMemberTracking(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
@@ -1576,6 +1633,11 @@ public class ModelCorporationWS {
                                         required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
+                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                        name = "reverse",
+                                        required = false,
+                                        defaultValue = "false",
+                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("characterID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "characterID",
@@ -1668,7 +1730,7 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<MemberTracking> result = MemberTracking.accessQuery(cfg.owner, contid, maxresults, at, characterID, base, baseID, grantableRoles, location,
+      List<MemberTracking> result = MemberTracking.accessQuery(cfg.owner, contid, maxresults, reverse, at, characterID, base, baseID, grantableRoles, location,
                                                                locationID, logoffDateTime, logonDateTime, name, roles, shipType, shipTypeID, startDateTime,
                                                                title);
       // Finish
@@ -1710,7 +1772,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getOutposts(
                               @Context HttpServletRequest request,
                               @QueryParam("accessKey") @ApiParam(
@@ -1737,6 +1799,11 @@ public class ModelCorporationWS {
                                   required = false,
                                   defaultValue = "1000",
                                   value = "Maximum number of results to retrieve") int maxresults,
+                              @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                  name = "reverse",
+                                  required = false,
+                                  defaultValue = "false",
+                                  value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                               @QueryParam("stationID") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "stationID",
@@ -1823,8 +1890,9 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<Outpost> result = Outpost.accessQuery(cfg.owner, contid, maxresults, at, stationID, ownerID, stationName, solarSystemID, dockingCostPerShipVolume,
-                                                 officeRentalCost, stationTypeID, reprocessingEfficiency, reprocessingStationTake, standingOwnerID, x, y, z);
+      List<Outpost> result = Outpost.accessQuery(cfg.owner, contid, maxresults, reverse, at, stationID, ownerID, stationName, solarSystemID,
+                                                 dockingCostPerShipVolume, officeRentalCost, stationTypeID, reprocessingEfficiency, reprocessingStationTake,
+                                                 standingOwnerID, x, y, z);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1864,7 +1932,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getOutpostServiceDetails(
                                            @Context HttpServletRequest request,
                                            @QueryParam("accessKey") @ApiParam(
@@ -1891,6 +1959,11 @@ public class ModelCorporationWS {
                                                required = false,
                                                defaultValue = "1000",
                                                value = "Maximum number of results to retrieve") int maxresults,
+                                           @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                               name = "reverse",
+                                               required = false,
+                                               defaultValue = "false",
+                                               value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                            @QueryParam("stationID") @DefaultValue(
                                                value = "{ any: true }") @ApiParam(
                                                    name = "stationID",
@@ -1934,8 +2007,8 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<OutpostServiceDetail> result = OutpostServiceDetail.accessQuery(cfg.owner, contid, maxresults, at, stationID, serviceName, ownerID, minStanding,
-                                                                           surchargePerBadStanding, discountPerGoodStanding);
+      List<OutpostServiceDetail> result = OutpostServiceDetail.accessQuery(cfg.owner, contid, maxresults, reverse, at, stationID, serviceName, ownerID,
+                                                                           minStanding, surchargePerBadStanding, discountPerGoodStanding);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1975,7 +2048,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getRoles(
                            @Context HttpServletRequest request,
                            @QueryParam("accessKey") @ApiParam(
@@ -2002,6 +2075,11 @@ public class ModelCorporationWS {
                                required = false,
                                defaultValue = "1000",
                                value = "Maximum number of results to retrieve") int maxresults,
+                           @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                               name = "reverse",
+                               required = false,
+                               defaultValue = "false",
+                               value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                            @QueryParam("roleID") @DefaultValue(
                                value = "{ any: true }") @ApiParam(
                                    name = "roleID",
@@ -2027,7 +2105,7 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<Role> result = Role.accessQuery(cfg.owner, contid, maxresults, at, roleID, roleDescription, roleName);
+      List<Role> result = Role.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleID, roleDescription, roleName);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2067,7 +2145,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getSecurityRoles(
                                    @Context HttpServletRequest request,
                                    @QueryParam("accessKey") @ApiParam(
@@ -2094,6 +2172,11 @@ public class ModelCorporationWS {
                                        required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                       name = "reverse",
+                                       required = false,
+                                       defaultValue = "false",
+                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("roleID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "roleID",
@@ -2113,7 +2196,7 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<SecurityRole> result = SecurityRole.accessQuery(cfg.owner, contid, maxresults, at, roleID, roleName);
+      List<SecurityRole> result = SecurityRole.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleID, roleName);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2153,7 +2236,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getSecurityTitles(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
@@ -2180,6 +2263,11 @@ public class ModelCorporationWS {
                                         required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
+                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                        name = "reverse",
+                                        required = false,
+                                        defaultValue = "false",
+                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("titleID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "titleID",
@@ -2199,7 +2287,7 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<SecurityTitle> result = SecurityTitle.accessQuery(cfg.owner, contid, maxresults, at, titleID, titleName);
+      List<SecurityTitle> result = SecurityTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2239,7 +2327,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getShareholders(
                                   @Context HttpServletRequest request,
                                   @QueryParam("accessKey") @ApiParam(
@@ -2266,6 +2354,11 @@ public class ModelCorporationWS {
                                       required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
+                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                      name = "reverse",
+                                      required = false,
+                                      defaultValue = "false",
+                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("shareholderID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "shareholderID",
@@ -2309,7 +2402,7 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<Shareholder> result = Shareholder.accessQuery(cfg.owner, contid, maxresults, at, shareholderID, isCorporation, shareholderCorporationID,
+      List<Shareholder> result = Shareholder.accessQuery(cfg.owner, contid, maxresults, reverse, at, shareholderID, isCorporation, shareholderCorporationID,
                                                          shareholderCorporationName, shareholderName, shares);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2350,7 +2443,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getStarbases(
                                @Context HttpServletRequest request,
                                @QueryParam("accessKey") @ApiParam(
@@ -2377,6 +2470,11 @@ public class ModelCorporationWS {
                                    required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
+                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                   name = "reverse",
+                                   required = false,
+                                   defaultValue = "false",
+                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("itemID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "itemID",
@@ -2432,8 +2530,8 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<Starbase> result = Starbase.accessQuery(cfg.owner, contid, maxresults, at, itemID, locationID, moonID, onlineTimestamp, state, stateTimestamp,
-                                                   typeID, standingOwnerID);
+      List<Starbase> result = Starbase.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, moonID, onlineTimestamp, state,
+                                                   stateTimestamp, typeID, standingOwnerID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2473,7 +2571,7 @@ public class ModelCorporationWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getStarbaseDetails(
                                      @Context HttpServletRequest request,
                                      @QueryParam("accessKey") @ApiParam(
@@ -2500,6 +2598,11 @@ public class ModelCorporationWS {
                                          required = false,
                                          defaultValue = "1000",
                                          value = "Maximum number of results to retrieve") int maxresults,
+                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                         name = "reverse",
+                                         required = false,
+                                         defaultValue = "false",
+                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                      @QueryParam("itemID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "itemID",
@@ -2611,8 +2714,8 @@ public class ModelCorporationWS {
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
-      List<StarbaseDetail> result = StarbaseDetail.accessQuery(cfg.owner, contid, maxresults, at, itemID, state, stateTimestamp, onlineTimestamp, usageFlags,
-                                                               deployFlags, allowAllianceMembers, allowCorporationMembers, useStandingsFrom,
+      List<StarbaseDetail> result = StarbaseDetail.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, state, stateTimestamp, onlineTimestamp,
+                                                               usageFlags, deployFlags, allowAllianceMembers, allowCorporationMembers, useStandingsFrom,
                                                                onAggressionEnabled, onAggressionStanding, onCorporationWarEnabled, onCorporationWarStanding,
                                                                onStandingDropEnabled, onStandingDropStanding, onStatusDropEnabled, onStatusDropStanding);
       // Finish

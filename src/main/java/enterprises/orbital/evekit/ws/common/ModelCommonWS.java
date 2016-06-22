@@ -53,7 +53,7 @@ import io.swagger.annotations.ApiResponses;
 @Api(
     tags = {
         "Common"
-},
+    },
     produces = "application/json",
     consumes = "application/json")
 public class ModelCommonWS {
@@ -89,7 +89,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getAccountBalance(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
@@ -116,6 +116,11 @@ public class ModelCommonWS {
                                         required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
+                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                        name = "reverse",
+                                        required = false,
+                                        defaultValue = "false",
+                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("accountID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "accountID",
@@ -135,7 +140,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<AccountBalance> result = AccountBalance.accessQuery(cfg.owner, contid, maxresults, at, accountID, accountKey);
+      List<AccountBalance> result = AccountBalance.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountID, accountKey);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -175,7 +180,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getAssets(
                             @Context HttpServletRequest request,
                             @QueryParam("accessKey") @ApiParam(
@@ -202,6 +207,11 @@ public class ModelCommonWS {
                                 required = false,
                                 defaultValue = "1000",
                                 value = "Maximum number of results to retrieve") int maxresults,
+                            @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                name = "reverse",
+                                required = false,
+                                defaultValue = "false",
+                                value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                             @QueryParam("itemID") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "itemID",
@@ -257,7 +267,8 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<Asset> result = Asset.accessQuery(cfg.owner, contid, maxresults, at, itemID, locationID, typeID, quantity, flag, singleton, rawQuantity, container);
+      List<Asset> result = Asset.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, typeID, quantity, flag, singleton, rawQuantity,
+                                             container);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -297,7 +308,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getBlueprints(
                                 @Context HttpServletRequest request,
                                 @QueryParam("accessKey") @ApiParam(
@@ -324,6 +335,11 @@ public class ModelCommonWS {
                                     required = false,
                                     defaultValue = "1000",
                                     value = "Maximum number of results to retrieve") int maxresults,
+                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                    name = "reverse",
+                                    required = false,
+                                    defaultValue = "false",
+                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                 @QueryParam("itemID") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "itemID",
@@ -385,8 +401,8 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<Blueprint> result = Blueprint.accessQuery(cfg.owner, contid, maxresults, at, itemID, locationID, typeID, typeName, flagID, quantity, timeEfficiency,
-                                                     materialEfficiency, runs);
+      List<Blueprint> result = Blueprint.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, typeID, typeName, flagID, quantity,
+                                                     timeEfficiency, materialEfficiency, runs);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -426,7 +442,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getBookmarks(
                                @Context HttpServletRequest request,
                                @QueryParam("accessKey") @ApiParam(
@@ -453,6 +469,11 @@ public class ModelCommonWS {
                                    required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
+                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                   name = "reverse",
+                                   required = false,
+                                   defaultValue = "false",
+                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("folderID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "folderID",
@@ -545,8 +566,8 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<Bookmark> result = Bookmark.accessQuery(cfg.owner, contid, maxresults, at, folderID, folderName, folderCreatorID, bookmarkID, bookmarkCreatorID,
-                                                   created, itemID, typeID, locationID, x, y, z, memo, note);
+      List<Bookmark> result = Bookmark.accessQuery(cfg.owner, contid, maxresults, reverse, at, folderID, folderName, folderCreatorID, bookmarkID,
+                                                   bookmarkCreatorID, created, itemID, typeID, locationID, x, y, z, memo, note);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -586,7 +607,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getContacts(
                               @Context HttpServletRequest request,
                               @QueryParam("accessKey") @ApiParam(
@@ -613,6 +634,11 @@ public class ModelCommonWS {
                                   required = false,
                                   defaultValue = "1000",
                                   value = "Maximum number of results to retrieve") int maxresults,
+                              @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                  name = "reverse",
+                                  required = false,
+                                  defaultValue = "false",
+                                  value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                               @QueryParam("list") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "list",
@@ -662,7 +688,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<Contact> result = Contact.accessQuery(cfg.owner, contid, maxresults, at, list, contactID, contactName, standing, contactTypeID, inWatchlist,
+      List<Contact> result = Contact.accessQuery(cfg.owner, contid, maxresults, reverse, at, list, contactID, contactName, standing, contactTypeID, inWatchlist,
                                                  labelMask);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -703,7 +729,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getContactLabels(
                                    @Context HttpServletRequest request,
                                    @QueryParam("accessKey") @ApiParam(
@@ -730,6 +756,11 @@ public class ModelCommonWS {
                                        required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                       name = "reverse",
+                                       required = false,
+                                       defaultValue = "false",
+                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("list") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "list",
@@ -755,7 +786,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<ContactLabel> result = ContactLabel.accessQuery(cfg.owner, contid, maxresults, at, list, labelID, name);
+      List<ContactLabel> result = ContactLabel.accessQuery(cfg.owner, contid, maxresults, reverse, at, list, labelID, name);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -795,7 +826,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getContracts(
                                @Context HttpServletRequest request,
                                @QueryParam("accessKey") @ApiParam(
@@ -822,6 +853,11 @@ public class ModelCommonWS {
                                    required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
+                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                   name = "reverse",
+                                   required = false,
+                                   defaultValue = "false",
+                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("contractID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "contractID",
@@ -963,7 +999,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<Contract> result = Contract.accessQuery(cfg.owner, contid, maxresults, at, contractID, issuerID, issuerCorpID, assigneeID, acceptorID,
+      List<Contract> result = Contract.accessQuery(cfg.owner, contid, maxresults, reverse, at, contractID, issuerID, issuerCorpID, assigneeID, acceptorID,
                                                    startStationID, endStationID, type, status, title, forCorp, availability, dateIssued, dateExpired,
                                                    dateAccepted, numDays, dateCompleted, price, reward, collateral, buyout, volume);
       // Finish
@@ -1005,7 +1041,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getContractBids(
                                   @Context HttpServletRequest request,
                                   @QueryParam("accessKey") @ApiParam(
@@ -1032,6 +1068,11 @@ public class ModelCommonWS {
                                       required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
+                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                      name = "reverse",
+                                      required = false,
+                                      defaultValue = "false",
+                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("bidID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "bidID",
@@ -1069,7 +1110,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<ContractBid> result = ContractBid.accessQuery(cfg.owner, contid, maxresults, at, bidID, contractID, bidderID, dateBid, amount);
+      List<ContractBid> result = ContractBid.accessQuery(cfg.owner, contid, maxresults, reverse, at, bidID, contractID, bidderID, dateBid, amount);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1109,7 +1150,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getContractItems(
                                    @Context HttpServletRequest request,
                                    @QueryParam("accessKey") @ApiParam(
@@ -1136,6 +1177,11 @@ public class ModelCommonWS {
                                        required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                       name = "reverse",
+                                       required = false,
+                                       defaultValue = "false",
+                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("contractID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "contractID",
@@ -1185,8 +1231,8 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<ContractItem> result = ContractItem.accessQuery(cfg.owner, contid, maxresults, at, contractID, recordID, typeID, quantity, rawQuantity, singleton,
-                                                           included);
+      List<ContractItem> result = ContractItem.accessQuery(cfg.owner, contid, maxresults, reverse, at, contractID, recordID, typeID, quantity, rawQuantity,
+                                                           singleton, included);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1226,7 +1272,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getFacWarStats(
                                  @Context HttpServletRequest request,
                                  @QueryParam("accessKey") @ApiParam(
@@ -1253,6 +1299,11 @@ public class ModelCommonWS {
                                      required = false,
                                      defaultValue = "1000",
                                      value = "Maximum number of results to retrieve") int maxresults,
+                                 @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                     name = "reverse",
+                                     required = false,
+                                     defaultValue = "false",
+                                     value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                  @QueryParam("currentRank") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "currentRank",
@@ -1333,7 +1384,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<FacWarStats> result = FacWarStats.accessQuery(cfg.owner, contid, maxresults, at, currentRank, enlisted, factionID, factionName, highestRank,
+      List<FacWarStats> result = FacWarStats.accessQuery(cfg.owner, contid, maxresults, reverse, at, currentRank, enlisted, factionID, factionName, highestRank,
                                                          killsLastWeek, killsTotal, killsYesterday, pilots, victoryPointsLastWeek, victoryPointsTotal,
                                                          victoryPointsYesterday);
       // Finish
@@ -1375,7 +1426,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getIndustryJobs(
                                   @Context HttpServletRequest request,
                                   @QueryParam("accessKey") @ApiParam(
@@ -1402,6 +1453,11 @@ public class ModelCommonWS {
                                       required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
+                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                      name = "reverse",
+                                      required = false,
+                                      defaultValue = "false",
+                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("jobID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "jobID",
@@ -1580,8 +1636,8 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<IndustryJob> result = IndustryJob.accessQuery(cfg.owner, contid, maxresults, at, jobID, installerID, installerName, facilityID, solarSystemID,
-                                                         solarSystemName, stationID, activityID, blueprintID, blueprintTypeID, blueprintTypeName,
+      List<IndustryJob> result = IndustryJob.accessQuery(cfg.owner, contid, maxresults, reverse, at, jobID, installerID, installerName, facilityID,
+                                                         solarSystemID, solarSystemName, stationID, activityID, blueprintID, blueprintTypeID, blueprintTypeName,
                                                          blueprintLocationID, outputLocationID, runs, cost, teamID, licensedRuns, probability, productTypeID,
                                                          productTypeName, status, timeInSeconds, startDate, endDate, pauseDate, completedDate,
                                                          completedCharacterID, successfulRuns);
@@ -1624,7 +1680,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getKills(
                            @Context HttpServletRequest request,
                            @QueryParam("accessKey") @ApiParam(
@@ -1651,6 +1707,11 @@ public class ModelCommonWS {
                                required = false,
                                defaultValue = "1000",
                                value = "Maximum number of results to retrieve") int maxresults,
+                           @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                               name = "reverse",
+                               required = false,
+                               defaultValue = "false",
+                               value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                            @QueryParam("killID") @DefaultValue(
                                value = "{ any: true }") @ApiParam(
                                    name = "killID",
@@ -1682,7 +1743,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<Kill> result = Kill.accessQuery(cfg.owner, contid, maxresults, at, killID, killTime, moonID, solarSystemID);
+      List<Kill> result = Kill.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, killTime, moonID, solarSystemID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1722,7 +1783,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getKillAttackers(
                                    @Context HttpServletRequest request,
                                    @QueryParam("accessKey") @ApiParam(
@@ -1749,6 +1810,11 @@ public class ModelCommonWS {
                                        required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
+                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                       name = "reverse",
+                                       required = false,
+                                       defaultValue = "false",
+                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("killID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "killID",
@@ -1841,7 +1907,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<KillAttacker> result = KillAttacker.accessQuery(cfg.owner, contid, maxresults, at, killID, attackerCharacterID, allianceID, allianceName,
+      List<KillAttacker> result = KillAttacker.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, attackerCharacterID, allianceID, allianceName,
                                                            attackerCharacterName, attackerCorporationID, attackerCorporationName, damageDone, factionID,
                                                            factionName, securityStatus, shipTypeID, weaponTypeID, finalBlow);
       // Finish
@@ -1883,7 +1949,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getKillItems(
                                @Context HttpServletRequest request,
                                @QueryParam("accessKey") @ApiParam(
@@ -1910,6 +1976,11 @@ public class ModelCommonWS {
                                    required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
+                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                   name = "reverse",
+                                   required = false,
+                                   defaultValue = "false",
+                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("killID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "killID",
@@ -1965,8 +2036,8 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<KillItem> result = KillItem.accessQuery(cfg.owner, contid, maxresults, at, killID, typeID, flag, qtyDestroyed, qtyDropped, singleton, sequence,
-                                                   containerSequence);
+      List<KillItem> result = KillItem.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, typeID, flag, qtyDestroyed, qtyDropped, singleton,
+                                                   sequence, containerSequence);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2006,7 +2077,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getKillVictims(
                                  @Context HttpServletRequest request,
                                  @QueryParam("accessKey") @ApiParam(
@@ -2033,6 +2104,11 @@ public class ModelCommonWS {
                                      required = false,
                                      defaultValue = "1000",
                                      value = "Maximum number of results to retrieve") int maxresults,
+                                 @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                     name = "reverse",
+                                     required = false,
+                                     defaultValue = "false",
+                                     value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                  @QueryParam("killID") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "killID",
@@ -2107,8 +2183,9 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<KillVictim> result = KillVictim.accessQuery(cfg.owner, contid, maxresults, at, killID, allianceID, allianceName, killCharacterID, killCharacterName,
-                                                       killCorporationID, killCorporationName, damageTaken, factionID, factionName, shipTypeID);
+      List<KillVictim> result = KillVictim.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, allianceID, allianceName, killCharacterID,
+                                                       killCharacterName, killCorporationID, killCorporationName, damageTaken, factionID, factionName,
+                                                       shipTypeID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2148,7 +2225,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getMarketOrders(
                                   @Context HttpServletRequest request,
                                   @QueryParam("accessKey") @ApiParam(
@@ -2175,6 +2252,11 @@ public class ModelCommonWS {
                                       required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
+                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                      name = "reverse",
+                                      required = false,
+                                      defaultValue = "false",
+                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("orderID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "orderID",
@@ -2273,7 +2355,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<MarketOrder> result = MarketOrder.accessQuery(cfg.owner, contid, maxresults, at, orderID, accountKey, bid, charID, duration, escrow, issued,
+      List<MarketOrder> result = MarketOrder.accessQuery(cfg.owner, contid, maxresults, reverse, at, orderID, accountKey, bid, charID, duration, escrow, issued,
                                                          minVolume, orderState, price, orderRange, stationID, typeID, volEntered, volRemaining);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2314,7 +2396,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getStandings(
                                @Context HttpServletRequest request,
                                @QueryParam("accessKey") @ApiParam(
@@ -2341,6 +2423,11 @@ public class ModelCommonWS {
                                    required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
+                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                   name = "reverse",
+                                   required = false,
+                                   defaultValue = "false",
+                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("standingEntity") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "standingEntity",
@@ -2372,7 +2459,7 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<Standing> result = Standing.accessQuery(cfg.owner, contid, maxresults, at, standingEntity, fromID, fromName, standing);
+      List<Standing> result = Standing.accessQuery(cfg.owner, contid, maxresults, reverse, at, standingEntity, fromID, fromName, standing);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2412,7 +2499,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getJournalEntries(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
@@ -2439,6 +2526,11 @@ public class ModelCommonWS {
                                         required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
+                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                        name = "reverse",
+                                        required = false,
+                                        defaultValue = "false",
+                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("accountKey") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "accountKey",
@@ -2537,8 +2629,9 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<WalletJournal> result = WalletJournal.accessQuery(cfg.owner, contid, maxresults, at, accountKey, refID, date, refTypeID, ownerName1, ownerID1,
-                                                             ownerName2, ownerID2, argName1, argID1, amount, balance, reason, taxReceiverID, taxAmount);
+      List<WalletJournal> result = WalletJournal.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountKey, refID, date, refTypeID, ownerName1,
+                                                             ownerID1, ownerName2, ownerID2, argName1, argID1, amount, balance, reason, taxReceiverID,
+                                                             taxAmount);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2578,7 +2671,7 @@ public class ModelCommonWS {
               code = 500,
               message = "internal service error",
               response = ServiceError.class),
-  })
+      })
   public Response getWalletTransactions(
                                         @Context HttpServletRequest request,
                                         @QueryParam("accessKey") @ApiParam(
@@ -2605,6 +2698,11 @@ public class ModelCommonWS {
                                             required = false,
                                             defaultValue = "1000",
                                             value = "Maximum number of results to retrieve") int maxresults,
+                                        @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                            name = "reverse",
+                                            required = false,
+                                            defaultValue = "false",
+                                            value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                         @QueryParam("accountKey") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "accountKey",
@@ -2697,8 +2795,8 @@ public class ModelCommonWS {
     if (cfg.fail) return cfg.response;
     // Retrieve requested balance
     try {
-      List<WalletTransaction> result = WalletTransaction.accessQuery(cfg.owner, contid, maxresults, at, accountKey, transactionID, date, quantity, typeName,
-                                                                     typeID, price, clientID, clientName, stationID, stationName, transactionType,
+      List<WalletTransaction> result = WalletTransaction.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountKey, transactionID, date, quantity,
+                                                                     typeName, typeID, price, clientID, clientName, stationID, stationName, transactionType,
                                                                      transactionFor, journalTransactionID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
