@@ -78,6 +78,7 @@ public class ModelAccessKeyWS {
     if (result.isFail()) return result.response;
     AccessConfig cfg = new AccessConfig(accessKey, accessCred, at, null);
     cfg.key = result.key;
+    cfg.key.generateMaskValue();
     cfg.owner = result.key.getSyncAccount();
     cfg.presetExpiry = now + TimeUnit.MINUTES.toMillis(5);
     KeyInfo ki = new KeyInfo(
