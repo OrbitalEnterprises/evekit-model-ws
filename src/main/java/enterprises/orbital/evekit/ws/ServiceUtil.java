@@ -274,7 +274,8 @@ public class ServiceUtil {
                                  String src,
                                  String path) {
     log.fine(join(", ", "AUDIT", "RESOURCEACCESS", "FROM", src, "USER", key.getSyncAccount().getUserAccount().getUid(), "ACCT",
-                  String.valueOf(key.getSyncAccount().getAid()), "KEY", String.valueOf(key.getAccessKey()), "OP", op.toString(), "PATH", path));
+                  String.valueOf(key.getSyncAccount().getAid()), "KEY", String.valueOf(key.getAccessKey()), "OP", op == null ? "NA" : op.toString(), "PATH",
+                  path));
   }
 
   public static void auditAccess(
@@ -316,7 +317,8 @@ public class ServiceUtil {
   public static long computeExpiry(
                                    long when,
                                    SynchronizedEveAccount acct,
-                                   AccountAccessMask type) throws IllegalArgumentException {
+                                   AccountAccessMask type)
+    throws IllegalArgumentException {
     Capsuleer caps = null;
     Corporation corp = null;
     boolean isCap = acct.isCharacterType();
