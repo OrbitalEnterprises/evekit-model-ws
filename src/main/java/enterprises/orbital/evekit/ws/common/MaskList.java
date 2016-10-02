@@ -37,6 +37,9 @@ public class MaskList {
       value = "access kill log")
   public final long ACCESS_KILL_LOG                 = 1L << 9;
   @ApiModelProperty(
+      value = "access asset locations")
+  public final long ACCESS_LOCATIONS                = 1L << 41;
+  @ApiModelProperty(
       value = "access market orders")
   public final long ACCESS_MARKET_ORDERS            = 1L << 10;
   @ApiModelProperty(

@@ -30,6 +30,7 @@ import enterprises.orbital.evekit.model.common.Kill;
 import enterprises.orbital.evekit.model.common.KillAttacker;
 import enterprises.orbital.evekit.model.common.KillItem;
 import enterprises.orbital.evekit.model.common.KillVictim;
+import enterprises.orbital.evekit.model.common.Location;
 import enterprises.orbital.evekit.model.common.MarketOrder;
 import enterprises.orbital.evekit.model.common.Standing;
 import enterprises.orbital.evekit.model.common.WalletJournal;
@@ -2194,6 +2195,115 @@ public class ModelCommonWS {
     }
   }
 
+  @Path("/location")
+  @GET
+  @ApiOperation(
+      value = "Get locations")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested locations",
+              response = Location.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getLocations(
+                               @Context HttpServletRequest request,
+                               @QueryParam("accessKey") @ApiParam(
+                                   name = "accessKey",
+                                   required = true,
+                                   value = "Model access key") int accessKey,
+                               @QueryParam("accessCred") @ApiParam(
+                                   name = "accessCred",
+                                   required = true,
+                                   value = "Model access credential") String accessCred,
+                               @QueryParam("at") @DefaultValue(
+                                   value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+                                       name = "at",
+                                       required = false,
+                                       defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+                                       value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+                               @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+                                   name = "contid",
+                                   required = false,
+                                   defaultValue = "-1",
+                                   value = "Continuation ID for paged results") long contid,
+                               @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+                                   name = "maxresults",
+                                   required = false,
+                                   defaultValue = "1000",
+                                   value = "Maximum number of results to retrieve") int maxresults,
+                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+                                   name = "reverse",
+                                   required = false,
+                                   defaultValue = "false",
+                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+                               @QueryParam("itemID") @DefaultValue(
+                                   value = "{ any: true }") @ApiParam(
+                                       name = "itemID",
+                                       required = false,
+                                       defaultValue = "{ any: true }",
+                                       value = "Location item ID selector") AttributeSelector itemID,
+                               @QueryParam("itemName") @DefaultValue(
+                                   value = "{ any: true }") @ApiParam(
+                                       name = "itemName",
+                                       required = false,
+                                       defaultValue = "{ any: true }",
+                                       value = "Location item name selector") AttributeSelector itemName,
+                               @QueryParam("x") @DefaultValue(
+                                   value = "{ any: true }") @ApiParam(
+                                       name = "x",
+                                       required = false,
+                                       defaultValue = "{ any: true }",
+                                       value = "Location X position selector") AttributeSelector x,
+                               @QueryParam("y") @DefaultValue(
+                                   value = "{ any: true }") @ApiParam(
+                                       name = "y",
+                                       required = false,
+                                       defaultValue = "{ any: true }",
+                                       value = "Location Y position selector") AttributeSelector y,
+                               @QueryParam("z") @DefaultValue(
+                                   value = "{ any: true }") @ApiParam(
+                                       name = "z",
+                                       required = false,
+                                       defaultValue = "{ any: true }",
+                                       value = "Location Z position selector") AttributeSelector z) {
+    // Verify access key and authorization for requested data
+    ServiceUtil.sanitizeAttributeSelector(at, itemID, itemName, x, y, z);
+    maxresults = Math.min(1000, maxresults);
+    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_LOCATIONS);
+    if (cfg.fail) return cfg.response;
+    // Retrieve requested balance
+    try {
+      List<Location> result = Location.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, itemName, x, y, z);
+      // Finish
+      return ServiceUtil.finish(cfg, result, request);
+    } catch (NumberFormatException e) {
+      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
+      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
+    }
+  }
+
   @Path("/market_order")
   @GET
   @ApiOperation(
@@ -2786,10 +2896,28 @@ public class ModelCommonWS {
                                                 name = "journalTransactionID",
                                                 required = false,
                                                 defaultValue = "{ any: true }",
-                                                value = "Journal transaction ID selector") AttributeSelector journalTransactionID) {
+                                                value = "Journal transaction ID selector") AttributeSelector journalTransactionID,
+                                        @QueryParam("clientTypeID") @DefaultValue(
+                                            value = "{ any: true }") @ApiParam(
+                                                name = "clientTypeID",
+                                                required = false,
+                                                defaultValue = "{ any: true }",
+                                                value = "Client type ID selector") AttributeSelector clientTypeID,
+                                        @QueryParam("characterID") @DefaultValue(
+                                            value = "{ any: true }") @ApiParam(
+                                                name = "characterID",
+                                                required = false,
+                                                defaultValue = "{ any: true }",
+                                                value = "Character ID selector") AttributeSelector characterID,
+                                        @QueryParam("characterName") @DefaultValue(
+                                            value = "{ any: true }") @ApiParam(
+                                                name = "characterName",
+                                                required = false,
+                                                defaultValue = "{ any: true }",
+                                                value = "Character name selector") AttributeSelector characterName) {
     // Verify access key and authorization for requested data
     ServiceUtil.sanitizeAttributeSelector(at, accountKey, transactionID, date, quantity, typeName, typeID, price, clientID, clientName, stationID, stationName,
-                                          transactionType, transactionFor, journalTransactionID);
+                                          transactionType, transactionFor, journalTransactionID, clientTypeID, characterID, characterName);
     maxresults = Math.min(1000, maxresults);
     AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_WALLET_TRANSACTIONS);
     if (cfg.fail) return cfg.response;
@@ -2797,7 +2925,7 @@ public class ModelCommonWS {
     try {
       List<WalletTransaction> result = WalletTransaction.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountKey, transactionID, date, quantity,
                                                                      typeName, typeID, price, clientID, clientName, stationID, stationName, transactionType,
-                                                                     transactionFor, journalTransactionID);
+                                                                     transactionFor, journalTransactionID, clientTypeID, characterID, characterName);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
