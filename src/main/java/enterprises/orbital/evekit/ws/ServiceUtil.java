@@ -24,6 +24,7 @@ import enterprises.orbital.evekit.account.SynchronizedAccountAccessKey;
 import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
 import enterprises.orbital.evekit.model.CachedData;
+import enterprises.orbital.evekit.model.RefCachedData;
 import enterprises.orbital.evekit.model.character.Capsuleer;
 import enterprises.orbital.evekit.model.corporation.Corporation;
 
@@ -128,6 +129,28 @@ public class ServiceUtil {
     ResponseBuilder rBuilder = Response.ok();
     if (result != null) rBuilder = rBuilder.entity(result);
     return stamp(rBuilder, cfg.when, expiry).build();
+  }
+
+  public static <A extends RefCachedData> Response finishRef(
+                                                             long when,
+                                                             long expiry,
+                                                             A result,
+                                                             HttpServletRequest request) {
+    auditRefAccess(getSource(request), getRequestURI(request));
+    ResponseBuilder rBuilder = Response.ok();
+    if (result != null) rBuilder = rBuilder.entity(result);
+    return stamp(rBuilder, when, expiry).build();
+  }
+
+  public static <A extends RefCachedData> Response finishRef(
+                                                             long when,
+                                                             long expiry,
+                                                             Collection<A> result,
+                                                             HttpServletRequest request) {
+    auditRefAccess(getSource(request), getRequestURI(request));
+    ResponseBuilder rBuilder = Response.ok();
+    if (result != null) rBuilder = rBuilder.entity(result);
+    return stamp(rBuilder, when, expiry).build();
   }
 
   public static String getSource(
@@ -286,6 +309,12 @@ public class ServiceUtil {
     log.fine(join(", ", "AUDIT", "RESOURCEACCESS", "FROM", src, "USER", key.getSyncAccount().getUserAccount().getUid(), "ACCT",
                   String.valueOf(key.getSyncAccount().getAid()), "KEY", String.valueOf(key.getAccessKey()), "OP",
                   Arrays.toString(op.toArray()).replace(", ", "|"), "PATH", path));
+  }
+
+  public static void auditRefAccess(
+                                    String src,
+                                    String path) {
+    log.fine(join(", ", "AUDIT", "REFRESOURCEACCESS", "FROM", src, "PATH", path));
   }
 
   public static void updateLifeline(
