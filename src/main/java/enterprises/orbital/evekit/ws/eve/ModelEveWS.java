@@ -264,6 +264,12 @@ public class ModelEveWS {
                                             required = false,
                                             defaultValue = "false",
                                             value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+                                        @QueryParam("attribute") @DefaultValue(
+                                            value = "{ any: true }") @ApiParam(
+                                                name = "attribute",
+                                                required = false,
+                                                defaultValue = "{ any: true }",
+                                                value = "Stat attribute (LAST_WEEK, TOTAL, YESTERDAY) selector") AttributeSelector attribute,
                                         @QueryParam("characterID") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "characterID",
@@ -282,10 +288,10 @@ public class ModelEveWS {
                                                 required = false,
                                                 defaultValue = "{ any: true }",
                                                 value = "Kill count selector") AttributeSelector kills) {
-    ServiceUtil.sanitizeAttributeSelector(at, characterID, characterName, kills);
+    ServiceUtil.sanitizeAttributeSelector(at, attribute, characterID, characterName, kills);
     maxresults = Math.min(1000, maxresults);
     try {
-      List<CharacterKillStat> result = CharacterKillStat.accessQuery(contid, maxresults, reverse, at, characterID, characterName, kills);
+      List<CharacterKillStat> result = CharacterKillStat.accessQuery(contid, maxresults, reverse, at, attribute, characterID, characterName, kills);
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -337,6 +343,12 @@ public class ModelEveWS {
                                                     required = false,
                                                     defaultValue = "false",
                                                     value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+                                                @QueryParam("attribute") @DefaultValue(
+                                                    value = "{ any: true }") @ApiParam(
+                                                        name = "attribute",
+                                                        required = false,
+                                                        defaultValue = "{ any: true }",
+                                                        value = "Stat attribute (LAST_WEEK, TOTAL, YESTERDAY) selector") AttributeSelector attribute,
                                                 @QueryParam("characterID") @DefaultValue(
                                                     value = "{ any: true }") @ApiParam(
                                                         name = "characterID",
@@ -355,10 +367,10 @@ public class ModelEveWS {
                                                         required = false,
                                                         defaultValue = "{ any: true }",
                                                         value = "Victory points selector") AttributeSelector victoryPoints) {
-    ServiceUtil.sanitizeAttributeSelector(at, characterID, characterName, victoryPoints);
+    ServiceUtil.sanitizeAttributeSelector(at, attribute, characterID, characterName, victoryPoints);
     maxresults = Math.min(1000, maxresults);
     try {
-      List<CharacterVictoryPointStat> result = CharacterVictoryPointStat.accessQuery(contid, maxresults, reverse, at, characterID, characterName,
+      List<CharacterVictoryPointStat> result = CharacterVictoryPointStat.accessQuery(contid, maxresults, reverse, at, attribute, characterID, characterName,
                                                                                      victoryPoints);
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
@@ -521,6 +533,12 @@ public class ModelEveWS {
                                               required = false,
                                               defaultValue = "false",
                                               value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+                                          @QueryParam("attribute") @DefaultValue(
+                                              value = "{ any: true }") @ApiParam(
+                                                  name = "attribute",
+                                                  required = false,
+                                                  defaultValue = "{ any: true }",
+                                                  value = "Stat attribute (LAST_WEEK, TOTAL, YESTERDAY) selector") AttributeSelector attribute,
                                           @QueryParam("corporationID") @DefaultValue(
                                               value = "{ any: true }") @ApiParam(
                                                   name = "corporationID",
@@ -539,10 +557,10 @@ public class ModelEveWS {
                                                   required = false,
                                                   defaultValue = "{ any: true }",
                                                   value = "Kill count selector") AttributeSelector kills) {
-    ServiceUtil.sanitizeAttributeSelector(at, corporationID, corporationName, kills);
+    ServiceUtil.sanitizeAttributeSelector(at, attribute, corporationID, corporationName, kills);
     maxresults = Math.min(1000, maxresults);
     try {
-      List<CorporationKillStat> result = CorporationKillStat.accessQuery(contid, maxresults, reverse, at, corporationID, corporationName, kills);
+      List<CorporationKillStat> result = CorporationKillStat.accessQuery(contid, maxresults, reverse, at, attribute, corporationID, corporationName, kills);
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -594,6 +612,12 @@ public class ModelEveWS {
                                                       required = false,
                                                       defaultValue = "false",
                                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+                                                  @QueryParam("attribute") @DefaultValue(
+                                                      value = "{ any: true }") @ApiParam(
+                                                          name = "attribute",
+                                                          required = false,
+                                                          defaultValue = "{ any: true }",
+                                                          value = "Stat attribute (LAST_WEEK, TOTAL, YESTERDAY) selector") AttributeSelector attribute,
                                                   @QueryParam("corporationID") @DefaultValue(
                                                       value = "{ any: true }") @ApiParam(
                                                           name = "corporationID",
@@ -612,11 +636,11 @@ public class ModelEveWS {
                                                           required = false,
                                                           defaultValue = "{ any: true }",
                                                           value = "Victory points selector") AttributeSelector victoryPoints) {
-    ServiceUtil.sanitizeAttributeSelector(at, corporationID, corporationName, victoryPoints);
+    ServiceUtil.sanitizeAttributeSelector(at, attribute, corporationID, corporationName, victoryPoints);
     maxresults = Math.min(1000, maxresults);
     try {
-      List<CorporationVictoryPointStat> result = CorporationVictoryPointStat.accessQuery(contid, maxresults, reverse, at, corporationID, corporationName,
-                                                                                         victoryPoints);
+      List<CorporationVictoryPointStat> result = CorporationVictoryPointStat.accessQuery(contid, maxresults, reverse, at, attribute, corporationID,
+                                                                                         corporationName, victoryPoints);
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -735,6 +759,12 @@ public class ModelEveWS {
                                           required = false,
                                           defaultValue = "false",
                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+                                      @QueryParam("attribute") @DefaultValue(
+                                          value = "{ any: true }") @ApiParam(
+                                              name = "attribute",
+                                              required = false,
+                                              defaultValue = "{ any: true }",
+                                              value = "Stat attribute (LAST_WEEK, TOTAL, YESTERDAY) selector") AttributeSelector attribute,
                                       @QueryParam("factionID") @DefaultValue(
                                           value = "{ any: true }") @ApiParam(
                                               name = "factionID",
@@ -753,10 +783,10 @@ public class ModelEveWS {
                                               required = false,
                                               defaultValue = "{ any: true }",
                                               value = "Kill count selector") AttributeSelector kills) {
-    ServiceUtil.sanitizeAttributeSelector(at, factionID, factionName, kills);
+    ServiceUtil.sanitizeAttributeSelector(at, attribute, factionID, factionName, kills);
     maxresults = Math.min(1000, maxresults);
     try {
-      List<FactionKillStat> result = FactionKillStat.accessQuery(contid, maxresults, reverse, at, factionID, factionName, kills);
+      List<FactionKillStat> result = FactionKillStat.accessQuery(contid, maxresults, reverse, at, attribute, factionID, factionName, kills);
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -925,6 +955,12 @@ public class ModelEveWS {
                                                     required = false,
                                                     defaultValue = "false",
                                                     value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+                                                @QueryParam("attribute") @DefaultValue(
+                                                    value = "{ any: true }") @ApiParam(
+                                                        name = "attribute",
+                                                        required = false,
+                                                        defaultValue = "{ any: true }",
+                                                        value = "Stat attribute (LAST_WEEK, TOTAL, YESTERDAY) selector") AttributeSelector attribute,
                                                 @QueryParam("factionID") @DefaultValue(
                                                     value = "{ any: true }") @ApiParam(
                                                         name = "factionID",
@@ -943,10 +979,11 @@ public class ModelEveWS {
                                                         required = false,
                                                         defaultValue = "{ any: true }",
                                                         value = "Victory points selector") AttributeSelector victoryPoints) {
-    ServiceUtil.sanitizeAttributeSelector(at, factionID, factionName, victoryPoints);
+    ServiceUtil.sanitizeAttributeSelector(at, attribute, factionID, factionName, victoryPoints);
     maxresults = Math.min(1000, maxresults);
     try {
-      List<FactionVictoryPointStat> result = FactionVictoryPointStat.accessQuery(contid, maxresults, reverse, at, factionID, factionName, victoryPoints);
+      List<FactionVictoryPointStat> result = FactionVictoryPointStat.accessQuery(contid, maxresults, reverse, at, attribute, factionID, factionName,
+                                                                                 victoryPoints);
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -1236,12 +1273,6 @@ public class ModelEveWS {
                                         required = false,
                                         defaultValue = "false",
                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                    @QueryParam("parentGroupID") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "parentGroupID",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Parent group ID selector") AttributeSelector parentGroupID,
                                     @QueryParam("parentTypeID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "parentTypeID",
@@ -1260,10 +1291,10 @@ public class ModelEveWS {
                                             required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Level selector") AttributeSelector level) {
-    ServiceUtil.sanitizeAttributeSelector(at, parentGroupID, parentTypeID, typeID, level);
+    ServiceUtil.sanitizeAttributeSelector(at, parentTypeID, typeID, level);
     maxresults = Math.min(1000, maxresults);
     try {
-      List<RequiredSkill> result = RequiredSkill.accessQuery(contid, maxresults, reverse, at, parentGroupID, parentTypeID, typeID, level);
+      List<RequiredSkill> result = RequiredSkill.accessQuery(contid, maxresults, reverse, at, parentTypeID, typeID, level);
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getSkillTreeExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -1315,12 +1346,6 @@ public class ModelEveWS {
                                       required = false,
                                       defaultValue = "false",
                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                  @QueryParam("groupID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "groupID",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Group ID selector") AttributeSelector groupID,
                                   @QueryParam("typeID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "typeID",
@@ -1339,10 +1364,10 @@ public class ModelEveWS {
                                           required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Bonus value selector") AttributeSelector bonusValue) {
-    ServiceUtil.sanitizeAttributeSelector(at, groupID, typeID, bonusType, bonusValue);
+    ServiceUtil.sanitizeAttributeSelector(at, typeID, bonusType, bonusValue);
     maxresults = Math.min(1000, maxresults);
     try {
-      List<SkillBonus> result = SkillBonus.accessQuery(contid, maxresults, reverse, at, groupID, typeID, bonusType, bonusValue);
+      List<SkillBonus> result = SkillBonus.accessQuery(contid, maxresults, reverse, at, typeID, bonusType, bonusValue);
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getSkillTreeExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -1394,34 +1419,22 @@ public class ModelEveWS {
                                      required = false,
                                      defaultValue = "false",
                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                 @QueryParam("type") @DefaultValue(
-                                     value = "{ any: true }") @ApiParam(
-                                         name = "type",
-                                         required = false,
-                                         defaultValue = "{ any: true }",
-                                         value = "Type selector") AttributeSelector type,
-                                 @QueryParam("name") @DefaultValue(
-                                     value = "{ any: true }") @ApiParam(
-                                         name = "name",
-                                         required = false,
-                                         defaultValue = "{ any: true }",
-                                         value = "Name selector") AttributeSelector name,
                                  @QueryParam("groupID") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "groupID",
                                          required = false,
                                          defaultValue = "{ any: true }",
                                          value = "Group ID selector") AttributeSelector groupID,
-                                 @QueryParam("description") @DefaultValue(
+                                 @QueryParam("groupName") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
-                                         name = "description",
+                                         name = "groupName",
                                          required = false,
                                          defaultValue = "{ any: true }",
-                                         value = "Description selector") AttributeSelector description) {
-    ServiceUtil.sanitizeAttributeSelector(at, type, name, groupID, description);
+                                         value = "Group name selector") AttributeSelector groupName) {
+    ServiceUtil.sanitizeAttributeSelector(at, groupID, groupName);
     maxresults = Math.min(1000, maxresults);
     try {
-      List<SkillGroup> result = SkillGroup.accessQuery(contid, maxresults, reverse, at, type, name, groupID, description);
+      List<SkillGroup> result = SkillGroup.accessQuery(contid, maxresults, reverse, at, groupID, groupName);
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getSkillTreeExpiry(), result, request);
     } catch (NumberFormatException e) {
