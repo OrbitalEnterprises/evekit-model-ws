@@ -2730,10 +2730,22 @@ public class ModelCommonWS {
                                             name = "taxAmount",
                                             required = false,
                                             defaultValue = "{ any: true }",
-                                            value = "Journal entry tax amount selector") AttributeSelector taxAmount) {
+                                            value = "Journal entry tax amount selector") AttributeSelector taxAmount,
+                                    @QueryParam("owner1TypeID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                            name = "owner1TypeID",
+                                            required = false,
+                                            defaultValue = "{ any: true }",
+                                            value = "First owner type ID selector") AttributeSelector owner1TypeID,
+                                    @QueryParam("owner2TypeID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                            name = "owner2TypeID",
+                                            required = false,
+                                            defaultValue = "{ any: true }",
+                                            value = "Second owner type ID selector") AttributeSelector owner2TypeID) {
     // Verify access key and authorization for requested data
     ServiceUtil.sanitizeAttributeSelector(at, accountKey, refID, date, refTypeID, ownerName1, ownerID1, ownerName2, ownerID2, argName1, argID1, amount, balance,
-                                          reason, taxReceiverID, taxAmount);
+                                          reason, taxReceiverID, taxAmount, owner1TypeID, owner2TypeID);
     maxresults = Math.min(1000, maxresults);
     AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_WALLET_JOURNAL);
     if (cfg.fail) return cfg.response;
@@ -2741,7 +2753,7 @@ public class ModelCommonWS {
     try {
       List<WalletJournal> result = WalletJournal.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountKey, refID, date, refTypeID, ownerName1,
                                                              ownerID1, ownerName2, ownerID2, argName1, argID1, amount, balance, reason, taxReceiverID,
-                                                             taxAmount);
+                                                             taxAmount, owner1TypeID, owner2TypeID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {

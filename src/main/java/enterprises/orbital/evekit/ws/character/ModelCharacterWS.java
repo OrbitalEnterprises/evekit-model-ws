@@ -295,16 +295,22 @@ public class ModelCharacterWS {
                                                     name = "important",
                                                     required = false,
                                                     defaultValue = "{ any: true }",
-                                                    value = "Important flag selector") AttributeSelector important) {
+                                                    value = "Important flag selector") AttributeSelector important,
+                                            @QueryParam("ownerTypeID") @DefaultValue(
+                                                value = "{ any: true }") @ApiParam(
+                                                    name = "ownerTypeID",
+                                                    required = false,
+                                                    defaultValue = "{ any: true }",
+                                                    value = "Event owner type ID selector") AttributeSelector ownerTypeID) {
     // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, duration, eventDate, eventID, eventText, eventTitle, ownerID, ownerName, response, important);
+    ServiceUtil.sanitizeAttributeSelector(at, duration, eventDate, eventID, eventText, eventTitle, ownerID, ownerName, response, important, ownerTypeID);
     maxresults = Math.min(1000, maxresults);
     AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_UPCOMING_CALENDAR_EVENTS);
     if (cfg.fail) return cfg.response;
     try {
       // Retrieve
       List<UpcomingCalendarEvent> result = UpcomingCalendarEvent.accessQuery(cfg.owner, contid, maxresults, reverse, at, duration, eventDate, eventID,
-                                                                             eventText, eventTitle, ownerID, ownerName, response, important);
+                                                                             eventText, eventTitle, ownerID, ownerName, response, important, ownerTypeID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2386,12 +2392,12 @@ public class ModelCharacterWS {
                                           required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Message title selector") AttributeSelector title,
-                                  @QueryParam("corpOrAllianceID") @DefaultValue(
+                                  @QueryParam("toCorpOrAllianceID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
-                                          name = "corpOrAllianceID",
+                                          name = "toCorpOrAllianceID",
                                           required = false,
                                           defaultValue = "{ any: true }",
-                                          value = "Message corporation or alliance ID selector") AttributeSelector corpOrAllianceID,
+                                          value = "Message corporation or alliance ID selector") AttributeSelector toCorpOrAllianceID,
                                   @QueryParam("toListID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "toListID",
@@ -2411,7 +2417,7 @@ public class ModelCharacterWS {
                                           defaultValue = "{ any: true }",
                                           value = "Message sender type ID selector") AttributeSelector senderTypeID) {
     // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, messageID, senderID, senderName, toCharacterID, sentDate, title, corpOrAllianceID, toListID, msgRead,
+    ServiceUtil.sanitizeAttributeSelector(at, messageID, senderID, senderName, toCharacterID, sentDate, title, toCorpOrAllianceID, toListID, msgRead,
                                           senderTypeID);
     maxresults = Math.min(1000, maxresults);
     AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_MAIL);
@@ -2419,7 +2425,7 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<CharacterMailMessage> result = CharacterMailMessage.accessQuery(cfg.owner, contid, maxresults, reverse, at, messageID, senderID, senderName,
-                                                                           toCharacterID, sentDate, title, corpOrAllianceID, toListID, msgRead, senderTypeID);
+                                                                           toCharacterID, sentDate, title, toCorpOrAllianceID, toListID, msgRead, senderTypeID);
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
