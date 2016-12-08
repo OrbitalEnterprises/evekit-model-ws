@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import enterprises.orbital.evekit.account.AccountAccessMask;
 import enterprises.orbital.evekit.model.AttributeSelector;
+import enterprises.orbital.evekit.model.CachedData;
 import enterprises.orbital.evekit.model.common.AccountBalance;
 import enterprises.orbital.evekit.model.common.Asset;
 import enterprises.orbital.evekit.model.common.Blueprint;
@@ -142,6 +143,9 @@ public class ModelCommonWS {
     // Retrieve requested balance
     try {
       List<AccountBalance> result = AccountBalance.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountID, accountKey);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -270,6 +274,9 @@ public class ModelCommonWS {
     try {
       List<Asset> result = Asset.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, typeID, quantity, flag, singleton, rawQuantity,
                                              container);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -404,6 +411,9 @@ public class ModelCommonWS {
     try {
       List<Blueprint> result = Blueprint.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, typeID, typeName, flagID, quantity,
                                                      timeEfficiency, materialEfficiency, runs);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -569,6 +579,9 @@ public class ModelCommonWS {
     try {
       List<Bookmark> result = Bookmark.accessQuery(cfg.owner, contid, maxresults, reverse, at, folderID, folderName, folderCreatorID, bookmarkID,
                                                    bookmarkCreatorID, created, itemID, typeID, locationID, x, y, z, memo, note);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -691,6 +704,9 @@ public class ModelCommonWS {
     try {
       List<Contact> result = Contact.accessQuery(cfg.owner, contid, maxresults, reverse, at, list, contactID, contactName, standing, contactTypeID, inWatchlist,
                                                  labelMask);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -788,6 +804,9 @@ public class ModelCommonWS {
     // Retrieve requested balance
     try {
       List<ContactLabel> result = ContactLabel.accessQuery(cfg.owner, contid, maxresults, reverse, at, list, labelID, name);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1003,6 +1022,9 @@ public class ModelCommonWS {
       List<Contract> result = Contract.accessQuery(cfg.owner, contid, maxresults, reverse, at, contractID, issuerID, issuerCorpID, assigneeID, acceptorID,
                                                    startStationID, endStationID, type, status, title, forCorp, availability, dateIssued, dateExpired,
                                                    dateAccepted, numDays, dateCompleted, price, reward, collateral, buyout, volume);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1112,6 +1134,9 @@ public class ModelCommonWS {
     // Retrieve requested balance
     try {
       List<ContractBid> result = ContractBid.accessQuery(cfg.owner, contid, maxresults, reverse, at, bidID, contractID, bidderID, dateBid, amount);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1234,6 +1259,9 @@ public class ModelCommonWS {
     try {
       List<ContractItem> result = ContractItem.accessQuery(cfg.owner, contid, maxresults, reverse, at, contractID, recordID, typeID, quantity, rawQuantity,
                                                            singleton, included);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1388,6 +1416,9 @@ public class ModelCommonWS {
       List<FacWarStats> result = FacWarStats.accessQuery(cfg.owner, contid, maxresults, reverse, at, currentRank, enlisted, factionID, factionName, highestRank,
                                                          killsLastWeek, killsTotal, killsYesterday, pilots, victoryPointsLastWeek, victoryPointsTotal,
                                                          victoryPointsYesterday);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1642,6 +1673,9 @@ public class ModelCommonWS {
                                                          blueprintLocationID, outputLocationID, runs, cost, teamID, licensedRuns, probability, productTypeID,
                                                          productTypeName, status, timeInSeconds, startDate, endDate, pauseDate, completedDate,
                                                          completedCharacterID, successfulRuns);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1745,6 +1779,9 @@ public class ModelCommonWS {
     // Retrieve requested balance
     try {
       List<Kill> result = Kill.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, killTime, moonID, solarSystemID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1911,6 +1948,9 @@ public class ModelCommonWS {
       List<KillAttacker> result = KillAttacker.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, attackerCharacterID, allianceID, allianceName,
                                                            attackerCharacterName, attackerCorporationID, attackerCorporationName, damageDone, factionID,
                                                            factionName, securityStatus, shipTypeID, weaponTypeID, finalBlow);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2039,6 +2079,9 @@ public class ModelCommonWS {
     try {
       List<KillItem> result = KillItem.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, typeID, flag, qtyDestroyed, qtyDropped, singleton,
                                                    sequence, containerSequence);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2187,6 +2230,9 @@ public class ModelCommonWS {
       List<KillVictim> result = KillVictim.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, allianceID, allianceName, killCharacterID,
                                                        killCharacterName, killCorporationID, killCorporationName, damageTaken, factionID, factionName,
                                                        shipTypeID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2296,6 +2342,9 @@ public class ModelCommonWS {
     // Retrieve requested balance
     try {
       List<Location> result = Location.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, itemName, x, y, z);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2467,6 +2516,9 @@ public class ModelCommonWS {
     try {
       List<MarketOrder> result = MarketOrder.accessQuery(cfg.owner, contid, maxresults, reverse, at, orderID, accountKey, bid, charID, duration, escrow, issued,
                                                          minVolume, orderState, price, orderRange, stationID, typeID, volEntered, volRemaining);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2570,6 +2622,9 @@ public class ModelCommonWS {
     // Retrieve requested balance
     try {
       List<Standing> result = Standing.accessQuery(cfg.owner, contid, maxresults, reverse, at, standingEntity, fromID, fromName, standing);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2754,6 +2809,9 @@ public class ModelCommonWS {
       List<WalletJournal> result = WalletJournal.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountKey, refID, date, refTypeID, ownerName1,
                                                              ownerID1, ownerName2, ownerID2, argName1, argID1, amount, balance, reason, taxReceiverID,
                                                              taxAmount, owner1TypeID, owner2TypeID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2938,6 +2996,9 @@ public class ModelCommonWS {
       List<WalletTransaction> result = WalletTransaction.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountKey, transactionID, date, quantity,
                                                                      typeName, typeID, price, clientID, clientName, stationID, stationName, transactionType,
                                                                      transactionFor, journalTransactionID, clientTypeID, characterID, characterName);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {

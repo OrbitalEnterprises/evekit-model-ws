@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import enterprises.orbital.base.OrbitalProperties;
 import enterprises.orbital.evekit.model.AttributeSelector;
+import enterprises.orbital.evekit.model.RefCachedData;
 import enterprises.orbital.evekit.model.RefData;
 import enterprises.orbital.evekit.model.server.ServerStatus;
 import enterprises.orbital.evekit.ws.ServiceError;
@@ -99,6 +100,9 @@ public class ModelServerWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<ServerStatus> result = ServerStatus.accessQuery(contid, maxresults, reverse, at, onlinePlayers, serverOpen);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getServerStatusExpiry(), result, request);
     } catch (NumberFormatException e) {

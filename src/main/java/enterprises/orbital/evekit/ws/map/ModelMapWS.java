@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import enterprises.orbital.base.OrbitalProperties;
 import enterprises.orbital.evekit.model.AttributeSelector;
+import enterprises.orbital.evekit.model.RefCachedData;
 import enterprises.orbital.evekit.model.RefData;
 import enterprises.orbital.evekit.model.map.FactionWarSystem;
 import enterprises.orbital.evekit.model.map.MapJump;
@@ -134,6 +135,9 @@ public class ModelMapWS {
     try {
       List<FactionWarSystem> result = FactionWarSystem.accessQuery(contid, maxresults, reverse, at, occupyingFactionID, occupyingFactionName, owningFactionID,
                                                                    owningFactionName, solarSystemID, solarSystemName, contested);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getAllianceListExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -201,6 +205,9 @@ public class ModelMapWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<MapJump> result = MapJump.accessQuery(contid, maxresults, reverse, at, solarSystemID, shipJumps);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getAllianceListExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -280,6 +287,9 @@ public class ModelMapWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<MapKill> result = MapKill.accessQuery(contid, maxresults, reverse, at, factionKills, podKills, shipKills, solarSystemID);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -366,6 +376,9 @@ public class ModelMapWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<Sovereignty> result = Sovereignty.accessQuery(contid, maxresults, reverse, at, allianceID, corporationID, factionID, solarSystemID, solarSystemName);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {

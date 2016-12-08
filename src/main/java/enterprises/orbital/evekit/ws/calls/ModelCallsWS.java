@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import enterprises.orbital.base.OrbitalProperties;
 import enterprises.orbital.evekit.model.AttributeSelector;
+import enterprises.orbital.evekit.model.RefCachedData;
 import enterprises.orbital.evekit.model.RefData;
 import enterprises.orbital.evekit.model.calls.Call;
 import enterprises.orbital.evekit.model.calls.CallGroup;
@@ -118,6 +119,9 @@ public class ModelCallsWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<Call> result = Call.accessQuery(contid, maxresults, reverse, at, accessMask, type, name, groupID, description);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getCallListExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -191,6 +195,9 @@ public class ModelCallsWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<CallGroup> result = CallGroup.accessQuery(contid, maxresults, reverse, at, groupID, name, description);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getCallListExpiry(), result, request);
     } catch (NumberFormatException e) {

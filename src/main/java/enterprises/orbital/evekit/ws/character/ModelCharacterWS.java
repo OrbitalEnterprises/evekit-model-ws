@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import enterprises.orbital.evekit.account.AccountAccessMask;
 import enterprises.orbital.evekit.model.AttributeSelector;
+import enterprises.orbital.evekit.model.CachedData;
 import enterprises.orbital.evekit.model.character.CalendarEventAttendee;
 import enterprises.orbital.evekit.model.character.Capsuleer;
 import enterprises.orbital.evekit.model.character.CharacterContactNotification;
@@ -171,6 +172,9 @@ public class ModelCharacterWS {
     try {
       List<AccountStatus> result = AccountStatus.accessQuery(cfg.owner, contid, maxresults, reverse, at, paidUntil, createDate, logonCount, logonMinutes,
                                                              multiCharacterTraining);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -311,6 +315,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<UpcomingCalendarEvent> result = UpcomingCalendarEvent.accessQuery(cfg.owner, contid, maxresults, reverse, at, duration, eventDate, eventID,
                                                                              eventText, eventTitle, ownerID, ownerName, response, important, ownerTypeID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -415,6 +422,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<CalendarEventAttendee> result = CalendarEventAttendee.accessQuery(cfg.owner, contid, maxresults, reverse, at, eventID, characterID, characterName,
                                                                              response);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -512,6 +522,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<CharacterRole> result = CharacterRole.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleCategory, roleID, roleName);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -752,6 +765,9 @@ public class ModelCharacterWS {
                                                                race, doB, bloodlineID, bloodline, ancestryID, ancestry, gender, allianceName, allianceID,
                                                                factionName, factionID, intelligence, memory, charisma, perception, willpower, homeStationID,
                                                                lastRespecDate, lastTimedRespec, freeRespecs, freeSkillPoints, remoteStationDate);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -837,6 +853,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<CharacterSheetBalance> result = CharacterSheetBalance.accessQuery(cfg.owner, contid, maxresults, reverse, at, balance);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -922,6 +941,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<CharacterSheetClone> result = CharacterSheetClone.accessQuery(cfg.owner, contid, maxresults, reverse, at, cloneJumpDate);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1019,6 +1041,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<CharacterSheetJump> result = CharacterSheetJump.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpActivation, jumpFatigue, jumpLastUpdate);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1122,6 +1147,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<CharacterSkill> result = CharacterSkill.accessQuery(cfg.owner, contid, maxresults, reverse, at, typeID, level, skillpoints, published);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1213,6 +1241,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<CharacterTitle> result = CharacterTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1304,6 +1335,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<Implant> result = Implant.accessQuery(cfg.owner, contid, maxresults, reverse, at, typeID, typeName);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1407,6 +1441,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<JumpClone> result = JumpClone.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpCloneID, typeID, locationID, cloneName);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1504,6 +1541,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<JumpCloneImplant> result = JumpCloneImplant.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpCloneID, typeID, typeName);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1632,6 +1672,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterMedal> result = CharacterMedal.accessQuery(cfg.owner, contid, maxresults, reverse, at, description, medalID, title, corporationID, issued,
                                                                issuerID, reason, status);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1742,6 +1785,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterNotification> result = CharacterNotification.accessQuery(cfg.owner, contid, maxresults, reverse, at, notificationID, typeID, senderID,
                                                                              sentDate, msgRead);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1846,6 +1892,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterNotificationBody> result = CharacterNotificationBody.accessQuery(cfg.owner, contid, maxresults, reverse, at, notificationID, retrieved,
                                                                                      text, missing);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1968,6 +2017,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<ChatChannel> result = ChatChannel.accessQuery(cfg.owner, contid, maxresults, reverse, at, channelID, ownerID, ownerName, displayName, comparisonKey,
                                                          hasPassword, motd);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2084,6 +2136,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<ChatChannelMember> result = ChatChannelMember.accessQuery(cfg.owner, contid, maxresults, reverse, at, channelID, category, accessorID, accessorName,
                                                                      untilWhen, reason);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2194,6 +2249,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterContactNotification> result = CharacterContactNotification.accessQuery(cfg.owner, contid, maxresults, reverse, at, notificationID, senderID,
                                                                                            senderName, sentDate, messageData);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2285,6 +2343,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<MailingList> result = MailingList.accessQuery(cfg.owner, contid, maxresults, reverse, at, displayName, listID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2426,6 +2487,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterMailMessage> result = CharacterMailMessage.accessQuery(cfg.owner, contid, maxresults, reverse, at, messageID, senderID, senderName,
                                                                            toCharacterID, sentDate, title, toCorpOrAllianceID, toListID, msgRead, senderTypeID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2523,6 +2587,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<CharacterMailMessageBody> result = CharacterMailMessageBody.accessQuery(cfg.owner, contid, maxresults, reverse, at, messageID, retrieved, body);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2672,6 +2739,9 @@ public class ModelCharacterWS {
       List<PlanetaryColony> result = PlanetaryColony.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, solarSystemID, solarSystemName,
                                                                  planetName, planetTypeID, planetTypeName, ownerID, ownerName, lastUpdate, upgradeLevel,
                                                                  numberOfPins);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2776,6 +2846,9 @@ public class ModelCharacterWS {
     try {
       // Retrieve
       List<PlanetaryLink> result = PlanetaryLink.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, sourcePinID, destinationPinID, linkLevel);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2949,6 +3022,9 @@ public class ModelCharacterWS {
       List<PlanetaryPin> result = PlanetaryPin.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, pinID, typeID, typeName, schematicID,
                                                            lastLaunchTime, cycleTime, quantityPerCycle, installTime, expiryTime, contentTypeID, contentTypeName,
                                                            contentQuantity, longitude, latitude);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -3103,6 +3179,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<PlanetaryRoute> result = PlanetaryRoute.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, routeID, sourcePinID, destinationPinID,
                                                                contentTypeID, contentTypeName, quantity, waypoint1, waypoint2, waypoint3, waypoint4, waypoint5);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -3219,6 +3298,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<ResearchAgent> result = ResearchAgent.accessQuery(cfg.owner, contid, maxresults, reverse, at, agentID, currentPoints, pointsPerDay, remainderPoints,
                                                              researchStartDate, skillTypeID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -3349,6 +3431,9 @@ public class ModelCharacterWS {
       List<CharacterSkillInTraining> result = CharacterSkillInTraining.accessQuery(cfg.owner, contid, maxresults, reverse, at, skillInTraining,
                                                                                    currentTrainingQueueTime, trainingStartTime, trainingEndTime,
                                                                                    trainingStartSP, trainingDestinationSP, trainingToLevel, skillTypeID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -3471,6 +3556,9 @@ public class ModelCharacterWS {
       // Retrieve
       List<SkillInQueue> result = SkillInQueue.accessQuery(cfg.owner, contid, maxresults, reverse, at, endSP, endTime, level, queuePosition, startSP, startTime,
                                                            typeID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {

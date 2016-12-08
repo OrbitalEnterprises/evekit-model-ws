@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import enterprises.orbital.base.OrbitalProperties;
 import enterprises.orbital.evekit.model.AttributeSelector;
+import enterprises.orbital.evekit.model.RefCachedData;
 import enterprises.orbital.evekit.model.RefData;
 import enterprises.orbital.evekit.model.eve.Alliance;
 import enterprises.orbital.evekit.model.eve.AllianceMemberCorporation;
@@ -140,6 +141,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<Alliance> result = Alliance.accessQuery(contid, maxresults, reverse, at, allianceID, executorCorpID, memberCount, name, shortName, startDate);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getAllianceListExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -213,6 +217,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<AllianceMemberCorporation> result = AllianceMemberCorporation.accessQuery(contid, maxresults, reverse, at, allianceID, corporationID, startDate);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getAllianceListExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -292,6 +299,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<CharacterKillStat> result = CharacterKillStat.accessQuery(contid, maxresults, reverse, at, attribute, characterID, characterName, kills);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -372,6 +382,9 @@ public class ModelEveWS {
     try {
       List<CharacterVictoryPointStat> result = CharacterVictoryPointStat.accessQuery(contid, maxresults, reverse, at, attribute, characterID, characterName,
                                                                                      victoryPoints);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -482,6 +495,9 @@ public class ModelEveWS {
     try {
       List<ConquerableStation> result = ConquerableStation.accessQuery(contid, maxresults, reverse, at, corporationID, corporationName, solarSystemID,
                                                                        stationID, stationName, stationTypeID, x, y, z);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getConquerableStationsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -561,6 +577,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<CorporationKillStat> result = CorporationKillStat.accessQuery(contid, maxresults, reverse, at, attribute, corporationID, corporationName, kills);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -641,6 +660,9 @@ public class ModelEveWS {
     try {
       List<CorporationVictoryPointStat> result = CorporationVictoryPointStat.accessQuery(contid, maxresults, reverse, at, attribute, corporationID,
                                                                                          corporationName, victoryPoints);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -708,6 +730,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<ErrorType> result = ErrorType.accessQuery(contid, maxresults, reverse, at, errorCode, errorText);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getErrorListExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -787,6 +812,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<FactionKillStat> result = FactionKillStat.accessQuery(contid, maxresults, reverse, at, attribute, factionID, factionName, kills);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -904,6 +932,9 @@ public class ModelEveWS {
     try {
       List<FactionStats> result = FactionStats.accessQuery(contid, maxresults, reverse, at, factionID, factionName, killsLastWeek, killsTotal, killsYesterday,
                                                            pilots, systemsControlled, victoryPointsLastWeek, victoryPointsTotal, victoryPointsYesterday);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -984,6 +1015,9 @@ public class ModelEveWS {
     try {
       List<FactionVictoryPointStat> result = FactionVictoryPointStat.accessQuery(contid, maxresults, reverse, at, attribute, factionID, factionName,
                                                                                  victoryPoints);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarTopStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -1063,6 +1097,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<FactionWar> result = FactionWar.accessQuery(contid, maxresults, reverse, at, againstID, againstName, factionID, factionName);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -1155,6 +1192,9 @@ public class ModelEveWS {
     try {
       List<FactionWarSummary> result = FactionWarSummary.accessQuery(contid, maxresults, reverse, at, killsLastWeek, killsTotal, killsYesterday,
                                                                      victoryPointsLastWeek, victoryPointsTotal, victoryPointsYesterday);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getFacWarStatsExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -1222,6 +1262,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<RefType> result = RefType.accessQuery(contid, maxresults, reverse, at, refTypeID, refTypeName);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getRefTypeExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -1296,6 +1339,9 @@ public class ModelEveWS {
     try {
       List<RequiredSkill> result = RequiredSkill.accessQuery(contid, maxresults, reverse, at, parentTypeID, typeID, level);
       // Finish
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getSkillTreeExpiry(), result, request);
     } catch (NumberFormatException e) {
       ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
@@ -1368,6 +1414,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<SkillBonus> result = SkillBonus.accessQuery(contid, maxresults, reverse, at, typeID, bonusType, bonusValue);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getSkillTreeExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -1435,6 +1484,9 @@ public class ModelEveWS {
     maxresults = Math.min(1000, maxresults);
     try {
       List<SkillGroup> result = SkillGroup.accessQuery(contid, maxresults, reverse, at, groupID, groupName);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getSkillTreeExpiry(), result, request);
     } catch (NumberFormatException e) {
@@ -1539,6 +1591,9 @@ public class ModelEveWS {
     try {
       List<SkillMember> result = SkillMember.accessQuery(contid, maxresults, reverse, at, groupID, typeID, description, rank, requiredPrimaryAttribute,
                                                          requiredSecondaryAttribute, typeName, published);
+      for (RefCachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finishRef(OrbitalProperties.getCurrentTime(), RefData.getRefData().getSkillTreeExpiry(), result, request);
     } catch (NumberFormatException e) {

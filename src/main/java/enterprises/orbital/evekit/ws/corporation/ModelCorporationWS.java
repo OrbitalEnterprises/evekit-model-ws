@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.Status;
 
 import enterprises.orbital.evekit.account.AccountAccessMask;
 import enterprises.orbital.evekit.model.AttributeSelector;
+import enterprises.orbital.evekit.model.CachedData;
 import enterprises.orbital.evekit.model.corporation.ContainerLog;
 import enterprises.orbital.evekit.model.corporation.Corporation;
 import enterprises.orbital.evekit.model.corporation.CorporationMedal;
@@ -211,6 +212,9 @@ public class ModelCorporationWS {
       // Retrieve
       List<ContainerLog> result = ContainerLog.accessQuery(cfg.owner, contid, maxresults, reverse, at, logTime, action, actorID, actorName, flag, itemID,
                                                            itemTypeID, locationID, newConfiguration, oldConfiguration, passwordType, quantity, typeID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -320,6 +324,9 @@ public class ModelCorporationWS {
     try {
       // Retrieve
       List<CorporationMedal> result = CorporationMedal.accessQuery(cfg.owner, contid, maxresults, reverse, at, medalID, description, title, created, creatorID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -436,6 +443,9 @@ public class ModelCorporationWS {
       // Retrieve
       List<CorporationMemberMedal> result = CorporationMemberMedal.accessQuery(cfg.owner, contid, maxresults, reverse, at, medalID, characterID, issued,
                                                                                issuerID, reason, status);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -652,6 +662,9 @@ public class ModelCorporationWS {
                                                                    corporationID, corporationName, description, logoColor1, logoColor2, logoColor3,
                                                                    logoGraphicID, logoShape1, logoShape2, logoShape3, memberCount, memberLimit, shares,
                                                                    stationID, stationName, taxRate, ticker, url);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -794,6 +807,9 @@ public class ModelCorporationWS {
       List<CorporationTitle> result = CorporationTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName, grantableRoles,
                                                                    grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase,
                                                                    rolesAtHQ, rolesAtOther);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -962,6 +978,9 @@ public class ModelCorporationWS {
       List<CustomsOffice> result = CustomsOffice.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, solarSystemID, solarSystemName, reinforceHour,
                                                              allowAlliance, allowStandings, standingLevel, taxRateAlliance, taxRateCorp, taxRateStandingHigh,
                                                              taxRateStandingGood, taxRateStandingNeutral, taxRateStandingBad, taxRateStandingHorrible);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1059,6 +1078,9 @@ public class ModelCorporationWS {
     try {
       // Retrieve
       List<Division> result = Division.accessQuery(cfg.owner, contid, maxresults, reverse, at, wallet, accountKey, description);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1194,6 +1216,9 @@ public class ModelCorporationWS {
       // Retrieve
       List<Facility> result = Facility.accessQuery(cfg.owner, contid, maxresults, reverse, at, facilityID, typeID, typeName, solarSystemID, solarSystemName,
                                                    regionID, regionName, starbaseModifier, tax);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1291,6 +1316,9 @@ public class ModelCorporationWS {
     try {
       // Retrieve
       List<Fuel> result = Fuel.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, typeID, quantity);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1439,6 +1467,9 @@ public class ModelCorporationWS {
       List<MemberSecurity> result = MemberSecurity.accessQuery(cfg.owner, contid, maxresults, reverse, at, characterID, name, grantableRoles,
                                                                grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase, rolesAtHQ,
                                                                rolesAtOther, titles);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1567,6 +1598,9 @@ public class ModelCorporationWS {
       // Retrieve
       List<MemberSecurityLog> result = MemberSecurityLog.accessQuery(cfg.owner, contid, maxresults, reverse, at, changeTime, changedCharacterID,
                                                                      changedCharacterName, issuerID, issuerName, roleLocationType, oldRoles, newRoles);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1733,6 +1767,9 @@ public class ModelCorporationWS {
       List<MemberTracking> result = MemberTracking.accessQuery(cfg.owner, contid, maxresults, reverse, at, characterID, base, baseID, grantableRoles, location,
                                                                locationID, logoffDateTime, logonDateTime, name, roles, shipType, shipTypeID, startDateTime,
                                                                title);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -1893,6 +1930,9 @@ public class ModelCorporationWS {
       List<Outpost> result = Outpost.accessQuery(cfg.owner, contid, maxresults, reverse, at, stationID, ownerID, stationName, solarSystemID,
                                                  dockingCostPerShipVolume, officeRentalCost, stationTypeID, reprocessingEfficiency, reprocessingStationTake,
                                                  standingOwnerID, x, y, z);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2009,6 +2049,9 @@ public class ModelCorporationWS {
       // Retrieve
       List<OutpostServiceDetail> result = OutpostServiceDetail.accessQuery(cfg.owner, contid, maxresults, reverse, at, stationID, serviceName, ownerID,
                                                                            minStanding, surchargePerBadStanding, discountPerGoodStanding);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2106,6 +2149,9 @@ public class ModelCorporationWS {
     try {
       // Retrieve
       List<Role> result = Role.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleID, roleDescription, roleName);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2197,6 +2243,9 @@ public class ModelCorporationWS {
     try {
       // Retrieve
       List<SecurityRole> result = SecurityRole.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleID, roleName);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2288,6 +2337,9 @@ public class ModelCorporationWS {
     try {
       // Retrieve
       List<SecurityTitle> result = SecurityTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2404,6 +2456,9 @@ public class ModelCorporationWS {
       // Retrieve
       List<Shareholder> result = Shareholder.accessQuery(cfg.owner, contid, maxresults, reverse, at, shareholderID, isCorporation, shareholderCorporationID,
                                                          shareholderCorporationName, shareholderName, shares);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2532,6 +2587,9 @@ public class ModelCorporationWS {
       // Retrieve
       List<Starbase> result = Starbase.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, moonID, onlineTimestamp, state,
                                                    stateTimestamp, typeID, standingOwnerID);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
@@ -2718,6 +2776,9 @@ public class ModelCorporationWS {
                                                                usageFlags, deployFlags, allowAllianceMembers, allowCorporationMembers, useStandingsFrom,
                                                                onAggressionEnabled, onAggressionStanding, onCorporationWarEnabled, onCorporationWarStanding,
                                                                onStandingDropEnabled, onStandingDropStanding, onStatusDropEnabled, onStatusDropStanding);
+      for (CachedData next : result) {
+        next.prepareDates();
+      }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
     } catch (NumberFormatException e) {
