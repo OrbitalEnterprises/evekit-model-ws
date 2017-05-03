@@ -29,7 +29,9 @@ import enterprises.orbital.evekit.model.character.Capsuleer;
 import enterprises.orbital.evekit.model.corporation.Corporation;
 
 public class ServiceUtil {
-  private static final Logger log = Logger.getLogger(ServiceUtil.class.getName());
+  private static final Logger log                  = Logger.getLogger(ServiceUtil.class.getName());
+  private static final String PROP_MIN_CACHE_DELAY = "enterprises.orbital.evekit.model.min_cache_delay";
+  private static final long   DEF_MIN_CACHE_DELAY  = TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES);
 
   public static class AuthenticationResult {
     // The authenticated key as a result of a successful authentication
@@ -66,7 +68,7 @@ public class ServiceUtil {
       super();
       this.accessKey = accessKey;
       this.accessCred = accessCred;
-      this.when = OrbitalProperties.getCurrentTime();
+      this.when = OrbitalProperties.getCurrentTime() + OrbitalProperties.getLongGlobalProperty(PROP_MIN_CACHE_DELAY, DEF_MIN_CACHE_DELAY);
       this.at = at;
       this.mask = mask;
     }
