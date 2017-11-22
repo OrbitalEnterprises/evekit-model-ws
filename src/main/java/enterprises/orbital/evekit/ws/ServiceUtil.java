@@ -1,25 +1,8 @@
 package enterprises.orbital.evekit.ws;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-
 import enterprises.orbital.base.OrbitalProperties;
+import enterprises.orbital.evekit.account.AccessKeyNotFoundException;
 import enterprises.orbital.evekit.account.AccountAccessMask;
-import enterprises.orbital.evekit.account.NoSuchKeyException;
 import enterprises.orbital.evekit.account.SynchronizedAccountAccessKey;
 import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
@@ -27,6 +10,16 @@ import enterprises.orbital.evekit.model.CachedData;
 import enterprises.orbital.evekit.model.RefCachedData;
 import enterprises.orbital.evekit.model.character.Capsuleer;
 import enterprises.orbital.evekit.model.corporation.Corporation;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class ServiceUtil {
   private static final Logger log                  = Logger.getLogger(ServiceUtil.class.getName());
@@ -177,7 +170,7 @@ public class ServiceUtil {
         ServiceError errMsg = new ServiceError(Status.UNAUTHORIZED.getStatusCode(), "Access credential invalid");
         return new AuthenticationResult(Response.status(Status.UNAUTHORIZED).entity(errMsg).build());
       }
-    } catch (NoSuchKeyException e) {
+    } catch (AccessKeyNotFoundException e) {
       ServiceError errMsg = new ServiceError(Status.NOT_FOUND.getStatusCode(), "Access key with the given ID not found");
       return new AuthenticationResult(Response.status(Status.NOT_FOUND).entity(errMsg).build());
     } catch (Exception e) {
