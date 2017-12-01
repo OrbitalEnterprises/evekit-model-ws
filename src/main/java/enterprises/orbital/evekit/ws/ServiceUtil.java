@@ -7,7 +7,6 @@ import enterprises.orbital.evekit.account.SynchronizedAccountAccessKey;
 import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
 import enterprises.orbital.evekit.model.CachedData;
-import enterprises.orbital.evekit.model.RefCachedData;
 import enterprises.orbital.evekit.model.character.Capsuleer;
 import enterprises.orbital.evekit.model.corporation.Corporation;
 
@@ -124,28 +123,6 @@ public class ServiceUtil {
     ResponseBuilder rBuilder = Response.ok();
     if (result != null) rBuilder = rBuilder.entity(result);
     return stamp(rBuilder, cfg.when, expiry).build();
-  }
-
-  public static <A extends RefCachedData> Response finishRef(
-                                                             long when,
-                                                             long expiry,
-                                                             A result,
-                                                             HttpServletRequest request) {
-    auditRefAccess(getSource(request), getRequestURI(request));
-    ResponseBuilder rBuilder = Response.ok();
-    if (result != null) rBuilder = rBuilder.entity(result);
-    return stamp(rBuilder, when, expiry).build();
-  }
-
-  public static <A extends RefCachedData> Response finishRef(
-                                                             long when,
-                                                             long expiry,
-                                                             Collection<A> result,
-                                                             HttpServletRequest request) {
-    auditRefAccess(getSource(request), getRequestURI(request));
-    ResponseBuilder rBuilder = Response.ok();
-    if (result != null) rBuilder = rBuilder.entity(result);
-    return stamp(rBuilder, when, expiry).build();
   }
 
   public static String getSource(
