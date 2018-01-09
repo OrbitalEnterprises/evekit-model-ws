@@ -103,6 +103,17 @@ public class ServiceUtil {
     return cfg;
   }
 
+  public static <A extends CachedData> Response finishRef(
+      long when,
+      long expiry,
+      Collection<A> result,
+      HttpServletRequest request) {
+    auditRefAccess(getSource(request), getRequestURI(request));
+    ResponseBuilder rBuilder = Response.ok();
+    if (result != null) rBuilder = rBuilder.entity(result);
+    return stamp(rBuilder, when, expiry).build();
+  }
+
   public static Response finish(
                                 AccessConfig cfg,
                                 Object result,
@@ -424,7 +435,7 @@ public class ServiceUtil {
     if (as.end != null && as.end.length() > 200) as.end = as.end.substring(0, 200);
     // allow at most 500 set members for set selectors and verify strings are not too long
     if (as.values.size() > 0) {
-      Set<String> newSet = new HashSet<String>();
+      Set<String> newSet = new HashSet<>();
       Iterator<String> i = as.values.iterator();
       for (int j = 0; j < 500 && i.hasNext(); j++) {
         String next = i.next();

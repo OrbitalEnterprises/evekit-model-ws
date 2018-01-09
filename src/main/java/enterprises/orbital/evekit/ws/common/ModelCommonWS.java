@@ -1,5 +1,6 @@
 package enterprises.orbital.evekit.ws.common;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +15,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import enterprises.orbital.evekit.account.AccountAccessMask;
+import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
 import enterprises.orbital.evekit.model.CachedData;
+import enterprises.orbital.evekit.model.ESIRefSyncEndpoint;
+import enterprises.orbital.evekit.model.ESISyncEndpoint;
 import enterprises.orbital.evekit.model.common.AccountBalance;
 import enterprises.orbital.evekit.model.common.Asset;
 import enterprises.orbital.evekit.model.common.Blueprint;
@@ -36,6 +40,7 @@ import enterprises.orbital.evekit.model.common.MarketOrder;
 import enterprises.orbital.evekit.model.common.Standing;
 import enterprises.orbital.evekit.model.common.WalletJournal;
 import enterprises.orbital.evekit.model.common.WalletTransaction;
+import enterprises.orbital.evekit.ws.AccountHandlerUtil;
 import enterprises.orbital.evekit.ws.ServiceError;
 import enterprises.orbital.evekit.ws.ServiceUtil;
 import enterprises.orbital.evekit.ws.ServiceUtil.AccessConfig;
@@ -44,6 +49,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
+import static enterprises.orbital.evekit.ws.AccountHandlerUtil.handleStandardExpiry;
 
 @Path("/ws/v1/common")
 @Consumes({
@@ -105,53 +112,46 @@ public class ModelCommonWS {
                                     @QueryParam("at") @DefaultValue(
                                         value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                             name = "at",
-                                            required = false,
                                             defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                             value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                     @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                         name = "contid",
-                                        required = false,
                                         defaultValue = "-1",
                                         value = "Continuation ID for paged results") long contid,
                                     @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                         name = "maxresults",
-                                        required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                         name = "reverse",
-                                        required = false,
                                         defaultValue = "false",
                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                    @QueryParam("accountID") @DefaultValue(
+                                    @QueryParam("division") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "accountID",
-                                            required = false,
+                                            name = "division",
                                             defaultValue = "{ any: true }",
-                                            value = "Account ID selector") AttributeSelector accountID,
-                                    @QueryParam("accountKey") @DefaultValue(
+                                            value = "Division selector") AttributeSelector division,
+                                    @QueryParam("balance") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "accountKey",
-                                            required = false,
+                                            name = "balance",
                                             defaultValue = "{ any: true }",
-                                            value = "Account key selector") AttributeSelector accountKey) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, accountID, accountKey);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_ACCOUNT_BALANCE);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<AccountBalance> result = AccountBalance.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountID, accountKey);
-      for (CachedData next : result) {
-        next.prepareDates();
+                                            value = "Balance selector") AttributeSelector balance) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_ACCOUNT_BALANCE,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<AccountBalance>() {
+
+      @Override
+      public List<AccountBalance> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                          AttributeSelector at, AttributeSelector... others) throws IOException {
+        final int DIVISION = 0;
+        final int BALANCE = 1;
+        return AccountBalance.accessQuery(acct, contid, maxresults, reverse, at, others[DIVISION], others[BALANCE]);
       }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+
+      @Override
+      public long getExpiry(SynchronizedEveAccount acct) {
+        return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_WALLET_BALANCE : ESISyncEndpoint.CORP_WALLET_BALANCE, acct);
+      }
+    }, request, division, balance);
   }
 
   @Path("/asset")
@@ -275,7 +275,7 @@ public class ModelCommonWS {
       List<Asset> result = Asset.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, typeID, quantity, flag, singleton, rawQuantity,
                                              container);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -412,7 +412,7 @@ public class ModelCommonWS {
       List<Blueprint> result = Blueprint.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, typeID, typeName, flagID, quantity,
                                                      timeEfficiency, materialEfficiency, runs);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -580,7 +580,7 @@ public class ModelCommonWS {
       List<Bookmark> result = Bookmark.accessQuery(cfg.owner, contid, maxresults, reverse, at, folderID, folderName, folderCreatorID, bookmarkID,
                                                    bookmarkCreatorID, created, itemID, typeID, locationID, x, y, z, memo, note);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -705,7 +705,7 @@ public class ModelCommonWS {
       List<Contact> result = Contact.accessQuery(cfg.owner, contid, maxresults, reverse, at, list, contactID, contactName, standing, contactTypeID, inWatchlist,
                                                  labelMask);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -805,7 +805,7 @@ public class ModelCommonWS {
     try {
       List<ContactLabel> result = ContactLabel.accessQuery(cfg.owner, contid, maxresults, reverse, at, list, labelID, name);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1023,7 +1023,7 @@ public class ModelCommonWS {
                                                    startStationID, endStationID, type, status, title, forCorp, availability, dateIssued, dateExpired,
                                                    dateAccepted, numDays, dateCompleted, price, reward, collateral, buyout, volume);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1135,7 +1135,7 @@ public class ModelCommonWS {
     try {
       List<ContractBid> result = ContractBid.accessQuery(cfg.owner, contid, maxresults, reverse, at, bidID, contractID, bidderID, dateBid, amount);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1260,7 +1260,7 @@ public class ModelCommonWS {
       List<ContractItem> result = ContractItem.accessQuery(cfg.owner, contid, maxresults, reverse, at, contractID, recordID, typeID, quantity, rawQuantity,
                                                            singleton, included);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1417,7 +1417,7 @@ public class ModelCommonWS {
                                                          killsLastWeek, killsTotal, killsYesterday, pilots, victoryPointsLastWeek, victoryPointsTotal,
                                                          victoryPointsYesterday);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1674,7 +1674,7 @@ public class ModelCommonWS {
                                                          productTypeName, status, timeInSeconds, startDate, endDate, pauseDate, completedDate,
                                                          completedCharacterID, successfulRuns);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1780,7 +1780,7 @@ public class ModelCommonWS {
     try {
       List<Kill> result = Kill.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, killTime, moonID, solarSystemID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1949,7 +1949,7 @@ public class ModelCommonWS {
                                                            attackerCharacterName, attackerCorporationID, attackerCorporationName, damageDone, factionID,
                                                            factionName, securityStatus, shipTypeID, weaponTypeID, finalBlow);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2080,7 +2080,7 @@ public class ModelCommonWS {
       List<KillItem> result = KillItem.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, typeID, flag, qtyDestroyed, qtyDropped, singleton,
                                                    sequence, containerSequence);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2231,7 +2231,7 @@ public class ModelCommonWS {
                                                        killCharacterName, killCorporationID, killCorporationName, damageTaken, factionID, factionName,
                                                        shipTypeID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2343,7 +2343,7 @@ public class ModelCommonWS {
     try {
       List<Location> result = Location.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, itemName, x, y, z);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2517,7 +2517,7 @@ public class ModelCommonWS {
       List<MarketOrder> result = MarketOrder.accessQuery(cfg.owner, contid, maxresults, reverse, at, orderID, accountKey, bid, charID, duration, escrow, issued,
                                                          minVolume, orderState, price, orderRange, stationID, typeID, volEntered, volRemaining);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2623,7 +2623,7 @@ public class ModelCommonWS {
     try {
       List<Standing> result = Standing.accessQuery(cfg.owner, contid, maxresults, reverse, at, standingEntity, fromID, fromName, standing);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2810,7 +2810,7 @@ public class ModelCommonWS {
                                                              ownerID1, ownerName2, ownerID2, argName1, argID1, amount, balance, reason, taxReceiverID,
                                                              taxAmount, owner1TypeID, owner2TypeID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2997,7 +2997,7 @@ public class ModelCommonWS {
                                                                      typeName, typeID, price, clientID, clientName, stationID, stationName, transactionType,
                                                                      transactionFor, journalTransactionID, clientTypeID, characterID, characterName);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);

@@ -1,9 +1,12 @@
 package enterprises.orbital.evekit.ws.common;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -47,10 +50,11 @@ import io.swagger.annotations.ApiResponses;
     produces = "application/json",
     consumes = "application/json")
 public class ModelMetaWS {
+  private static final Logger log = Logger.getLogger(ModelMetaWS.class.getName());
 
-  protected static Response limitCheck(
-                                       SynchronizedAccountAccessKey key,
-                                       CachedData target) {
+  private static Response limitCheck(
+      SynchronizedAccountAccessKey key,
+      CachedData target) {
     if (key.getLimit() > 0) {
       long limit = key.getLimit();
       if (limit >= target.getLifeEnd()) {
@@ -187,7 +191,7 @@ public class ModelMetaWS {
     Response limitCheck = limitCheck(cfg.key, target);
     if (limitCheck != null) return limitCheck;
     // 4. Perform requested meta-data operation
-    List<MetaData> result = new ArrayList<MetaData>();
+    List<MetaData> result = new ArrayList<>();
     for (Entry<String, String> datum : target.getAllMetaData()) {
       result.add(new MetaData(datum.getKey(), datum.getValue()));
     }
@@ -196,6 +200,7 @@ public class ModelMetaWS {
     return ServiceUtil.finish(cfg, result, request);
   }
 
+  @SuppressWarnings("Duplicates")
   @Path("/meta/{cid}")
   @DELETE
   @ApiOperation(
@@ -255,7 +260,15 @@ public class ModelMetaWS {
     for (Entry<String, String> datum : target.getAllMetaData()) {
       target.deleteMetaData(datum.getKey());
     }
-    CachedData.updateData(target);
+    try {
+      CachedData.update(target);
+    } catch (IOException e) {
+      log.log(Level.WARNING, "query error", e);
+      ServiceError errMsg = new ServiceError(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Internal error removing meta data.  If this error persists, please contact the site administrator");
+      return Response.status(Response.Status.BAD_REQUEST)
+                     .entity(errMsg)
+                     .build();
+    }
     // 5. return result - meta-data operations are not cacheable
     cfg.presetExpiry = Long.MIN_VALUE;
     return ServiceUtil.finish(cfg, null, request);
@@ -331,16 +344,23 @@ public class ModelMetaWS {
     // 4. Perform requested meta-data operation
     try {
       target.setMetaData(key, value);
-      CachedData.updateData(target);
+      CachedData.update(target);
     } catch (MetaDataLimitException | MetaDataCountException e) {
       ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
       return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
+    } catch (IOException e) {
+      log.log(Level.WARNING, "query error", e);
+      ServiceError errMsg = new ServiceError(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Internal error setting meta data.  If this error persists, please contact the site administrator");
+      return Response.status(Response.Status.BAD_REQUEST)
+                     .entity(errMsg)
+                     .build();
     }
     // 5. return result - meta-data operations are not cacheable
     cfg.presetExpiry = Long.MIN_VALUE;
     return ServiceUtil.finish(cfg, null, request);
   }
 
+  @SuppressWarnings("Duplicates")
   @Path("/meta/{cid}/{key}")
   @DELETE
   @ApiOperation(
@@ -402,7 +422,15 @@ public class ModelMetaWS {
     if (limitCheck != null) return limitCheck;
     // 4. Perform requested meta-data operation
     target.deleteMetaData(key);
-    CachedData.updateData(target);
+    try {
+      CachedData.update(target);
+    } catch (IOException e) {
+      log.log(Level.WARNING, "query error", e);
+      ServiceError errMsg = new ServiceError(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Internal error removing meta data.  If this error persists, please contact the site administrator");
+      return Response.status(Response.Status.BAD_REQUEST)
+                     .entity(errMsg)
+                     .build();
+    }
     // 5. return result - meta-data operations are not cacheable
     cfg.presetExpiry = Long.MIN_VALUE;
     return ServiceUtil.finish(cfg, null, request);

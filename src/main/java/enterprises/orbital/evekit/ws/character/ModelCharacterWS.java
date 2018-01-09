@@ -1,5 +1,6 @@
 package enterprises.orbital.evekit.ws.character;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +15,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import enterprises.orbital.evekit.account.AccountAccessMask;
+import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
 import enterprises.orbital.evekit.model.CachedData;
+import enterprises.orbital.evekit.model.ESISyncEndpoint;
 import enterprises.orbital.evekit.model.character.CalendarEventAttendee;
 import enterprises.orbital.evekit.model.character.Capsuleer;
 import enterprises.orbital.evekit.model.character.CharacterContactNotification;
@@ -45,7 +48,8 @@ import enterprises.orbital.evekit.model.character.PlanetaryRoute;
 import enterprises.orbital.evekit.model.character.ResearchAgent;
 import enterprises.orbital.evekit.model.character.SkillInQueue;
 import enterprises.orbital.evekit.model.character.UpcomingCalendarEvent;
-import enterprises.orbital.evekit.model.common.AccountStatus;
+import enterprises.orbital.evekit.model.common.AccountBalance;
+import enterprises.orbital.evekit.ws.AccountHandlerUtil;
 import enterprises.orbital.evekit.ws.ServiceError;
 import enterprises.orbital.evekit.ws.ServiceUtil;
 import enterprises.orbital.evekit.ws.ServiceUtil.AccessConfig;
@@ -54,6 +58,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
+import static enterprises.orbital.evekit.ws.AccountHandlerUtil.handleStandardExpiry;
 
 @Path("/ws/v1/char")
 @Consumes({
@@ -69,119 +75,6 @@ import io.swagger.annotations.ApiResponses;
     produces = "application/json",
     consumes = "application/json")
 public class ModelCharacterWS {
-
-  @Path("/account_status")
-  @GET
-  @ApiOperation(
-      value = "Get account status(es)")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              code = 200,
-              message = "list of requested account statuses",
-              response = AccountStatus.class,
-              responseContainer = "array"),
-          @ApiResponse(
-              code = 400,
-              message = "invalid attribute selector",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 401,
-              message = "access key credential is invalid",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 403,
-              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 404,
-              message = "access key not found",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 500,
-              message = "internal service error",
-              response = ServiceError.class),
-      })
-  public Response getAccountStatus(
-                                   @Context HttpServletRequest request,
-                                   @QueryParam("accessKey") @ApiParam(
-                                       name = "accessKey",
-                                       required = true,
-                                       value = "Model access key") int accessKey,
-                                   @QueryParam("accessCred") @ApiParam(
-                                       name = "accessCred",
-                                       required = true,
-                                       value = "Model access credential") String accessCred,
-                                   @QueryParam("at") @DefaultValue(
-                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                           name = "at",
-                                           required = false,
-                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                       name = "contid",
-                                       required = false,
-                                       defaultValue = "-1",
-                                       value = "Continuation ID for paged results") long contid,
-                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                       name = "maxresults",
-                                       required = false,
-                                       defaultValue = "1000",
-                                       value = "Maximum number of results to retrieve") int maxresults,
-                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                       name = "reverse",
-                                       required = false,
-                                       defaultValue = "false",
-                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                   @QueryParam("paidUntil") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "paidUntil",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Account status paid until selector") AttributeSelector paidUntil,
-                                   @QueryParam("createDate") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "createDate",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Account status create date selector") AttributeSelector createDate,
-                                   @QueryParam("logonCount") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "logonCount",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Account status logon count selector") AttributeSelector logonCount,
-                                   @QueryParam("logonMinutes") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "logonMinutes",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Account status logon minutes selector") AttributeSelector logonMinutes,
-                                   @QueryParam("multiCharacterTraining") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "multiCharacterTraining",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Account status multi-character training selector") AttributeSelector multiCharacterTraining) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, paidUntil, createDate, logonCount, logonMinutes, multiCharacterTraining);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_ACCOUNT_STATUS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<AccountStatus> result = AccountStatus.accessQuery(cfg.owner, contid, maxresults, reverse, at, paidUntil, createDate, logonCount, logonMinutes,
-                                                             multiCharacterTraining);
-      for (CachedData next : result) {
-        next.prepareDates();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
-  }
 
   @Path("/calendar_events")
   @GET
@@ -316,7 +209,7 @@ public class ModelCharacterWS {
       List<UpcomingCalendarEvent> result = UpcomingCalendarEvent.accessQuery(cfg.owner, contid, maxresults, reverse, at, duration, eventDate, eventID,
                                                                              eventText, eventTitle, ownerID, ownerName, response, important, ownerTypeID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -423,7 +316,7 @@ public class ModelCharacterWS {
       List<CalendarEventAttendee> result = CalendarEventAttendee.accessQuery(cfg.owner, contid, maxresults, reverse, at, eventID, characterID, characterName,
                                                                              response);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -523,7 +416,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterRole> result = CharacterRole.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleCategory, roleID, roleName);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -766,7 +659,7 @@ public class ModelCharacterWS {
                                                                factionName, factionID, intelligence, memory, charisma, perception, willpower, homeStationID,
                                                                lastRespecDate, lastTimedRespec, freeRespecs, freeSkillPoints, remoteStationDate);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -854,7 +747,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterSheetBalance> result = CharacterSheetBalance.accessQuery(cfg.owner, contid, maxresults, reverse, at, balance);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -942,7 +835,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterSheetClone> result = CharacterSheetClone.accessQuery(cfg.owner, contid, maxresults, reverse, at, cloneJumpDate);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1042,7 +935,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterSheetJump> result = CharacterSheetJump.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpActivation, jumpFatigue, jumpLastUpdate);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1148,7 +1041,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterSkill> result = CharacterSkill.accessQuery(cfg.owner, contid, maxresults, reverse, at, typeID, level, skillpoints, published);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1242,7 +1135,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterTitle> result = CharacterTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1336,7 +1229,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<Implant> result = Implant.accessQuery(cfg.owner, contid, maxresults, reverse, at, typeID, typeName);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1442,7 +1335,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<JumpClone> result = JumpClone.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpCloneID, typeID, locationID, cloneName);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1542,7 +1435,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<JumpCloneImplant> result = JumpCloneImplant.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpCloneID, typeID, typeName);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1673,7 +1566,7 @@ public class ModelCharacterWS {
       List<CharacterMedal> result = CharacterMedal.accessQuery(cfg.owner, contid, maxresults, reverse, at, description, medalID, title, corporationID, issued,
                                                                issuerID, reason, status);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1786,7 +1679,7 @@ public class ModelCharacterWS {
       List<CharacterNotification> result = CharacterNotification.accessQuery(cfg.owner, contid, maxresults, reverse, at, notificationID, typeID, senderID,
                                                                              sentDate, msgRead);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1893,7 +1786,7 @@ public class ModelCharacterWS {
       List<CharacterNotificationBody> result = CharacterNotificationBody.accessQuery(cfg.owner, contid, maxresults, reverse, at, notificationID, retrieved,
                                                                                      text, missing);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2018,7 +1911,7 @@ public class ModelCharacterWS {
       List<ChatChannel> result = ChatChannel.accessQuery(cfg.owner, contid, maxresults, reverse, at, channelID, ownerID, ownerName, displayName, comparisonKey,
                                                          hasPassword, motd);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2137,7 +2030,7 @@ public class ModelCharacterWS {
       List<ChatChannelMember> result = ChatChannelMember.accessQuery(cfg.owner, contid, maxresults, reverse, at, channelID, category, accessorID, accessorName,
                                                                      untilWhen, reason);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2250,7 +2143,7 @@ public class ModelCharacterWS {
       List<CharacterContactNotification> result = CharacterContactNotification.accessQuery(cfg.owner, contid, maxresults, reverse, at, notificationID, senderID,
                                                                                            senderName, sentDate, messageData);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2344,7 +2237,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<MailingList> result = MailingList.accessQuery(cfg.owner, contid, maxresults, reverse, at, displayName, listID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2488,7 +2381,7 @@ public class ModelCharacterWS {
       List<CharacterMailMessage> result = CharacterMailMessage.accessQuery(cfg.owner, contid, maxresults, reverse, at, messageID, senderID, senderName,
                                                                            toCharacterID, sentDate, title, toCorpOrAllianceID, toListID, msgRead, senderTypeID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2588,7 +2481,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<CharacterMailMessageBody> result = CharacterMailMessageBody.accessQuery(cfg.owner, contid, maxresults, reverse, at, messageID, retrieved, body);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2740,7 +2633,7 @@ public class ModelCharacterWS {
                                                                  planetName, planetTypeID, planetTypeName, ownerID, ownerName, lastUpdate, upgradeLevel,
                                                                  numberOfPins);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2847,7 +2740,7 @@ public class ModelCharacterWS {
       // Retrieve
       List<PlanetaryLink> result = PlanetaryLink.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, sourcePinID, destinationPinID, linkLevel);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -3023,7 +2916,7 @@ public class ModelCharacterWS {
                                                            lastLaunchTime, cycleTime, quantityPerCycle, installTime, expiryTime, contentTypeID, contentTypeName,
                                                            contentQuantity, longitude, latitude);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -3180,7 +3073,7 @@ public class ModelCharacterWS {
       List<PlanetaryRoute> result = PlanetaryRoute.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, routeID, sourcePinID, destinationPinID,
                                                                contentTypeID, contentTypeName, quantity, waypoint1, waypoint2, waypoint3, waypoint4, waypoint5);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -3235,78 +3128,66 @@ public class ModelCharacterWS {
                                     @QueryParam("at") @DefaultValue(
                                         value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                             name = "at",
-                                            required = false,
                                             defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                             value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                     @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                         name = "contid",
-                                        required = false,
                                         defaultValue = "-1",
                                         value = "Continuation ID for paged results") long contid,
                                     @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                         name = "maxresults",
-                                        required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                         name = "reverse",
-                                        required = false,
                                         defaultValue = "false",
                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("agentID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "agentID",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Research agent ID selector") AttributeSelector agentID,
-                                    @QueryParam("currentPoints") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "currentPoints",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Agent current points selector") AttributeSelector currentPoints,
                                     @QueryParam("pointsPerDay") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "pointsPerDay",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Agent points per day selector") AttributeSelector pointsPerDay,
                                     @QueryParam("remainderPoints") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "remainderPoints",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Agent remainder points selector") AttributeSelector remainderPoints,
                                     @QueryParam("researchStartDate") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "researchStartDate",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Agent research start date selector") AttributeSelector researchStartDate,
                                     @QueryParam("skillTypeID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "skillTypeID",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Agent skill type ID selector") AttributeSelector skillTypeID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, agentID, currentPoints, pointsPerDay, remainderPoints, researchStartDate, skillTypeID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_RESEARCH);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<ResearchAgent> result = ResearchAgent.accessQuery(cfg.owner, contid, maxresults, reverse, at, agentID, currentPoints, pointsPerDay, remainderPoints,
-                                                             researchStartDate, skillTypeID);
-      for (CachedData next : result) {
-        next.prepareDates();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_RESEARCH,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<ResearchAgent>() {
+
+          @Override
+          public List<ResearchAgent> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                              AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int AGENT_ID = 0;
+            final int POINTS_PER_DAY = 1;
+            final int REMAINDER_POINTS = 2;
+            final int RESEARCH_START_DATE = 3;
+            final int SKILL_TYPE_ID = 4;
+            return ResearchAgent.accessQuery(acct, contid, maxresults, reverse, at, others[AGENT_ID], others[POINTS_PER_DAY],
+                                             others[REMAINDER_POINTS], others[RESEARCH_START_DATE],
+                                             others[SKILL_TYPE_ID]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(ESISyncEndpoint.CHAR_AGENTS, acct);
+          }
+        }, request, agentID, pointsPerDay, remainderPoints, researchStartDate, skillTypeID);
   }
 
   @Path("/skill_in_training")
@@ -3432,7 +3313,7 @@ public class ModelCharacterWS {
                                                                                    currentTrainingQueueTime, trainingStartTime, trainingEndTime,
                                                                                    trainingStartSP, trainingDestinationSP, trainingToLevel, skillTypeID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -3557,7 +3438,7 @@ public class ModelCharacterWS {
       List<SkillInQueue> result = SkillInQueue.accessQuery(cfg.owner, contid, maxresults, reverse, at, endSP, endTime, level, queuePosition, startSP, startTime,
                                                            typeID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);

@@ -213,7 +213,7 @@ public class ModelCorporationWS {
       List<ContainerLog> result = ContainerLog.accessQuery(cfg.owner, contid, maxresults, reverse, at, logTime, action, actorID, actorName, flag, itemID,
                                                            itemTypeID, locationID, newConfiguration, oldConfiguration, passwordType, quantity, typeID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -325,7 +325,7 @@ public class ModelCorporationWS {
       // Retrieve
       List<CorporationMedal> result = CorporationMedal.accessQuery(cfg.owner, contid, maxresults, reverse, at, medalID, description, title, created, creatorID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -444,7 +444,7 @@ public class ModelCorporationWS {
       List<CorporationMemberMedal> result = CorporationMemberMedal.accessQuery(cfg.owner, contid, maxresults, reverse, at, medalID, characterID, issued,
                                                                                issuerID, reason, status);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -663,7 +663,7 @@ public class ModelCorporationWS {
                                                                    logoGraphicID, logoShape1, logoShape2, logoShape3, memberCount, memberLimit, shares,
                                                                    stationID, stationName, taxRate, ticker, url);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -808,7 +808,7 @@ public class ModelCorporationWS {
                                                                    grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase,
                                                                    rolesAtHQ, rolesAtOther);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -979,7 +979,7 @@ public class ModelCorporationWS {
                                                              allowAlliance, allowStandings, standingLevel, taxRateAlliance, taxRateCorp, taxRateStandingHigh,
                                                              taxRateStandingGood, taxRateStandingNeutral, taxRateStandingBad, taxRateStandingHorrible);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1079,7 +1079,7 @@ public class ModelCorporationWS {
       // Retrieve
       List<Division> result = Division.accessQuery(cfg.owner, contid, maxresults, reverse, at, wallet, accountKey, description);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1217,7 +1217,7 @@ public class ModelCorporationWS {
       List<Facility> result = Facility.accessQuery(cfg.owner, contid, maxresults, reverse, at, facilityID, typeID, typeName, solarSystemID, solarSystemName,
                                                    regionID, regionName, starbaseModifier, tax);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1317,7 +1317,7 @@ public class ModelCorporationWS {
       // Retrieve
       List<Fuel> result = Fuel.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, typeID, quantity);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1468,7 +1468,7 @@ public class ModelCorporationWS {
                                                                grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase, rolesAtHQ,
                                                                rolesAtOther, titles);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1599,7 +1599,7 @@ public class ModelCorporationWS {
       List<MemberSecurityLog> result = MemberSecurityLog.accessQuery(cfg.owner, contid, maxresults, reverse, at, changeTime, changedCharacterID,
                                                                      changedCharacterName, issuerID, issuerName, roleLocationType, oldRoles, newRoles);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1768,7 +1768,7 @@ public class ModelCorporationWS {
                                                                locationID, logoffDateTime, logonDateTime, name, roles, shipType, shipTypeID, startDateTime,
                                                                title);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -1931,7 +1931,7 @@ public class ModelCorporationWS {
                                                  dockingCostPerShipVolume, officeRentalCost, stationTypeID, reprocessingEfficiency, reprocessingStationTake,
                                                  standingOwnerID, x, y, z);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2050,7 +2050,7 @@ public class ModelCorporationWS {
       List<OutpostServiceDetail> result = OutpostServiceDetail.accessQuery(cfg.owner, contid, maxresults, reverse, at, stationID, serviceName, ownerID,
                                                                            minStanding, surchargePerBadStanding, discountPerGoodStanding);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2150,7 +2150,7 @@ public class ModelCorporationWS {
       // Retrieve
       List<Role> result = Role.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleID, roleDescription, roleName);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2244,7 +2244,7 @@ public class ModelCorporationWS {
       // Retrieve
       List<SecurityRole> result = SecurityRole.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleID, roleName);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2338,7 +2338,7 @@ public class ModelCorporationWS {
       // Retrieve
       List<SecurityTitle> result = SecurityTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2457,7 +2457,7 @@ public class ModelCorporationWS {
       List<Shareholder> result = Shareholder.accessQuery(cfg.owner, contid, maxresults, reverse, at, shareholderID, isCorporation, shareholderCorporationID,
                                                          shareholderCorporationName, shareholderName, shares);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2588,7 +2588,7 @@ public class ModelCorporationWS {
       List<Starbase> result = Starbase.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, moonID, onlineTimestamp, state,
                                                    stateTimestamp, typeID, standingOwnerID);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
@@ -2777,7 +2777,7 @@ public class ModelCorporationWS {
                                                                onAggressionEnabled, onAggressionStanding, onCorporationWarEnabled, onCorporationWarStanding,
                                                                onStandingDropEnabled, onStandingDropStanding, onStatusDropEnabled, onStatusDropStanding);
       for (CachedData next : result) {
-        next.prepareDates();
+        next.prepareTransient();
       }
       // Finish
       return ServiceUtil.finish(cfg, result, request);
