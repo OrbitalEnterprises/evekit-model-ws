@@ -29,7 +29,11 @@ public class AccountHandlerUtil {
   private static final Map<ESISyncEndpoint, Long> modelExpiry = Stream.of(
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_WALLET_BALANCE, TimeUnit.MILLISECONDS.convert(120, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_WALLET_BALANCE, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS)),
-      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_AGENTS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS))
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_AGENTS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_WALLET_JOURNAL, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_WALLET_JOURNAL, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_WALLET_TRANSACTIONS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_WALLET_TRANSACTIONS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS))
                                                                          )
                                                                       .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 

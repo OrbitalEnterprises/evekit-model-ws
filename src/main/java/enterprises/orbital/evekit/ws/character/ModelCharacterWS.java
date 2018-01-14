@@ -1,63 +1,24 @@
 package enterprises.orbital.evekit.ws.character;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import enterprises.orbital.evekit.account.AccountAccessMask;
 import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
 import enterprises.orbital.evekit.model.CachedData;
 import enterprises.orbital.evekit.model.ESISyncEndpoint;
-import enterprises.orbital.evekit.model.character.CalendarEventAttendee;
-import enterprises.orbital.evekit.model.character.Capsuleer;
-import enterprises.orbital.evekit.model.character.CharacterContactNotification;
-import enterprises.orbital.evekit.model.character.CharacterMailMessage;
-import enterprises.orbital.evekit.model.character.CharacterMailMessageBody;
-import enterprises.orbital.evekit.model.character.CharacterMedal;
-import enterprises.orbital.evekit.model.character.CharacterNotification;
-import enterprises.orbital.evekit.model.character.CharacterNotificationBody;
-import enterprises.orbital.evekit.model.character.CharacterRole;
-import enterprises.orbital.evekit.model.character.CharacterSheet;
-import enterprises.orbital.evekit.model.character.CharacterSheetBalance;
-import enterprises.orbital.evekit.model.character.CharacterSheetClone;
-import enterprises.orbital.evekit.model.character.CharacterSheetJump;
-import enterprises.orbital.evekit.model.character.CharacterSkill;
-import enterprises.orbital.evekit.model.character.CharacterSkillInTraining;
-import enterprises.orbital.evekit.model.character.CharacterTitle;
-import enterprises.orbital.evekit.model.character.ChatChannel;
-import enterprises.orbital.evekit.model.character.ChatChannelMember;
-import enterprises.orbital.evekit.model.character.Implant;
-import enterprises.orbital.evekit.model.character.JumpClone;
-import enterprises.orbital.evekit.model.character.JumpCloneImplant;
-import enterprises.orbital.evekit.model.character.MailingList;
-import enterprises.orbital.evekit.model.character.PlanetaryColony;
-import enterprises.orbital.evekit.model.character.PlanetaryLink;
-import enterprises.orbital.evekit.model.character.PlanetaryPin;
-import enterprises.orbital.evekit.model.character.PlanetaryRoute;
-import enterprises.orbital.evekit.model.character.ResearchAgent;
-import enterprises.orbital.evekit.model.character.SkillInQueue;
-import enterprises.orbital.evekit.model.character.UpcomingCalendarEvent;
-import enterprises.orbital.evekit.model.common.AccountBalance;
+import enterprises.orbital.evekit.model.character.*;
 import enterprises.orbital.evekit.ws.AccountHandlerUtil;
 import enterprises.orbital.evekit.ws.ServiceError;
 import enterprises.orbital.evekit.ws.ServiceUtil;
 import enterprises.orbital.evekit.ws.ServiceUtil.AccessConfig;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.util.List;
 
 import static enterprises.orbital.evekit.ws.AccountHandlerUtil.handleStandardExpiry;
 
@@ -3168,26 +3129,36 @@ public class ModelCharacterWS {
                                             defaultValue = "{ any: true }",
                                             value = "Agent skill type ID selector") AttributeSelector skillTypeID) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_RESEARCH,
-                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<ResearchAgent>() {
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<ResearchAgent>() {
 
-          @Override
-          public List<ResearchAgent> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
-                                              AttributeSelector at, AttributeSelector... others) throws IOException {
-            final int AGENT_ID = 0;
-            final int POINTS_PER_DAY = 1;
-            final int REMAINDER_POINTS = 2;
-            final int RESEARCH_START_DATE = 3;
-            final int SKILL_TYPE_ID = 4;
-            return ResearchAgent.accessQuery(acct, contid, maxresults, reverse, at, others[AGENT_ID], others[POINTS_PER_DAY],
-                                             others[REMAINDER_POINTS], others[RESEARCH_START_DATE],
-                                             others[SKILL_TYPE_ID]);
-          }
+                                                          @Override
+                                                          public List<ResearchAgent> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int AGENT_ID = 0;
+                                                            final int POINTS_PER_DAY = 1;
+                                                            final int REMAINDER_POINTS = 2;
+                                                            final int RESEARCH_START_DATE = 3;
+                                                            final int SKILL_TYPE_ID = 4;
+                                                            return ResearchAgent.accessQuery(acct, contid, maxresults,
+                                                                                             reverse, at,
+                                                                                             others[AGENT_ID],
+                                                                                             others[POINTS_PER_DAY],
+                                                                                             others[REMAINDER_POINTS],
+                                                                                             others[RESEARCH_START_DATE],
+                                                                                             others[SKILL_TYPE_ID]);
+                                                          }
 
-          @Override
-          public long getExpiry(SynchronizedEveAccount acct) {
-            return handleStandardExpiry(ESISyncEndpoint.CHAR_AGENTS, acct);
-          }
-        }, request, agentID, pointsPerDay, remainderPoints, researchStartDate, skillTypeID);
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_AGENTS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, agentID, pointsPerDay, remainderPoints,
+                                                        researchStartDate, skillTypeID);
   }
 
   @Path("/skill_in_training")

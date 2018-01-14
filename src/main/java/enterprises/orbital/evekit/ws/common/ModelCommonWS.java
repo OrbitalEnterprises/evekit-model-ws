@@ -1,54 +1,27 @@
 package enterprises.orbital.evekit.ws.common;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import enterprises.orbital.evekit.account.AccountAccessMask;
 import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
 import enterprises.orbital.evekit.model.CachedData;
-import enterprises.orbital.evekit.model.ESIRefSyncEndpoint;
 import enterprises.orbital.evekit.model.ESISyncEndpoint;
-import enterprises.orbital.evekit.model.common.AccountBalance;
-import enterprises.orbital.evekit.model.common.Asset;
-import enterprises.orbital.evekit.model.common.Blueprint;
-import enterprises.orbital.evekit.model.common.Bookmark;
+import enterprises.orbital.evekit.model.common.*;
 import enterprises.orbital.evekit.model.common.Contact;
-import enterprises.orbital.evekit.model.common.ContactLabel;
-import enterprises.orbital.evekit.model.common.Contract;
-import enterprises.orbital.evekit.model.common.ContractBid;
-import enterprises.orbital.evekit.model.common.ContractItem;
-import enterprises.orbital.evekit.model.common.FacWarStats;
-import enterprises.orbital.evekit.model.common.IndustryJob;
-import enterprises.orbital.evekit.model.common.Kill;
-import enterprises.orbital.evekit.model.common.KillAttacker;
-import enterprises.orbital.evekit.model.common.KillItem;
-import enterprises.orbital.evekit.model.common.KillVictim;
-import enterprises.orbital.evekit.model.common.Location;
-import enterprises.orbital.evekit.model.common.MarketOrder;
-import enterprises.orbital.evekit.model.common.Standing;
-import enterprises.orbital.evekit.model.common.WalletJournal;
-import enterprises.orbital.evekit.model.common.WalletTransaction;
 import enterprises.orbital.evekit.ws.AccountHandlerUtil;
 import enterprises.orbital.evekit.ws.ServiceError;
 import enterprises.orbital.evekit.ws.ServiceUtil;
 import enterprises.orbital.evekit.ws.ServiceUtil.AccessConfig;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
+
+import javax.persistence.Column;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.List;
 
 import static enterprises.orbital.evekit.ws.AccountHandlerUtil.handleStandardExpiry;
 
@@ -2678,146 +2651,260 @@ public class ModelCommonWS {
                                     @QueryParam("at") @DefaultValue(
                                         value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                             name = "at",
-                                            required = false,
                                             defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                             value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                     @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                         name = "contid",
-                                        required = false,
                                         defaultValue = "-1",
                                         value = "Continuation ID for paged results") long contid,
                                     @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                         name = "maxresults",
-                                        required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                         name = "reverse",
-                                        required = false,
                                         defaultValue = "false",
                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                    @QueryParam("accountKey") @DefaultValue(
+                                    @QueryParam("division") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "accountKey",
-                                            required = false,
+                                            name = "division",
                                             defaultValue = "{ any: true }",
-                                            value = "Wallet journal account key selector") AttributeSelector accountKey,
+                                            value = "Wallet journal division selector") AttributeSelector division,
                                     @QueryParam("refID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "refID",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Journal entry ref ID selector") AttributeSelector refID,
                                     @QueryParam("date") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "date",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Journal entry date selector") AttributeSelector date,
-                                    @QueryParam("refTypeID") @DefaultValue(
+                                    @QueryParam("refType") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "refTypeID",
-                                            required = false,
+                                            name = "refType",
                                             defaultValue = "{ any: true }",
-                                            value = "Journal entry ref type ID selector") AttributeSelector refTypeID,
-                                    @QueryParam("ownerName1") @DefaultValue(
+                                            value = "Journal entry ref type selector") AttributeSelector refType,
+                                    @QueryParam("firstPartyID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "ownerName1",
-                                            required = false,
+                                            name = "firstPartyID",
                                             defaultValue = "{ any: true }",
-                                            value = "Journal entry first owner name selector") AttributeSelector ownerName1,
-                                    @QueryParam("ownerID1") @DefaultValue(
+                                            value = "Journal entry first party ID selector") AttributeSelector firstPartyID,
+                                    @QueryParam("firstPartyType") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "ownerID1",
-                                            required = false,
+                                            name = "firstPartyType",
                                             defaultValue = "{ any: true }",
-                                            value = "Journal entry first owner ID selector") AttributeSelector ownerID1,
-                                    @QueryParam("ownerName2") @DefaultValue(
+                                            value = "Journal entry first party type selector") AttributeSelector firstPartyType,
+                                    @QueryParam("secondPartyID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "ownerName2",
-                                            required = false,
+                                            name = "secondPartyID",
                                             defaultValue = "{ any: true }",
-                                            value = "Journal entry second owner name selector") AttributeSelector ownerName2,
-                                    @QueryParam("ownerID2") @DefaultValue(
+                                            value = "Journal entry second party ID selector") AttributeSelector secondPartyID,
+                                    @QueryParam("secondPartyType") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "ownerID2",
-                                            required = false,
+                                            name = "secondPartyType",
                                             defaultValue = "{ any: true }",
-                                            value = "Journal entry second owner ID selector") AttributeSelector ownerID2,
+                                            value = "Journal entry second party type selector") AttributeSelector secondPartyType,
                                     @QueryParam("argName1") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "argName1",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Journal entry argument name selector") AttributeSelector argName1,
                                     @QueryParam("argID1") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "argID1",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Journal entry argument ID selector") AttributeSelector argID1,
                                     @QueryParam("amount") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "amount",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Journal entry amount selector") AttributeSelector amount,
                                     @QueryParam("balance") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "balance",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Journal entry balance selector") AttributeSelector balance,
                                     @QueryParam("reason") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "reason",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Journal entry reason selector") AttributeSelector reason,
                                     @QueryParam("taxReceiverID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "taxReceiverID",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Journal entry tax receiver ID selector") AttributeSelector taxReceiverID,
                                     @QueryParam("taxAmount") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "taxAmount",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Journal entry tax amount selector") AttributeSelector taxAmount,
-                                    @QueryParam("owner1TypeID") @DefaultValue(
+                                    @QueryParam("locationID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "owner1TypeID",
-                                            required = false,
+                                            name = "locationID",
                                             defaultValue = "{ any: true }",
-                                            value = "First owner type ID selector") AttributeSelector owner1TypeID,
-                                    @QueryParam("owner2TypeID") @DefaultValue(
+                                            value = "Location ID selector") AttributeSelector locationID,
+                                    @QueryParam("transactionID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "owner2TypeID",
-                                            required = false,
+                                            name = "transactionID",
                                             defaultValue = "{ any: true }",
-                                            value = "Second owner type ID selector") AttributeSelector owner2TypeID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, accountKey, refID, date, refTypeID, ownerName1, ownerID1, ownerName2, ownerID2, argName1, argID1, amount, balance,
-                                          reason, taxReceiverID, taxAmount, owner1TypeID, owner2TypeID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_WALLET_JOURNAL);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<WalletJournal> result = WalletJournal.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountKey, refID, date, refTypeID, ownerName1,
-                                                             ownerID1, ownerName2, ownerID2, argName1, argID1, amount, balance, reason, taxReceiverID,
-                                                             taxAmount, owner1TypeID, owner2TypeID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                            value = "Transaction ID selector") AttributeSelector transactionID,
+                                    @QueryParam("npcName") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "npcName",
+                                        defaultValue = "{ any: true }",
+                                        value = "NPC name selector") AttributeSelector npcName,
+                                    @QueryParam("npcID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "npcID",
+                                        defaultValue = "{ any: true }",
+                                        value = "NPC ID selector") AttributeSelector npcID,
+                                    @QueryParam("destroyedShipTypeID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "destroyedShipTypeID",
+                                        defaultValue = "{ any: true }",
+                                        value = "Destroyed ship type ID selector") AttributeSelector destroyedShipTypeID,
+                                    @QueryParam("characterID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "characterID",
+                                        defaultValue = "{ any: true }",
+                                        value = "Character ID selector") AttributeSelector characterID,
+                                    @QueryParam("corporationID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "corporationID",
+                                        defaultValue = "{ any: true }",
+                                        value = "Corporation ID selector") AttributeSelector corporationID,
+                                    @QueryParam("allianceID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "allianceID",
+                                        defaultValue = "{ any: true }",
+                                        value = "Alliance ID selector") AttributeSelector allianceID,
+                                    @QueryParam("jobID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "jobID",
+                                        defaultValue = "{ any: true }",
+                                        value = "Job ID selector") AttributeSelector jobID,
+                                    @QueryParam("contractID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "contractID",
+                                        defaultValue = "{ any: true }",
+                                        value = "Contract ID selector") AttributeSelector contractID,
+                                    @QueryParam("systemID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "systemID",
+                                        defaultValue = "{ any: true }",
+                                        value = "System ID selector") AttributeSelector systemID,
+                                    @QueryParam("planetID") @DefaultValue(
+                                        value = "{ any: true }") @ApiParam(
+                                        name = "planetID",
+                                        defaultValue = "{ any: true }",
+                                        value = "Planet ID selector") AttributeSelector planetID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_WALLET_JOURNAL,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<WalletJournal>() {
+
+                                                          @Override
+                                                          public List<WalletJournal> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int DIVISION = 0;
+                                                            final int REF_ID = 1;
+                                                            final int DATE = 2;
+                                                            final int REF_TYPE = 3;
+                                                            final int FIRST_PARTY_ID = 4;
+                                                            final int FIRST_PARTY_TYPE = 5;
+                                                            final int SECOND_PARTY_ID = 6;
+                                                            final int SECOND_PARTY_TYPE = 7;
+                                                            final int ARG_NAME_1 = 8;
+                                                            final int ARG_ID_1 = 9;
+                                                            final int AMOUNT = 10;
+                                                            final int BALANCE = 11;
+                                                            final int REASON = 12;
+                                                            final int TAX_RECEIVER_ID = 13;
+                                                            final int TAX_AMOUNT = 14;
+                                                            final int LOCATION_ID = 15;
+                                                            final int TRANSACTION_ID = 16;
+                                                            final int NPC_NAME = 17;
+                                                            final int NPC_ID = 18;
+                                                            final int DESTROYED_SHIP_TYPE_ID = 19;
+                                                            final int CHARACTER_ID = 20;
+                                                            final int CORPORATION_ID = 21;
+                                                            final int ALLIANCE_ID = 22;
+                                                            final int JOB_ID = 23;
+                                                            final int CONTRACT_ID = 24;
+                                                            final int SYSTEM_ID = 25;
+                                                            final int PLANET_ID = 26;
+                                                            return WalletJournal.accessQuery(acct, contid,
+                                                                                                 maxresults, reverse,
+                                                                                                 at,
+                                                            others[DIVISION],
+                                                            others[REF_ID],
+                                                            others[DATE],
+                                                            others[REF_TYPE],
+                                                            others[FIRST_PARTY_ID],
+                                                            others[FIRST_PARTY_TYPE],
+                                                            others[SECOND_PARTY_ID],
+                                                            others[SECOND_PARTY_TYPE],
+                                                            others[ARG_NAME_1],
+                                                            others[ARG_ID_1],
+                                                            others[AMOUNT],
+                                                            others[BALANCE],
+                                                            others[REASON],
+                                                            others[TAX_RECEIVER_ID],
+                                                            others[TAX_AMOUNT],
+                                                            others[LOCATION_ID],
+                                                            others[TRANSACTION_ID],
+                                                            others[NPC_NAME],
+                                                            others[NPC_ID],
+                                                            others[DESTROYED_SHIP_TYPE_ID],
+                                                            others[CHARACTER_ID],
+                                                            others[CORPORATION_ID],
+                                                            others[ALLIANCE_ID],
+                                                            others[JOB_ID],
+                                                            others[CONTRACT_ID],
+                                                            others[SYSTEM_ID],
+                                                            others[PLANET_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                acct.isCharacterType() ? ESISyncEndpoint.CHAR_WALLET_JOURNAL : ESISyncEndpoint.CORP_WALLET_JOURNAL,
+                                                                acct);
+                                                          }
+                                                        }, request,
+
+    division,
+    refID,
+    date,
+    refType,
+    firstPartyID,
+    firstPartyType,
+    secondPartyID,
+    secondPartyType,
+    argName1,
+    argID1,
+    amount,
+    balance,
+    reason,
+    taxReceiverID,
+    taxAmount,
+    locationID,
+    transactionID,
+    npcName,
+    npcID,
+    destroyedShipTypeID,
+    characterID,
+    corporationID,
+    allianceID,
+    jobID,
+    contractID,
+    systemID,
+    planetID);
   }
 
   @Path("/wallet_transaction")
@@ -2865,146 +2952,121 @@ public class ModelCommonWS {
                                         @QueryParam("at") @DefaultValue(
                                             value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                                 name = "at",
-                                                required = false,
                                                 defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                                 value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                         @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                             name = "contid",
-                                            required = false,
                                             defaultValue = "-1",
                                             value = "Continuation ID for paged results") long contid,
                                         @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                             name = "maxresults",
-                                            required = false,
                                             defaultValue = "1000",
                                             value = "Maximum number of results to retrieve") int maxresults,
                                         @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                             name = "reverse",
-                                            required = false,
                                             defaultValue = "false",
                                             value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                        @QueryParam("accountKey") @DefaultValue(
+                                        @QueryParam("division") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
-                                                name = "accountKey",
-                                                required = false,
+                                                name = "division",
                                                 defaultValue = "{ any: true }",
-                                                value = "Wallet account key selector") AttributeSelector accountKey,
+                                                value = "Wallet division selector") AttributeSelector division,
                                         @QueryParam("transactionID") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "transactionID",
-                                                required = false,
                                                 defaultValue = "{ any: true }",
                                                 value = "Transaction ID selector") AttributeSelector transactionID,
                                         @QueryParam("date") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "date",
-                                                required = false,
                                                 defaultValue = "{ any: true }",
                                                 value = "Transaction date selector") AttributeSelector date,
                                         @QueryParam("quantity") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "quantity",
-                                                required = false,
                                                 defaultValue = "{ any: true }",
                                                 value = "Transaction quantity selector") AttributeSelector quantity,
-                                        @QueryParam("typeName") @DefaultValue(
-                                            value = "{ any: true }") @ApiParam(
-                                                name = "typeName",
-                                                required = false,
-                                                defaultValue = "{ any: true }",
-                                                value = "Transaction type name selector") AttributeSelector typeName,
                                         @QueryParam("typeID") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "typeID",
-                                                required = false,
                                                 defaultValue = "{ any: true }",
                                                 value = "Transaction type ID selector") AttributeSelector typeID,
                                         @QueryParam("price") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "price",
-                                                required = false,
                                                 defaultValue = "{ any: true }",
                                                 value = "Transaction price selector") AttributeSelector price,
                                         @QueryParam("clientID") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "clientID",
-                                                required = false,
                                                 defaultValue = "{ any: true }",
                                                 value = "Transaction client ID selector") AttributeSelector clientID,
-                                        @QueryParam("clientName") @DefaultValue(
+                                        @QueryParam("locationID") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
-                                                name = "clientName",
-                                                required = false,
+                                                name = "locationID",
                                                 defaultValue = "{ any: true }",
-                                                value = "Transaction client name selector") AttributeSelector clientName,
-                                        @QueryParam("stationID") @DefaultValue(
+                                                value = "Transaction location ID selector") AttributeSelector locationID,
+                                        @QueryParam("isBuy") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
-                                                name = "stationID",
-                                                required = false,
+                                                name = "isBuy",
                                                 defaultValue = "{ any: true }",
-                                                value = "Transaction station ID selector") AttributeSelector stationID,
-                                        @QueryParam("stationName") @DefaultValue(
+                                                value = "Transaction isBuy selector") AttributeSelector isBuy,
+                                        @QueryParam("isPersonal") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
-                                                name = "stationName",
-                                                required = false,
+                                                name = "isPersonal",
                                                 defaultValue = "{ any: true }",
-                                                value = "Transaction station name selector") AttributeSelector stationName,
-                                        @QueryParam("transactionType") @DefaultValue(
-                                            value = "{ any: true }") @ApiParam(
-                                                name = "transactionType",
-                                                required = false,
-                                                defaultValue = "{ any: true }",
-                                                value = "Transaction type selector") AttributeSelector transactionType,
-                                        @QueryParam("transactionFor") @DefaultValue(
-                                            value = "{ any: true }") @ApiParam(
-                                                name = "transactionFor",
-                                                required = false,
-                                                defaultValue = "{ any: true }",
-                                                value = "Transaction for selector") AttributeSelector transactionFor,
+                                                value = "Transaction isPersonal selector") AttributeSelector isPersonal,
                                         @QueryParam("journalTransactionID") @DefaultValue(
                                             value = "{ any: true }") @ApiParam(
                                                 name = "journalTransactionID",
-                                                required = false,
                                                 defaultValue = "{ any: true }",
-                                                value = "Journal transaction ID selector") AttributeSelector journalTransactionID,
-                                        @QueryParam("clientTypeID") @DefaultValue(
-                                            value = "{ any: true }") @ApiParam(
-                                                name = "clientTypeID",
-                                                required = false,
-                                                defaultValue = "{ any: true }",
-                                                value = "Client type ID selector") AttributeSelector clientTypeID,
-                                        @QueryParam("characterID") @DefaultValue(
-                                            value = "{ any: true }") @ApiParam(
-                                                name = "characterID",
-                                                required = false,
-                                                defaultValue = "{ any: true }",
-                                                value = "Character ID selector") AttributeSelector characterID,
-                                        @QueryParam("characterName") @DefaultValue(
-                                            value = "{ any: true }") @ApiParam(
-                                                name = "characterName",
-                                                required = false,
-                                                defaultValue = "{ any: true }",
-                                                value = "Character name selector") AttributeSelector characterName) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, accountKey, transactionID, date, quantity, typeName, typeID, price, clientID, clientName, stationID, stationName,
-                                          transactionType, transactionFor, journalTransactionID, clientTypeID, characterID, characterName);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_WALLET_TRANSACTIONS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<WalletTransaction> result = WalletTransaction.accessQuery(cfg.owner, contid, maxresults, reverse, at, accountKey, transactionID, date, quantity,
-                                                                     typeName, typeID, price, clientID, clientName, stationID, stationName, transactionType,
-                                                                     transactionFor, journalTransactionID, clientTypeID, characterID, characterName);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                                value = "Journal transaction ID selector") AttributeSelector journalTransactionID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_WALLET_TRANSACTIONS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<WalletTransaction>() {
+
+                                                          @Override
+                                                          public List<WalletTransaction> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int DIVISION = 0;
+                                                            final int TRANSACTION_ID = 1;
+                                                            final int DATE = 2;
+                                                            final int QUANTITY = 3;
+                                                            final int TYPE_ID = 4;
+                                                            final int PRICE = 5;
+                                                            final int CLIENT_ID = 6;
+                                                            final int LOCATION_ID = 7;
+                                                            final int IS_BUY = 8;
+                                                            final int IS_PERSONAL = 9;
+                                                            final int JOURNAL_TRANSACTION_ID = 10;
+                                                            return WalletTransaction.accessQuery(acct, contid,
+                                                                                                 maxresults, reverse,
+                                                                                                 at, others[DIVISION],
+                                                                                                 others[TRANSACTION_ID],
+                                                                                                 others[DATE],
+                                                                                                 others[QUANTITY],
+                                                                                                 others[TYPE_ID],
+                                                                                                 others[PRICE],
+                                                                                                 others[CLIENT_ID],
+                                                                                                 others[LOCATION_ID],
+                                                                                                 others[IS_BUY],
+                                                                                                 others[IS_PERSONAL],
+                                                                                                 others[JOURNAL_TRANSACTION_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                acct.isCharacterType() ? ESISyncEndpoint.CHAR_WALLET_TRANSACTIONS : ESISyncEndpoint.CORP_WALLET_TRANSACTIONS,
+                                                                acct);
+                                                          }
+                                                        }, request, division, transactionID, date, quantity, typeID,
+                                                        price, clientID, locationID, isBuy,
+                                                        isPersonal, journalTransactionID);
   }
 
 }
