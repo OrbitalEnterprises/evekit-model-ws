@@ -13,14 +13,12 @@ import enterprises.orbital.evekit.ws.ServiceUtil;
 import enterprises.orbital.evekit.ws.ServiceUtil.AccessConfig;
 import io.swagger.annotations.*;
 
-import javax.persistence.Column;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import static enterprises.orbital.evekit.ws.AccountHandlerUtil.handleStandardExpiry;
@@ -172,90 +170,91 @@ public class ModelCommonWS {
                             @QueryParam("at") @DefaultValue(
                                 value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                     name = "at",
-                                    required = false,
                                     defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                     value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                             @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                 name = "contid",
-                                required = false,
                                 defaultValue = "-1",
                                 value = "Continuation ID for paged results") long contid,
                             @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                 name = "maxresults",
-                                required = false,
                                 defaultValue = "1000",
                                 value = "Maximum number of results to retrieve") int maxresults,
                             @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                 name = "reverse",
-                                required = false,
                                 defaultValue = "false",
                                 value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                             @QueryParam("itemID") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "itemID",
-                                    required = false,
                                     defaultValue = "{ any: true }",
                                     value = "Asset item ID selector") AttributeSelector itemID,
                             @QueryParam("locationID") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "locationID",
-                                    required = false,
                                     defaultValue = "{ any: true }",
                                     value = "Asset location ID selector") AttributeSelector locationID,
+                            @QueryParam("locationType") @DefaultValue(
+                                value = "{ any: true }") @ApiParam(
+                                name = "locationType",
+                                defaultValue = "{ any: true }",
+                                value = "Asset location type selector") AttributeSelector locationType,
+                            @QueryParam("locationFlag") @DefaultValue(
+                                value = "{ any: true }") @ApiParam(
+                                name = "locationFlag",
+                                defaultValue = "{ any: true }",
+                                value = "Asset location flag selector") AttributeSelector locationFlag,
                             @QueryParam("typeID") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "typeID",
-                                    required = false,
                                     defaultValue = "{ any: true }",
                                     value = "Asset type ID selector") AttributeSelector typeID,
                             @QueryParam("quantity") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "quantity",
-                                    required = false,
                                     defaultValue = "{ any: true }",
                                     value = "Asset quantity selector") AttributeSelector quantity,
-                            @QueryParam("flag") @DefaultValue(
-                                value = "{ any: true }") @ApiParam(
-                                    name = "flag",
-                                    required = false,
-                                    defaultValue = "{ any: true }",
-                                    value = "Asset flag selector") AttributeSelector flag,
                             @QueryParam("singleton") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "singleton",
-                                    required = false,
                                     defaultValue = "{ any: true }",
                                     value = "Asset is singleton selector") AttributeSelector singleton,
-                            @QueryParam("rawQuantity") @DefaultValue(
+                            @QueryParam("blueprintType") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
-                                    name = "rawQuantity",
-                                    required = false,
+                                    name = "blueprintType",
                                     defaultValue = "{ any: true }",
-                                    value = "Asset raw quantity selector") AttributeSelector rawQuantity,
-                            @QueryParam("container") @DefaultValue(
-                                value = "{ any: true }") @ApiParam(
-                                    name = "container",
-                                    required = false,
-                                    defaultValue = "{ any: true }",
-                                    value = "Asset container selector") AttributeSelector container) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, itemID, locationID, typeID, quantity, flag, singleton, rawQuantity, container);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_ASSETS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<Asset> result = Asset.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, typeID, quantity, flag, singleton, rawQuantity,
-                                             container);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                    value = "Asset blueprint type selector") AttributeSelector blueprintType) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_ASSETS,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<Asset>() {
+
+          @Override
+          public List<Asset> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                              AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int ITEM_ID = 0;
+            final int LOCATION_ID = 1;
+            final int LOCATION_TYPE = 2;
+            final int LOCATION_FLAG = 3;
+            final int TYPE_ID = 4;
+            final int QUANTITY = 5;
+            final int SINGLETON = 6;
+            final int BLUEPRINT_TYPE = 7;
+
+            return Asset.accessQuery(acct, contid, maxresults, reverse, at,
+                                     others[ITEM_ID],
+                                     others[LOCATION_ID],
+                                     others[LOCATION_TYPE],
+                                     others[LOCATION_FLAG],
+                                     others[TYPE_ID],
+                                     others[QUANTITY],
+                                     others[SINGLETON],
+                                     others[BLUEPRINT_TYPE]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_ASSETS : ESISyncEndpoint.CORP_ASSETS, acct);
+          }
+        }, request, itemID, locationID, locationType, locationFlag, typeID, quantity, singleton, blueprintType);
   }
 
   @Path("/blueprint")
@@ -303,96 +302,91 @@ public class ModelCommonWS {
                                 @QueryParam("at") @DefaultValue(
                                     value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                         name = "at",
-                                        required = false,
                                         defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                         value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                 @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                     name = "contid",
-                                    required = false,
                                     defaultValue = "-1",
                                     value = "Continuation ID for paged results") long contid,
                                 @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                     name = "maxresults",
-                                    required = false,
                                     defaultValue = "1000",
                                     value = "Maximum number of results to retrieve") int maxresults,
                                 @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                     name = "reverse",
-                                    required = false,
                                     defaultValue = "false",
                                     value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                 @QueryParam("itemID") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "itemID",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Blueprint item ID selector") AttributeSelector itemID,
                                 @QueryParam("locationID") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "locationID",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Blueprint location ID selector") AttributeSelector locationID,
+                                @QueryParam("locationFlag") @DefaultValue(
+                                    value = "{ any: true }") @ApiParam(
+                                    name = "locationFlag",
+                                    defaultValue = "{ any: true }",
+                                    value = "Blueprint location flag selector") AttributeSelector locationFlag,
                                 @QueryParam("typeID") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "typeID",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Blueprint type ID selector") AttributeSelector typeID,
-                                @QueryParam("typeName") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "typeName",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Blueprint type name selector") AttributeSelector typeName,
-                                @QueryParam("flagID") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "flagID",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Blueprint flag ID selector") AttributeSelector flagID,
                                 @QueryParam("quantity") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "quantity",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Blueprint quantity selector") AttributeSelector quantity,
                                 @QueryParam("timeEfficiency") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "timeEfficiency",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Blueprint time efficiency selector") AttributeSelector timeEfficiency,
                                 @QueryParam("materialEfficiency") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "materialEfficiency",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Blueprint material efficiency selector") AttributeSelector materialEfficiency,
                                 @QueryParam("runs") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "runs",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Blueprint runs selector") AttributeSelector runs) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, itemID, locationID, typeID, typeName, flagID, quantity, timeEfficiency, materialEfficiency, runs);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_BLUEPRINTS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<Blueprint> result = Blueprint.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, typeID, typeName, flagID, quantity,
-                                                     timeEfficiency, materialEfficiency, runs);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_BLUEPRINTS,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<Blueprint>() {
+
+          @Override
+          public List<Blueprint> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                     AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int ITEM_ID = 0;
+            final int LOCATION_ID = 1;
+            final int LOCATION_FLAG = 2;
+            final int TYPE_ID = 3;
+            final int QUANTITY = 4;
+            final int TIME_EFFICIENCY = 5;
+            final int MATERIAL_EFFICIENCY = 6;
+            final int RUNS = 7;
+
+            return Blueprint.accessQuery(acct, contid, maxresults, reverse, at,
+                                     others[ITEM_ID],
+                                     others[LOCATION_ID],
+                                     others[LOCATION_FLAG],
+                                     others[TYPE_ID],
+                                     others[QUANTITY],
+                                     others[TIME_EFFICIENCY],
+                                     others[MATERIAL_EFFICIENCY],
+                                     others[RUNS]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_BLUEPRINTS : ESISyncEndpoint.CORP_BLUEPRINTS, acct);
+          }
+        }, request, itemID, locationID, locationFlag, typeID, quantity, timeEfficiency, materialEfficiency, runs);
   }
 
   @Path("/bookmark")
@@ -2259,71 +2253,70 @@ public class ModelCommonWS {
                                @QueryParam("at") @DefaultValue(
                                    value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                        name = "at",
-                                       required = false,
                                        defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                        value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                    name = "contid",
-                                   required = false,
                                    defaultValue = "-1",
                                    value = "Continuation ID for paged results") long contid,
                                @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                    name = "maxresults",
-                                   required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                    name = "reverse",
-                                   required = false,
                                    defaultValue = "false",
                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("itemID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "itemID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Location item ID selector") AttributeSelector itemID,
                                @QueryParam("itemName") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "itemName",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Location item name selector") AttributeSelector itemName,
                                @QueryParam("x") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "x",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Location X position selector") AttributeSelector x,
                                @QueryParam("y") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "y",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Location Y position selector") AttributeSelector y,
                                @QueryParam("z") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "z",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Location Z position selector") AttributeSelector z) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, itemID, itemName, x, y, z);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_LOCATIONS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<Location> result = Location.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, itemName, x, y, z);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_LOCATIONS,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<Location>() {
+
+          @Override
+          public List<Location> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                         AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int ITEM_ID = 0;
+            final int ITEM_NAME = 1;
+            final int X = 2;
+            final int Y = 3;
+            final int Z = 4;
+
+            return Location.accessQuery(acct, contid, maxresults, reverse, at,
+                                         others[ITEM_ID],
+                                         others[ITEM_NAME],
+                                         others[X],
+                                         others[Y],
+                                         others[Z]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_ASSETS : ESISyncEndpoint.CORP_ASSETS, acct);
+          }
+        }, request, itemID, itemName, x, y, z);
   }
 
   @Path("/market_order")
@@ -2371,133 +2364,154 @@ public class ModelCommonWS {
                                   @QueryParam("at") @DefaultValue(
                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                           name = "at",
-                                          required = false,
                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                       name = "contid",
-                                      required = false,
                                       defaultValue = "-1",
                                       value = "Continuation ID for paged results") long contid,
                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                       name = "maxresults",
-                                      required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                       name = "reverse",
-                                      required = false,
                                       defaultValue = "false",
                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("orderID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "orderID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order ID selector") AttributeSelector orderID,
-                                  @QueryParam("accountKey") @DefaultValue(
+                                  @QueryParam("walletDivision") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
-                                          name = "accountKey",
-                                          required = false,
+                                          name = "walletDivision",
                                           defaultValue = "{ any: true }",
-                                          value = "Market order account key selector") AttributeSelector accountKey,
+                                          value = "Market order wallet division selector") AttributeSelector walletDivision,
                                   @QueryParam("bid") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "bid",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order bid indicator selector") AttributeSelector bid,
                                   @QueryParam("charID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "charID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order character ID selector") AttributeSelector charID,
                                   @QueryParam("duration") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "duration",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order duration selector") AttributeSelector duration,
                                   @QueryParam("escrow") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "escrow",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order escrow selector") AttributeSelector escrow,
                                   @QueryParam("issued") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "issued",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order issue date selector") AttributeSelector issued,
                                   @QueryParam("minVolume") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "minVolume",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order min volume selector") AttributeSelector minVolume,
                                   @QueryParam("orderState") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "orderState",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order state selector") AttributeSelector orderState,
                                   @QueryParam("price") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "price",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order price selector") AttributeSelector price,
                                   @QueryParam("orderRange") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "orderRange",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order range selector") AttributeSelector orderRange,
-                                  @QueryParam("stationID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "stationID",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Market order station ID selector") AttributeSelector stationID,
                                   @QueryParam("typeID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "typeID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order type ID selector") AttributeSelector typeID,
                                   @QueryParam("volEntered") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "volEntered",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Market order volume entered selector") AttributeSelector volEntered,
                                   @QueryParam("volRemaining") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "volRemaining",
-                                          required = false,
                                           defaultValue = "{ any: true }",
-                                          value = "Market order volume remaining selector") AttributeSelector volRemaining) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, orderID, accountKey, bid, charID, duration, escrow, issued, minVolume, orderState, price, orderRange, stationID,
-                                          typeID, volEntered, volRemaining);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_MARKET_ORDERS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<MarketOrder> result = MarketOrder.accessQuery(cfg.owner, contid, maxresults, reverse, at, orderID, accountKey, bid, charID, duration, escrow, issued,
-                                                         minVolume, orderState, price, orderRange, stationID, typeID, volEntered, volRemaining);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                          value = "Market order volume remaining selector") AttributeSelector volRemaining,
+                                  @QueryParam("regionID") @DefaultValue(
+                                      value = "{ any: true }") @ApiParam(
+                                      name = "regionID",
+                                      defaultValue = "{ any: true }",
+                                      value = "Market order region ID selector") AttributeSelector regionID,
+                                  @QueryParam("locationID") @DefaultValue(
+                                      value = "{ any: true }") @ApiParam(
+                                      name = "locationID",
+                                      defaultValue = "{ any: true }",
+                                      value = "Market order location ID selector") AttributeSelector locationID,
+                                  @QueryParam("isCorp") @DefaultValue(
+                                      value = "{ any: true }") @ApiParam(
+                                      name = "isCorp",
+                                      defaultValue = "{ any: true }",
+                                      value = "Market order is corporation selector") AttributeSelector isCorp) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_MARKET_ORDERS,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<MarketOrder>() {
+
+          @Override
+          public List<MarketOrder> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                           AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int ORDER_ID = 0;
+            final int WALLET_DIVISION = 1;
+            final int BID = 2;
+            final int CHAR_ID = 3;
+            final int DURATION = 4;
+            final int ESCROW = 5;
+            final int ISSUED = 6;
+            final int MIN_VOLUME = 7;
+            final int ORDER_STATE = 8;
+            final int PRICE = 9;
+            final int ORDER_RANGE = 10;
+            final int TYPE_ID = 11;
+            final int VOL_ENTERED = 12;
+            final int VOL_REMAINING = 13;
+            final int REGION_ID = 14;
+            final int LOCATION_ID = 15;
+            final int IS_CORP = 16;
+
+            return MarketOrder.accessQuery(acct, contid, maxresults, reverse, at,
+                                           others[ORDER_ID],
+                                           others[WALLET_DIVISION],
+                                           others[BID],
+                                           others[CHAR_ID],
+                                           others[DURATION],
+                                           others[ESCROW],
+                                           others[ISSUED],
+                                           others[MIN_VOLUME],
+                                           others[ORDER_STATE],
+                                           others[PRICE],
+                                           others[ORDER_RANGE],
+                                           others[TYPE_ID],
+                                           others[VOL_ENTERED],
+                                           others[VOL_REMAINING],
+                                           others[REGION_ID],
+                                           others[LOCATION_ID],
+                                           others[IS_CORP]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_MARKET : ESISyncEndpoint.CORP_MARKET, acct);
+          }
+        }, request, orderID, walletDivision, bid, charID, duration, escrow, issued, minVolume, orderState, price, orderRange, typeID, volEntered, volRemaining, regionID, locationID, isCorp);
   }
 
   @Path("/standing")
@@ -2545,65 +2559,56 @@ public class ModelCommonWS {
                                @QueryParam("at") @DefaultValue(
                                    value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                        name = "at",
-                                       required = false,
                                        defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                        value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                    name = "contid",
-                                   required = false,
                                    defaultValue = "-1",
                                    value = "Continuation ID for paged results") long contid,
                                @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                    name = "maxresults",
-                                   required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                    name = "reverse",
-                                   required = false,
                                    defaultValue = "false",
                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("standingEntity") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "standingEntity",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Standing entity selector") AttributeSelector standingEntity,
                                @QueryParam("fromID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "fromID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Standing from ID selector") AttributeSelector fromID,
-                               @QueryParam("fromName") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "fromName",
-                                       required = false,
-                                       defaultValue = "{ any: true }",
-                                       value = "Standing from name selector") AttributeSelector fromName,
                                @QueryParam("standing") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "standing",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Standing value selector") AttributeSelector standing) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, standingEntity, fromID, fromName, standing);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_STANDINGS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<Standing> result = Standing.accessQuery(cfg.owner, contid, maxresults, reverse, at, standingEntity, fromID, fromName, standing);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_STANDINGS,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<Standing>() {
+
+          @Override
+          public List<Standing> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                           AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int STANDING_ENTITY = 0;
+            final int FROM_ID = 1;
+            final int STANDING = 2;
+
+            return Standing.accessQuery(acct, contid, maxresults, reverse, at,
+                                           others[STANDING_ENTITY],
+                                           others[FROM_ID],
+                                           others[STANDING]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_STANDINGS : ESISyncEndpoint.CORP_STANDINGS, acct);
+          }
+        }, request, standingEntity, fromID, standing);
   }
 
   @Path("/wallet_journal")

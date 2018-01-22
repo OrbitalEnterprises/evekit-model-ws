@@ -33,7 +33,15 @@ public class AccountHandlerUtil {
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_WALLET_JOURNAL, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_WALLET_JOURNAL, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_WALLET_TRANSACTIONS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
-      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_WALLET_TRANSACTIONS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS))
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_WALLET_TRANSACTIONS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_ASSETS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_ASSETS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_BLUEPRINTS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_BLUEPRINTS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_MARKET, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_MARKET, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_STANDINGS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_STANDINGS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS))
                                                                          )
                                                                       .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
