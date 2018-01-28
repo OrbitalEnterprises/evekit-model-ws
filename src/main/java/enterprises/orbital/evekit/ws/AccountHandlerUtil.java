@@ -41,12 +41,16 @@ public class AccountHandlerUtil {
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_MARKET, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_MARKET, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_STANDINGS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
-      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_STANDINGS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS))
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_STANDINGS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_CONTRACTS, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_CONTRACTS, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_INDUSTRY, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_INDUSTRY, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS))
                                                                          )
                                                                       .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
   // Standard handling for an illegal selector value
-  private static Response handleIllegalSelector(Exception e) {
+  private static Response handleIllegalSelector() {
     ServiceError errMsg = new ServiceError(Response.Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
     return Response.status(Response.Status.BAD_REQUEST)
                    .entity(errMsg)
@@ -71,7 +75,7 @@ public class AccountHandlerUtil {
   }
 
   // Standard determination of result expiry
-  public static <A extends CachedData> long handleStandardExpiry(ESISyncEndpoint ep, SynchronizedEveAccount acct) {
+  public static long handleStandardExpiry(ESISyncEndpoint ep, SynchronizedEveAccount acct) {
     long shift = TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES);
     long def = OrbitalProperties.getCurrentTime() + shift;
     try {
@@ -106,7 +110,7 @@ public class AccountHandlerUtil {
       cfg.presetExpiry = query.getExpiry(cfg.owner);
       return ServiceUtil.finish(cfg, results, request);
     } catch (NumberFormatException e) {
-      return handleIllegalSelector(e);
+      return handleIllegalSelector();
     } catch (IOException e) {
       return handleIOError(e);
     }

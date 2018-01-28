@@ -827,177 +827,192 @@ public class ModelCommonWS {
                                @QueryParam("at") @DefaultValue(
                                    value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                        name = "at",
-                                       required = false,
                                        defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                        value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                    name = "contid",
-                                   required = false,
                                    defaultValue = "-1",
                                    value = "Continuation ID for paged results") long contid,
                                @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                    name = "maxresults",
-                                   required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                    name = "reverse",
-                                   required = false,
                                    defaultValue = "false",
                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("contractID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "contractID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract ID selector") AttributeSelector contractID,
                                @QueryParam("issuerID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "issuerID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract issuer ID selector") AttributeSelector issuerID,
                                @QueryParam("issuerCorpID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "issuerCorpID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract issuer corporation ID selector") AttributeSelector issuerCorpID,
                                @QueryParam("assigneeID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "assigneeID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract assignee ID selector") AttributeSelector assigneeID,
                                @QueryParam("acceptorID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "acceptorID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract acceptor ID selector") AttributeSelector acceptorID,
                                @QueryParam("startStationID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "startStationID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract start station ID selector") AttributeSelector startStationID,
                                @QueryParam("endStationID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "endStationID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract end station ID selector") AttributeSelector endStationID,
                                @QueryParam("type") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "type",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract type selector") AttributeSelector type,
                                @QueryParam("status") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "status",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract status selector") AttributeSelector status,
                                @QueryParam("title") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "title",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract title selector") AttributeSelector title,
                                @QueryParam("forCorp") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "forCorp",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract for corporation selector") AttributeSelector forCorp,
                                @QueryParam("availability") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "availability",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract availability selector") AttributeSelector availability,
                                @QueryParam("dateIssued") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "dateIssued",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract date issued selector") AttributeSelector dateIssued,
                                @QueryParam("dateExpired") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "dateExpired",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract date expired selector") AttributeSelector dateExpired,
                                @QueryParam("dateAccepted") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "dateAccepted",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract date accepted selector") AttributeSelector dateAccepted,
                                @QueryParam("numDays") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "numDays",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract duration (days) selector") AttributeSelector numDays,
                                @QueryParam("dateCompleted") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "dateCompleted",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract date completed selector") AttributeSelector dateCompleted,
                                @QueryParam("price") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "price",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract price selector") AttributeSelector price,
                                @QueryParam("reward") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "reward",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract reward value selector") AttributeSelector reward,
                                @QueryParam("collateral") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "collateral",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract collateral value selector") AttributeSelector collateral,
                                @QueryParam("buyout") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "buyout",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract buyout price selector") AttributeSelector buyout,
                                @QueryParam("volume") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "volume",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Contract volume selector") AttributeSelector volume) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, contractID, issuerID, issuerCorpID, assigneeID, acceptorID, startStationID, endStationID, type, status, title,
-                                          forCorp, availability, dateIssued, dateExpired, dateAccepted, numDays, dateCompleted, price, reward, collateral,
-                                          buyout, volume);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CONTRACTS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<Contract> result = Contract.accessQuery(cfg.owner, contid, maxresults, reverse, at, contractID, issuerID, issuerCorpID, assigneeID, acceptorID,
-                                                   startStationID, endStationID, type, status, title, forCorp, availability, dateIssued, dateExpired,
-                                                   dateAccepted, numDays, dateCompleted, price, reward, collateral, buyout, volume);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CONTRACTS,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<Contract>() {
+
+          @Override
+          public List<Contract> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                        AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int CONTRACT_ID = 0;
+            final int ISSUER_ID = 1;
+            final int ISSUER_CORP_ID = 2;
+            final int ASSIGNEE_ID = 3;
+            final int ACCEPTOR_ID = 4;
+            final int START_STATION_ID = 5;
+            final int END_STATION_ID = 6;
+            final int TYPE = 7;
+            final int STATUS = 8;
+            final int TITLE = 9;
+            final int FOR_CORP = 10;
+            final int AVAILABILITY = 11;
+            final int DATE_ISSUED = 12;
+            final int DATE_EXPIRED = 13;
+            final int DATE_ACCEPTED = 14;
+            final int NUM_DAYS = 15;
+            final int DATE_COMPLETED = 16;
+            final int PRICE = 17;
+            final int REWARD = 18;
+            final int COLLATERAL = 19;
+            final int BUYOUT = 20;
+            final int VOLUME = 21;
+
+            return Contract.accessQuery(acct, contid, maxresults, reverse, at,
+                                        others[CONTRACT_ID],
+                                        others[ISSUER_ID],
+                                        others[ISSUER_CORP_ID],
+                                        others[ASSIGNEE_ID],
+                                        others[ACCEPTOR_ID],
+                                        others[START_STATION_ID],
+                                        others[END_STATION_ID],
+                                        others[TYPE],
+                                        others[STATUS],
+                                        others[TITLE],
+                                        others[FOR_CORP],
+                                        others[AVAILABILITY],
+                                        others[DATE_ISSUED],
+                                        others[DATE_EXPIRED],
+                                        others[DATE_ACCEPTED],
+                                        others[NUM_DAYS],
+                                        others[DATE_COMPLETED],
+                                        others[PRICE],
+                                        others[REWARD],
+                                        others[COLLATERAL],
+                                        others[BUYOUT],
+                                        others[VOLUME]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_CONTRACTS : ESISyncEndpoint.CORP_CONTRACTS, acct);
+          }
+        }, request, contractID, issuerID, issuerCorpID, assigneeID, acceptorID, startStationID, endStationID,
+                                                        type, status, title, forCorp, availability, dateIssued,
+                                                        dateExpired, dateAccepted, numDays, dateCompleted,
+                                                        price, reward, collateral, buyout, volume);
   }
 
   @Path("/contract_bid")
@@ -1045,71 +1060,70 @@ public class ModelCommonWS {
                                   @QueryParam("at") @DefaultValue(
                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                           name = "at",
-                                          required = false,
                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                       name = "contid",
-                                      required = false,
                                       defaultValue = "-1",
                                       value = "Continuation ID for paged results") long contid,
                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                       name = "maxresults",
-                                      required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                       name = "reverse",
-                                      required = false,
                                       defaultValue = "false",
                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("bidID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "bidID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Contract bid ID selector") AttributeSelector bidID,
                                   @QueryParam("contractID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "contractID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Contract ID selector") AttributeSelector contractID,
                                   @QueryParam("bidderID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "bidderID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Contract bid bidder ID selector") AttributeSelector bidderID,
                                   @QueryParam("dateBid") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "dateBid",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Contract bid date selector") AttributeSelector dateBid,
                                   @QueryParam("amount") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "amount",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Contract bid amount selector") AttributeSelector amount) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, bidID, contractID, bidderID, dateBid, amount);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CONTRACTS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<ContractBid> result = ContractBid.accessQuery(cfg.owner, contid, maxresults, reverse, at, bidID, contractID, bidderID, dateBid, amount);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CONTRACTS,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<ContractBid>() {
+
+          @Override
+          public List<ContractBid> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                           AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int BID_ID = 0;
+            final int CONTRACT_ID = 1;
+            final int BIDDER_ID = 2;
+            final int DATE_BID = 3;
+            final int AMOUNT = 4;
+
+            return ContractBid.accessQuery(acct, contid, maxresults, reverse, at,
+                                           others[BID_ID],
+                                           others[CONTRACT_ID],
+                                           others[BIDDER_ID],
+                                           others[DATE_BID],
+                                           others[AMOUNT]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_CONTRACTS : ESISyncEndpoint.CORP_CONTRACTS, acct);
+          }
+        }, request, bidID, contractID, bidderID, dateBid, amount);
   }
 
   @Path("/contract_item")
@@ -1157,84 +1171,84 @@ public class ModelCommonWS {
                                    @QueryParam("at") @DefaultValue(
                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                            name = "at",
-                                           required = false,
                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                        name = "contid",
-                                       required = false,
                                        defaultValue = "-1",
                                        value = "Continuation ID for paged results") long contid,
                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                        name = "maxresults",
-                                       required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                        name = "reverse",
-                                       required = false,
                                        defaultValue = "false",
                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("contractID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "contractID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contract ID selector") AttributeSelector contractID,
                                    @QueryParam("recordID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "recordID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contract item record ID selector") AttributeSelector recordID,
                                    @QueryParam("typeID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "typeID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contract item type ID selector") AttributeSelector typeID,
                                    @QueryParam("quantity") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "quantity",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contract item quantity selector") AttributeSelector quantity,
                                    @QueryParam("rawQuantity") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "rawQuantity",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contract item raw quantity selector") AttributeSelector rawQuantity,
                                    @QueryParam("singleton") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "singleton",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contract item singleton selector") AttributeSelector singleton,
                                    @QueryParam("included") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "included",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contract item included selector") AttributeSelector included) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, contractID, recordID, typeID, quantity, rawQuantity, singleton, included);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CONTRACTS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<ContractItem> result = ContractItem.accessQuery(cfg.owner, contid, maxresults, reverse, at, contractID, recordID, typeID, quantity, rawQuantity,
-                                                           singleton, included);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CONTRACTS,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<ContractItem>() {
+
+          @Override
+          public List<ContractItem> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                            AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int CONTRACT_ID = 0;
+            final int RECORD_ID = 1;
+            final int TYPE_ID = 2;
+            final int QUANTITY = 3;
+            final int RAW_QUANTITY = 4;
+            final int SINGLETON = 5;
+            final int INCLUDED = 6;
+
+            return ContractItem.accessQuery(acct, contid, maxresults, reverse, at,
+                                            others[CONTRACT_ID],
+                                            others[RECORD_ID],
+                                            others[TYPE_ID],
+                                            others[QUANTITY],
+                                            others[RAW_QUANTITY],
+                                            others[SINGLETON],
+                                            others[INCLUDED]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_CONTRACTS : ESISyncEndpoint.CORP_CONTRACTS, acct);
+          }
+        }, request, contractID, recordID, typeID, quantity, rawQuantity, singleton, included);
   }
 
   @Path("/fac_war_stats")
@@ -1439,216 +1453,202 @@ public class ModelCommonWS {
                                   @QueryParam("at") @DefaultValue(
                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                           name = "at",
-                                          required = false,
                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                       name = "contid",
-                                      required = false,
                                       defaultValue = "-1",
                                       value = "Continuation ID for paged results") long contid,
                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                       name = "maxresults",
-                                      required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                       name = "reverse",
-                                      required = false,
                                       defaultValue = "false",
                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("jobID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "jobID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job ID selector") AttributeSelector jobID,
                                   @QueryParam("installerID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "installerID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job installer ID selector") AttributeSelector installerID,
-                                  @QueryParam("installerName") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "installerName",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Industry job installer name selector") AttributeSelector installerName,
                                   @QueryParam("facilityID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "facilityID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job facility ID selector") AttributeSelector facilityID,
-                                  @QueryParam("solarSystemID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "solarSystemID",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Industry job solar system ID selector") AttributeSelector solarSystemID,
-                                  @QueryParam("solarSystemName") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "solarSystemName",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Industry job solar system name selector") AttributeSelector solarSystemName,
                                   @QueryParam("stationID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "stationID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job station ID selector") AttributeSelector stationID,
                                   @QueryParam("activityID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "activityID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job activity ID selector") AttributeSelector activityID,
                                   @QueryParam("blueprintID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "blueprintID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job blueprint ID selector") AttributeSelector blueprintID,
                                   @QueryParam("blueprintTypeID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "blueprintTypeID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job blueprint type ID selector") AttributeSelector blueprintTypeID,
-                                  @QueryParam("blueprintTypeName") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "blueprintTypeName",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Industry job blueprint type name selector") AttributeSelector blueprintTypeName,
                                   @QueryParam("blueprintLocationID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "blueprintLocationID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job blueprint location ID selector") AttributeSelector blueprintLocationID,
                                   @QueryParam("outputLocationID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "outputLocationID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job output location ID selector") AttributeSelector outputLocationID,
                                   @QueryParam("runs") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "runs",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job runs selector") AttributeSelector runs,
                                   @QueryParam("cost") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "cost",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job cost selector") AttributeSelector cost,
-                                  @QueryParam("teamID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "teamID",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Industry job team ID selector") AttributeSelector teamID,
                                   @QueryParam("licensedRuns") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "licensedRuns",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job licensed runs selector") AttributeSelector licensedRuns,
                                   @QueryParam("probability") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "probability",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job probability selector") AttributeSelector probability,
                                   @QueryParam("productTypeID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "productTypeID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job product type ID selector") AttributeSelector productTypeID,
-                                  @QueryParam("productTypeName") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "productTypeName",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Industry job product type name selector") AttributeSelector productTypeName,
                                   @QueryParam("status") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "status",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job status selector") AttributeSelector status,
                                   @QueryParam("timeInSeconds") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "timeInSeconds",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job time in seconds selector") AttributeSelector timeInSeconds,
                                   @QueryParam("startDate") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "startDate",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job start date selector") AttributeSelector startDate,
                                   @QueryParam("endDate") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "endDate",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job end date selector") AttributeSelector endDate,
                                   @QueryParam("pauseDate") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "pauseDate",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job pause date selector") AttributeSelector pauseDate,
                                   @QueryParam("completedDate") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "completedDate",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job completed date selector") AttributeSelector completedDate,
                                   @QueryParam("completedCharacterID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "completedCharacterID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job completed character ID selector") AttributeSelector completedCharacterID,
                                   @QueryParam("successfulRuns") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "successfulRuns",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Industry job successful runs selector") AttributeSelector successfulRuns) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, jobID, installerID, installerName, facilityID, solarSystemID, solarSystemName, stationID, activityID, blueprintID,
-                                          blueprintTypeID, blueprintTypeName, blueprintLocationID, outputLocationID, runs, cost, teamID, licensedRuns,
-                                          probability, productTypeID, productTypeName, status, timeInSeconds, startDate, endDate, pauseDate, completedDate,
-                                          completedCharacterID, successfulRuns);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_INDUSTRY_JOBS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<IndustryJob> result = IndustryJob.accessQuery(cfg.owner, contid, maxresults, reverse, at, jobID, installerID, installerName, facilityID,
-                                                         solarSystemID, solarSystemName, stationID, activityID, blueprintID, blueprintTypeID, blueprintTypeName,
-                                                         blueprintLocationID, outputLocationID, runs, cost, teamID, licensedRuns, probability, productTypeID,
-                                                         productTypeName, status, timeInSeconds, startDate, endDate, pauseDate, completedDate,
-                                                         completedCharacterID, successfulRuns);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_INDUSTRY_JOBS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<IndustryJob>() {
+
+                                                          @Override
+                                                          public List<IndustryJob> getList(SynchronizedEveAccount acct,
+                                                                                           long contid, int maxresults,
+                                                                                           boolean reverse,
+                                                                                           AttributeSelector at,
+                                                                                           AttributeSelector... others) throws IOException {
+                                                            final int JOB_ID = 0;
+                                                            final int INSTALLER_ID = 1;
+                                                            final int FACILITY_ID = 2;
+                                                            final int STATION_ID = 3;
+                                                            final int ACTIVITY_ID = 4;
+                                                            final int BLUEPRINT_ID = 5;
+                                                            final int BLUEPRINT_TYPE_ID = 6;
+                                                            final int BLUEPRINT_LOCATION_ID = 7;
+                                                            final int OUTPUT_LOCATION_ID = 8;
+                                                            final int RUNS = 9;
+                                                            final int COST = 10;
+                                                            final int LICENSED_RUNS = 11;
+                                                            final int PROBABILITY = 12;
+                                                            final int PRODUCT_TYPE_ID = 13;
+                                                            final int STATUS = 14;
+                                                            final int TIME_IN_SECONDS = 15;
+                                                            final int START_DATE = 16;
+                                                            final int END_DATE = 17;
+                                                            final int PAUSE_DATE = 18;
+                                                            final int COMPLETED_DATE = 19;
+                                                            final int COMPLETED_CHARACTER_ID = 20;
+                                                            final int SUCCESSFUL_RUNS = 21;
+
+                                                            return IndustryJob.accessQuery(acct, contid, maxresults,
+                                                                                           reverse, at,
+                                                                                           others[JOB_ID],
+                                                                                           others[INSTALLER_ID],
+                                                                                           others[FACILITY_ID],
+                                                                                           others[STATION_ID],
+                                                                                           others[ACTIVITY_ID],
+                                                                                           others[BLUEPRINT_ID],
+                                                                                           others[BLUEPRINT_TYPE_ID],
+                                                                                           others[BLUEPRINT_LOCATION_ID],
+                                                                                           others[OUTPUT_LOCATION_ID],
+                                                                                           others[RUNS],
+                                                                                           others[COST],
+                                                                                           others[LICENSED_RUNS],
+                                                                                           others[PROBABILITY],
+                                                                                           others[PRODUCT_TYPE_ID],
+                                                                                           others[STATUS],
+                                                                                           others[TIME_IN_SECONDS],
+                                                                                           others[START_DATE],
+                                                                                           others[END_DATE],
+                                                                                           others[PAUSE_DATE],
+                                                                                           others[COMPLETED_DATE],
+                                                                                           others[COMPLETED_CHARACTER_ID],
+                                                                                           others[SUCCESSFUL_RUNS]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                acct.isCharacterType() ? ESISyncEndpoint.CHAR_INDUSTRY : ESISyncEndpoint.CORP_INDUSTRY,
+                                                                acct);
+                                                          }
+                                                        }, request, jobID, installerID, facilityID, stationID,
+                                                        activityID, blueprintID, blueprintTypeID, blueprintLocationID,
+                                                        outputLocationID, runs, cost, licensedRuns, probability,
+                                                        productTypeID,
+                                                        status, timeInSeconds, startDate, endDate, pauseDate,
+                                                        completedDate,
+                                                        completedCharacterID, successfulRuns);
   }
 
   @Path("/kill")
