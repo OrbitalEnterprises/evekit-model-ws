@@ -1,50 +1,26 @@
 package enterprises.orbital.evekit.ws.corporation;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import enterprises.orbital.evekit.account.AccountAccessMask;
+import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
 import enterprises.orbital.evekit.model.CachedData;
-import enterprises.orbital.evekit.model.corporation.ContainerLog;
-import enterprises.orbital.evekit.model.corporation.Corporation;
-import enterprises.orbital.evekit.model.corporation.CorporationMedal;
-import enterprises.orbital.evekit.model.corporation.CorporationMemberMedal;
-import enterprises.orbital.evekit.model.corporation.CorporationSheet;
-import enterprises.orbital.evekit.model.corporation.CorporationTitle;
-import enterprises.orbital.evekit.model.corporation.CustomsOffice;
-import enterprises.orbital.evekit.model.corporation.Division;
-import enterprises.orbital.evekit.model.corporation.Facility;
-import enterprises.orbital.evekit.model.corporation.Fuel;
-import enterprises.orbital.evekit.model.corporation.MemberSecurity;
-import enterprises.orbital.evekit.model.corporation.MemberSecurityLog;
-import enterprises.orbital.evekit.model.corporation.MemberTracking;
-import enterprises.orbital.evekit.model.corporation.Outpost;
-import enterprises.orbital.evekit.model.corporation.OutpostServiceDetail;
-import enterprises.orbital.evekit.model.corporation.Role;
-import enterprises.orbital.evekit.model.corporation.SecurityRole;
-import enterprises.orbital.evekit.model.corporation.SecurityTitle;
-import enterprises.orbital.evekit.model.corporation.Shareholder;
-import enterprises.orbital.evekit.model.corporation.Starbase;
-import enterprises.orbital.evekit.model.corporation.StarbaseDetail;
+import enterprises.orbital.evekit.model.ESISyncEndpoint;
+import enterprises.orbital.evekit.model.corporation.*;
+import enterprises.orbital.evekit.ws.AccountHandlerUtil;
 import enterprises.orbital.evekit.ws.ServiceError;
 import enterprises.orbital.evekit.ws.ServiceUtil;
 import enterprises.orbital.evekit.ws.ServiceUtil.AccessConfig;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.util.List;
+
+import static enterprises.orbital.evekit.ws.AccountHandlerUtil.handleStandardExpiry;
 
 @Path("/ws/v1/corp")
 @Consumes({
@@ -106,121 +82,119 @@ public class ModelCorporationWS {
                                    @QueryParam("at") @DefaultValue(
                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                            name = "at",
-                                           required = false,
                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                        name = "contid",
-                                       required = false,
                                        defaultValue = "-1",
                                        value = "Continuation ID for paged results") long contid,
                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                        name = "maxresults",
-                                       required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                        name = "reverse",
-                                       required = false,
                                        defaultValue = "false",
                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("logTime") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "logTime",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Corporation container log time selector") AttributeSelector logTime,
                                    @QueryParam("action") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "action",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Corporation container log action selector") AttributeSelector action,
-                                   @QueryParam("actorID") @DefaultValue(
+                                   @QueryParam("characterID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
-                                           name = "actorID",
-                                           required = false,
+                                           name = "characterID",
                                            defaultValue = "{ any: true }",
-                                           value = "Corporation container log actor ID selector") AttributeSelector actorID,
-                                   @QueryParam("actorName") @DefaultValue(
+                                           value = "Corporation container log character ID selector") AttributeSelector characterID,
+                                   @QueryParam("locationFlag") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
-                                           name = "actorName",
-                                           required = false,
+                                           name = "locationFlag",
                                            defaultValue = "{ any: true }",
-                                           value = "Corporation container log actor name selector") AttributeSelector actorName,
-                                   @QueryParam("flag") @DefaultValue(
+                                           value = "Corporation container log location flag selector") AttributeSelector locationFlag,
+                                   @QueryParam("containerID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
-                                           name = "flag",
-                                           required = false,
+                                           name = "containerID",
                                            defaultValue = "{ any: true }",
-                                           value = "Corporation container log flag selector") AttributeSelector flag,
-                                   @QueryParam("itemID") @DefaultValue(
+                                           value = "Corporation container log container ID selector") AttributeSelector containerID,
+                                   @QueryParam("containerTypeID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
-                                           name = "itemID",
-                                           required = false,
+                                           name = "containerTypeID",
                                            defaultValue = "{ any: true }",
-                                           value = "Corporation container log item ID selector") AttributeSelector itemID,
-                                   @QueryParam("itemTypeID") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "itemTypeID",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log item type ID selector") AttributeSelector itemTypeID,
+                                           value = "Corporation container log container type ID selector") AttributeSelector containerTypeID,
                                    @QueryParam("locationID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "locationID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Corporation container log location ID selector") AttributeSelector locationID,
                                    @QueryParam("newConfiguration") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "newConfiguration",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Corporation container log new configuration selector") AttributeSelector newConfiguration,
                                    @QueryParam("oldConfiguration") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "oldConfiguration",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Corporation container log old configuration selector") AttributeSelector oldConfiguration,
                                    @QueryParam("passwordType") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "passwordType",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Corporation container log password type selector") AttributeSelector passwordType,
                                    @QueryParam("quantity") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "quantity",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Corporation container log quantity selector") AttributeSelector quantity,
                                    @QueryParam("typeID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "typeID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Corporation container log type ID selector") AttributeSelector typeID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, logTime, action, actorID, actorName, flag, itemID, itemTypeID, locationID, newConfiguration, oldConfiguration,
-                                          passwordType, quantity, typeID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CONTAINER_LOG);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<ContainerLog> result = ContainerLog.accessQuery(cfg.owner, contid, maxresults, reverse, at, logTime, action, actorID, actorName, flag, itemID,
-                                                           itemTypeID, locationID, newConfiguration, oldConfiguration, passwordType, quantity, typeID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CONTAINER_LOG,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<ContainerLog>() {
+
+          @Override
+          public List<ContainerLog> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                           AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int LOG_TIME = 0;
+            final int ACTION = 1;
+            final int CHARACTER_ID = 2;
+            final int LOCATION_FLAG = 3;
+            final int CONTAINER_ID = 4;
+            final int CONTAINER_TYPE_ID = 5;
+            final int LOCATION_ID = 6;
+            final int NEW_CONFIGURATION = 7;
+            final int OLD_CONFIGURATION = 8;
+            final int PASSWORD_TYPE = 9;
+            final int QUANTITY = 10;
+            final int TYPE_ID = 11;
+
+            return ContainerLog.accessQuery(acct, contid, maxresults, reverse, at,
+                                           others[LOG_TIME],
+                                           others[ACTION],
+                                           others[CHARACTER_ID],
+                                           others[LOCATION_FLAG],
+                                           others[CONTAINER_ID],
+                                           others[CONTAINER_TYPE_ID],
+                                           others[LOCATION_ID],
+                                           others[NEW_CONFIGURATION],
+                                           others[OLD_CONFIGURATION],
+                                           others[PASSWORD_TYPE],
+                                           others[QUANTITY],
+                                           others[TYPE_ID]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(ESISyncEndpoint.CORP_CONTAINER_LOGS, acct);
+          }
+        }, request, logTime, action, characterID, locationFlag, containerID, containerTypeID, locationID, newConfiguration, oldConfiguration, passwordType, quantity, typeID);
   }
 
   @Path("/medal")
