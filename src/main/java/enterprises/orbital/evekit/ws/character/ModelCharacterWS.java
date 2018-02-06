@@ -3419,4 +3419,317 @@ public class ModelCharacterWS {
     }
   }
 
+  @Path("/location")
+  @GET
+  @ApiOperation(
+      value = "Get character location")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested location data",
+              response = CharacterLocation.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getLocation(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("solarSystemID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "solarSystemID",
+          defaultValue = "{ any: true }",
+          value = "Solar system ID selector") AttributeSelector solarSystemID,
+      @QueryParam("stationID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "stationID",
+          defaultValue = "{ any: true }",
+          value = "Station ID selector") AttributeSelector stationID,
+      @QueryParam("structureID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "structureID",
+          defaultValue = "{ any: true }",
+          value = "Structure ID selector") AttributeSelector structureID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_LOCATIONS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterLocation>() {
+
+                                                          @Override
+                                                          public List<CharacterLocation> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int SOLAR_SYSTEM_ID = 0;
+                                                            final int STATION_ID = 1;
+                                                            final int STRUCTURE_ID = 2;
+                                                            return CharacterLocation.accessQuery(acct, contid, maxresults,
+                                                                                             reverse, at,
+                                                                                             others[SOLAR_SYSTEM_ID],
+                                                                                             others[STATION_ID],
+                                                                                             others[STRUCTURE_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_LOCATION,
+                                                                                        acct);
+                                                          }
+                                                        }, request, solarSystemID, stationID, structureID);
+  }
+
+  @Path("/ship_type")
+  @GET
+  @ApiOperation(
+      value = "Get character ship type")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested ship type data",
+              response = CharacterShip.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getShipType(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("shipTypeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shipTypeID",
+          defaultValue = "{ any: true }",
+          value = "Ship type ID selector") AttributeSelector shipTypeID,
+      @QueryParam("shipItemID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shipItemID",
+          defaultValue = "{ any: true }",
+          value = "Ship item ID selector") AttributeSelector shipItemID,
+      @QueryParam("shipName") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shipName",
+          defaultValue = "{ any: true }",
+          value = "Ship name selector") AttributeSelector shipName) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_LOCATIONS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterShip>() {
+
+                                                          @Override
+                                                          public List<CharacterShip> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int SHIP_TYPE_ID = 0;
+                                                            final int SHIP_ITEM_ID = 1;
+                                                            final int SHIP_NAME = 2;
+                                                            return CharacterShip.accessQuery(acct, contid, maxresults,
+                                                                                                 reverse, at,
+                                                                                                 others[SHIP_TYPE_ID],
+                                                                                                 others[SHIP_ITEM_ID],
+                                                                                                 others[SHIP_NAME]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_SHIP_TYPE,
+                                                                                        acct);
+                                                          }
+                                                        }, request, shipTypeID, shipItemID, shipName);
+  }
+
+  @Path("/online")
+  @GET
+  @ApiOperation(
+      value = "Get character online data")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested online data",
+              response = CharacterOnline.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getOnline(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("online") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "online",
+          defaultValue = "{ any: true }",
+          value = "Online selector") AttributeSelector online,
+      @QueryParam("lastLogin") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "lastLogin",
+          defaultValue = "{ any: true }",
+          value = "Last login selector") AttributeSelector lastLogin,
+      @QueryParam("lastLogout") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "lastLogout",
+          defaultValue = "{ any: true }",
+          value = "Last logout selector") AttributeSelector lastLogout,
+      @QueryParam("logins") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "logins",
+          defaultValue = "{ any: true }",
+          value = "Logins selector") AttributeSelector logins) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_ACCOUNT_STATUS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterOnline>() {
+
+                                                          @Override
+                                                          public List<CharacterOnline> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int ONLINE = 0;
+                                                            final int LAST_LOGIN = 1;
+                                                            final int LAST_LOGOUT = 2;
+                                                            final int LOGINS = 3;
+                                                            return CharacterOnline.accessQuery(acct, contid, maxresults,
+                                                                                             reverse, at,
+                                                                                             others[ONLINE],
+                                                                                             others[LAST_LOGIN],
+                                                                                               others[LAST_LOGOUT],
+                                                                                             others[LOGINS]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_ONLINE,
+                                                                                        acct);
+                                                          }
+                                                        }, request, online, lastLogin, lastLogout, logins);
+  }
+
 }
