@@ -434,127 +434,135 @@ public class ModelCommonWS {
                                @QueryParam("at") @DefaultValue(
                                    value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                        name = "at",
-                                       required = false,
                                        defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                        value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                    name = "contid",
-                                   required = false,
                                    defaultValue = "-1",
                                    value = "Continuation ID for paged results") long contid,
                                @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                    name = "maxresults",
-                                   required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                    name = "reverse",
-                                   required = false,
                                    defaultValue = "false",
                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("folderID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "folderID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark folder ID selector") AttributeSelector folderID,
                                @QueryParam("folderName") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "folderName",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark folder name selector") AttributeSelector folderName,
                                @QueryParam("folderCreatorID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "folderCreatorID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark folder creator ID selector") AttributeSelector folderCreatorID,
                                @QueryParam("bookmarkID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "bookmarkID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark ID selector") AttributeSelector bookmarkID,
                                @QueryParam("bookmarkCreatorID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "bookmarkCreatorID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark creator ID selector") AttributeSelector bookmarkCreatorID,
                                @QueryParam("created") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "created",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark created selector") AttributeSelector created,
                                @QueryParam("itemID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "itemID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark item ID selector") AttributeSelector itemID,
                                @QueryParam("typeID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "typeID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark type ID selector") AttributeSelector typeID,
                                @QueryParam("locationID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "locationID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark location ID selector") AttributeSelector locationID,
                                @QueryParam("x") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "x",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark x coordinate selector") AttributeSelector x,
                                @QueryParam("y") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "y",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark y coordinate selector") AttributeSelector y,
                                @QueryParam("z") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "z",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark z coordinate selector") AttributeSelector z,
                                @QueryParam("memo") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "memo",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark memo selector") AttributeSelector memo,
                                @QueryParam("note") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "note",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Bookmark note selector") AttributeSelector note) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, folderID, folderName, folderCreatorID, bookmarkID, bookmarkCreatorID, created, itemID, typeID, locationID, x, y,
-                                          z, memo, note);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_BOOKMARKS);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<Bookmark> result = Bookmark.accessQuery(cfg.owner, contid, maxresults, reverse, at, folderID, folderName, folderCreatorID, bookmarkID,
-                                                   bookmarkCreatorID, created, itemID, typeID, locationID, x, y, z, memo, note);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_BOOKMARKS,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<Bookmark>() {
+
+          @Override
+          public List<Bookmark> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                        AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int FOLDER_ID = 0;
+            final int FOLDER_NAME = 1;
+            final int FOLDER_CREATOR_ID = 2;
+            final int BOOKMARK_ID = 3;
+            final int BOOKMARK_CREATOR_ID = 4;
+            final int CREATED = 5;
+            final int ITEM_ID = 6;
+            final int TYPE_ID = 7;
+            final int LOCATION_ID = 8;
+            final int X = 9;
+            final int Y = 10;
+            final int Z = 11;
+            final int MEMO = 12;
+            final int NOTE = 13;
+
+            return Bookmark.accessQuery(acct, contid, maxresults, reverse, at,
+                                        others[FOLDER_ID],
+                                        others[FOLDER_NAME],
+                                        others[FOLDER_CREATOR_ID],
+                                        others[BOOKMARK_ID],
+                                        others[BOOKMARK_CREATOR_ID],
+                                        others[CREATED],
+                                        others[ITEM_ID],
+                                        others[TYPE_ID],
+                                        others[LOCATION_ID],
+                                        others[X],
+                                        others[Y],
+                                        others[Z],
+                                        others[MEMO],
+                                        others[NOTE]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_BOOKMARKS : ESISyncEndpoint.CORP_BOOKMARKS, acct);
+          }
+        }, request, folderID, folderName, folderCreatorID, bookmarkID, bookmarkCreatorID, created,
+                                                        itemID, typeID, locationID, x, y, z,
+                                                        memo, note);
   }
 
   @Path("/contact")
@@ -1696,65 +1704,70 @@ public class ModelCommonWS {
                            @QueryParam("at") @DefaultValue(
                                value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                    name = "at",
-                                   required = false,
                                    defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                    value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                            @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                name = "contid",
-                               required = false,
                                defaultValue = "-1",
                                value = "Continuation ID for paged results") long contid,
                            @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                name = "maxresults",
-                               required = false,
                                defaultValue = "1000",
                                value = "Maximum number of results to retrieve") int maxresults,
                            @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                name = "reverse",
-                               required = false,
                                defaultValue = "false",
                                value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                            @QueryParam("killID") @DefaultValue(
                                value = "{ any: true }") @ApiParam(
                                    name = "killID",
-                                   required = false,
                                    defaultValue = "{ any: true }",
                                    value = "Kill ID selector") AttributeSelector killID,
                            @QueryParam("killTime") @DefaultValue(
                                value = "{ any: true }") @ApiParam(
                                    name = "killTime",
-                                   required = false,
                                    defaultValue = "{ any: true }",
                                    value = "Kill time selector") AttributeSelector killTime,
                            @QueryParam("moonID") @DefaultValue(
                                value = "{ any: true }") @ApiParam(
                                    name = "moonID",
-                                   required = false,
                                    defaultValue = "{ any: true }",
                                    value = "Kill moon ID selector") AttributeSelector moonID,
                            @QueryParam("solarSystemID") @DefaultValue(
                                value = "{ any: true }") @ApiParam(
                                    name = "solarSystemID",
-                                   required = false,
                                    defaultValue = "{ any: true }",
-                                   value = "Kill solar system ID selector") AttributeSelector solarSystemID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, killID, killTime, moonID, solarSystemID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_KILL_LOG);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<Kill> result = Kill.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, killTime, moonID, solarSystemID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                   value = "Kill solar system ID selector") AttributeSelector solarSystemID,
+                           @QueryParam("warID") @DefaultValue(
+                               value = "{ any: true }") @ApiParam(
+                               name = "warID",
+                               defaultValue = "{ any: true }",
+                               value = "War ID selector") AttributeSelector warID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_KILL_LOG,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<Kill>() {
+
+          @Override
+          public List<Kill> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                    AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int KILL_ID = 0;
+            final int KILL_TIME = 1;
+            final int MOON_ID = 2;
+            final int SOLAR_SYSTEM_ID = 3;
+            final int WAR_ID = 4;
+
+            return Kill.accessQuery(acct, contid, maxresults, reverse, at,
+                                    others[KILL_ID],
+                                    others[KILL_TIME],
+                                    others[MOON_ID],
+                                    others[SOLAR_SYSTEM_ID],
+                                    others[WAR_ID]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_KILL_MAIL : ESISyncEndpoint.CORP_KILL_MAIL, acct);
+          }
+        }, request, killID, killTime, moonID, solarSystemID, warID);
   }
 
   @Path("/kill_attacker")
@@ -1802,128 +1815,106 @@ public class ModelCommonWS {
                                    @QueryParam("at") @DefaultValue(
                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                            name = "at",
-                                           required = false,
                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                        name = "contid",
-                                       required = false,
                                        defaultValue = "-1",
                                        value = "Continuation ID for paged results") long contid,
                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                        name = "maxresults",
-                                       required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                        name = "reverse",
-                                       required = false,
                                        defaultValue = "false",
                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("killID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "killID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill ID selector") AttributeSelector killID,
                                    @QueryParam("attackerCharacterID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "attackerCharacterID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill attacker character ID selector") AttributeSelector attackerCharacterID,
                                    @QueryParam("allianceID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "allianceID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill attacker alliance ID selector") AttributeSelector allianceID,
-                                   @QueryParam("allianceName") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "allianceName",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Kill attacker alliance name selector") AttributeSelector allianceName,
-                                   @QueryParam("attackerCharacterName") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "attackerCharacterName",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Kill attacker character name selector") AttributeSelector attackerCharacterName,
                                    @QueryParam("attackerCorporationID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "attackerCorporationID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill attacker corporation ID selector") AttributeSelector attackerCorporationID,
-                                   @QueryParam("attackerCorporationName") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "attackerCorporationName",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Kill attacker corporation name selector") AttributeSelector attackerCorporationName,
                                    @QueryParam("damageDone") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "damageDone",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill attacker damage done selector") AttributeSelector damageDone,
                                    @QueryParam("factionID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "factionID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill attacker faction ID selector") AttributeSelector factionID,
-                                   @QueryParam("factionName") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "factionName",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Kill attacker faction name selector") AttributeSelector factionName,
                                    @QueryParam("securityStatus") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "securityStatus",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill attacker security status selector") AttributeSelector securityStatus,
                                    @QueryParam("shipTypeID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "shipTypeID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill attacker ship type ID selector") AttributeSelector shipTypeID,
                                    @QueryParam("weaponTypeID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "weaponTypeID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill attacker weapon type ID selector") AttributeSelector weaponTypeID,
                                    @QueryParam("finalBlow") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "finalBlow",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Kill attacker final blow selector") AttributeSelector finalBlow) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, killID, attackerCharacterID, allianceID, allianceName, attackerCharacterName, attackerCorporationID,
-                                          attackerCorporationName, damageDone, factionID, factionName, securityStatus, shipTypeID, weaponTypeID, finalBlow);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_KILL_LOG);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<KillAttacker> result = KillAttacker.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, attackerCharacterID, allianceID, allianceName,
-                                                           attackerCharacterName, attackerCorporationID, attackerCorporationName, damageDone, factionID,
-                                                           factionName, securityStatus, shipTypeID, weaponTypeID, finalBlow);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_KILL_LOG,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<KillAttacker>() {
+
+          @Override
+          public List<KillAttacker> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                            AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int KILL_ID = 0;
+            final int ATTACKER_CHARACTER_ID = 1;
+            final int ALLIANCE_ID = 2;
+            final int ATTACKER_CORPORATION_ID = 3;
+            final int DAMAGE_DONE = 4;
+            final int FACTION_ID = 5;
+            final int SECURITY_STATUS = 6;
+            final int SHIP_TYPE_ID = 7;
+            final int WEAPON_TYPE_ID = 8;
+            final int FINAL_BLOW = 9;
+
+            return KillAttacker.accessQuery(acct, contid, maxresults, reverse, at,
+                                            others[KILL_ID],
+                                            others[ATTACKER_CHARACTER_ID],
+                                            others[ALLIANCE_ID],
+                                            others[ATTACKER_CORPORATION_ID],
+                                            others[DAMAGE_DONE],
+                                            others[FACTION_ID],
+                                            others[SECURITY_STATUS],
+                                            others[SHIP_TYPE_ID],
+                                            others[WEAPON_TYPE_ID],
+                                            others[FINAL_BLOW]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_KILL_MAIL : ESISyncEndpoint.CORP_KILL_MAIL, acct);
+          }
+        }, request, killID, attackerCharacterID, allianceID, attackerCorporationID, damageDone, factionID,
+                                                        securityStatus, shipTypeID, weaponTypeID, finalBlow);
   }
 
   @Path("/kill_item")
@@ -1971,90 +1962,91 @@ public class ModelCommonWS {
                                @QueryParam("at") @DefaultValue(
                                    value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                        name = "at",
-                                       required = false,
                                        defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                        value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                    name = "contid",
-                                   required = false,
                                    defaultValue = "-1",
                                    value = "Continuation ID for paged results") long contid,
                                @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                    name = "maxresults",
-                                   required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                    name = "reverse",
-                                   required = false,
                                    defaultValue = "false",
                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("killID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "killID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Kill ID selector") AttributeSelector killID,
                                @QueryParam("typeID") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "typeID",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Kill item type ID selector") AttributeSelector typeID,
                                @QueryParam("flag") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "flag",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Kill item flag selector") AttributeSelector flag,
                                @QueryParam("qtyDestroyed") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "qtyDestroyed",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Kill item quantity destroyed selector") AttributeSelector qtyDestroyed,
                                @QueryParam("qtyDropped") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "qtyDropped",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Kill item quantity dropped selector") AttributeSelector qtyDropped,
                                @QueryParam("singleton") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "singleton",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Kill item singleton selector") AttributeSelector singleton,
                                @QueryParam("sequence") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "sequence",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Kill item sequence selector") AttributeSelector sequence,
                                @QueryParam("containerSequence") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "containerSequence",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Kill item container sequence selector") AttributeSelector containerSequence) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, killID, typeID, flag, qtyDestroyed, qtyDropped, singleton, sequence, containerSequence);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_KILL_LOG);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<KillItem> result = KillItem.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, typeID, flag, qtyDestroyed, qtyDropped, singleton,
-                                                   sequence, containerSequence);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_KILL_LOG,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<KillItem>() {
+
+          @Override
+          public List<KillItem> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                        AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int KILL_ID = 0;
+            final int TYPE_ID = 1;
+            final int FLAG = 2;
+            final int QTY_DESTROYED = 3;
+            final int QTY_DROPPED = 4;
+            final int SINGLETON = 5;
+            final int SEQUENCE = 6;
+            final int CONTAINER_SEQUENCE = 7;
+
+            return KillItem.accessQuery(acct, contid, maxresults, reverse, at,
+                                        others[KILL_ID],
+                                        others[TYPE_ID],
+                                        others[FLAG],
+                                        others[QTY_DESTROYED],
+                                        others[QTY_DROPPED],
+                                        others[SINGLETON],
+                                        others[SEQUENCE],
+                                        others[CONTAINER_SEQUENCE]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_KILL_MAIL : ESISyncEndpoint.CORP_KILL_MAIL, acct);
+          }
+        }, request, killID, typeID, flag, qtyDestroyed, qtyDropped, singleton, sequence, containerSequence);
   }
 
   @Path("/kill_victim")
@@ -2102,110 +2094,105 @@ public class ModelCommonWS {
                                  @QueryParam("at") @DefaultValue(
                                      value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                          name = "at",
-                                         required = false,
                                          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                  @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                      name = "contid",
-                                     required = false,
                                      defaultValue = "-1",
                                      value = "Continuation ID for paged results") long contid,
                                  @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                      name = "maxresults",
-                                     required = false,
                                      defaultValue = "1000",
                                      value = "Maximum number of results to retrieve") int maxresults,
                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                      name = "reverse",
-                                     required = false,
                                      defaultValue = "false",
                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                  @QueryParam("killID") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "killID",
-                                         required = false,
                                          defaultValue = "{ any: true }",
                                          value = "Kill ID selector") AttributeSelector killID,
                                  @QueryParam("allianceID") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "allianceID",
-                                         required = false,
                                          defaultValue = "{ any: true }",
                                          value = "Kill victim alliance ID selector") AttributeSelector allianceID,
-                                 @QueryParam("allianceName") @DefaultValue(
-                                     value = "{ any: true }") @ApiParam(
-                                         name = "allianceName",
-                                         required = false,
-                                         defaultValue = "{ any: true }",
-                                         value = "Kill victim alliance name selector") AttributeSelector allianceName,
                                  @QueryParam("killCharacterID") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "killCharacterID",
-                                         required = false,
                                          defaultValue = "{ any: true }",
                                          value = "Kill victim character ID selector") AttributeSelector killCharacterID,
-                                 @QueryParam("killCharacterName") @DefaultValue(
-                                     value = "{ any: true }") @ApiParam(
-                                         name = "killCharacterName",
-                                         required = false,
-                                         defaultValue = "{ any: true }",
-                                         value = "Kill victim character name selector") AttributeSelector killCharacterName,
                                  @QueryParam("killCorporationID") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "killCorporationID",
-                                         required = false,
                                          defaultValue = "{ any: true }",
                                          value = "Kill victim corporation ID selector") AttributeSelector killCorporationID,
-                                 @QueryParam("killCorporationName") @DefaultValue(
-                                     value = "{ any: true }") @ApiParam(
-                                         name = "killCorporationName",
-                                         required = false,
-                                         defaultValue = "{ any: true }",
-                                         value = "Kill victim corporation name selector") AttributeSelector killCorporationName,
                                  @QueryParam("damageTaken") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "damageTaken",
-                                         required = false,
                                          defaultValue = "{ any: true }",
                                          value = "Kill victim damage taken selector") AttributeSelector damageTaken,
                                  @QueryParam("factionID") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "factionID",
-                                         required = false,
                                          defaultValue = "{ any: true }",
                                          value = "Kill victim faction ID selector") AttributeSelector factionID,
-                                 @QueryParam("factionName") @DefaultValue(
-                                     value = "{ any: true }") @ApiParam(
-                                         name = "factionName",
-                                         required = false,
-                                         defaultValue = "{ any: true }",
-                                         value = "Kill victim faction name selector") AttributeSelector factionName,
                                  @QueryParam("shipTypeID") @DefaultValue(
                                      value = "{ any: true }") @ApiParam(
                                          name = "shipTypeID",
-                                         required = false,
                                          defaultValue = "{ any: true }",
-                                         value = "Kill victim ship type ID selector") AttributeSelector shipTypeID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, killID, allianceID, allianceName, killCharacterID, killCharacterName, killCorporationID, killCorporationName,
-                                          damageTaken, factionID, factionName, shipTypeID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_KILL_LOG);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<KillVictim> result = KillVictim.accessQuery(cfg.owner, contid, maxresults, reverse, at, killID, allianceID, allianceName, killCharacterID,
-                                                       killCharacterName, killCorporationID, killCorporationName, damageTaken, factionID, factionName,
-                                                       shipTypeID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                         value = "Kill victim ship type ID selector") AttributeSelector shipTypeID,
+                                 @QueryParam("x") @DefaultValue(
+                                     value = "{ any: true }") @ApiParam(
+                                     name = "x",
+                                     defaultValue = "{ any: true }",
+                                     value = "Kill X position selector") AttributeSelector x,
+                                 @QueryParam("y") @DefaultValue(
+                                     value = "{ any: true }") @ApiParam(
+                                     name = "y",
+                                     defaultValue = "{ any: true }",
+                                     value = "Kill Y position selector") AttributeSelector y,
+                                 @QueryParam("z") @DefaultValue(
+                                     value = "{ any: true }") @ApiParam(
+                                     name = "z",
+                                     defaultValue = "{ any: true }",
+                                     value = "Kill Z position selector") AttributeSelector z) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_KILL_LOG,
+                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<KillVictim>() {
+
+          @Override
+          public List<KillVictim> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
+                                          AttributeSelector at, AttributeSelector... others) throws IOException {
+            final int KILL_ID = 0;
+            final int ALLIANCE_ID = 1;
+            final int KILL_CHARACTER_ID = 2;
+            final int KILL_CORPORATION_ID = 3;
+            final int DAMAGE_TAKEN = 4;
+            final int FACTION_ID = 5;
+            final int SHIP_TYPE_ID = 6;
+            final int X = 7;
+            final int Y = 8;
+            final int Z = 9;
+
+            return KillVictim.accessQuery(acct, contid, maxresults, reverse, at,
+                                          others[KILL_ID],
+                                          others[ALLIANCE_ID],
+                                          others[KILL_CHARACTER_ID],
+                                          others[KILL_CORPORATION_ID],
+                                          others[DAMAGE_TAKEN],
+                                          others[FACTION_ID],
+                                          others[SHIP_TYPE_ID],
+                                          others[X],
+                                          others[Y],
+                                          others[Z]);
+          }
+
+          @Override
+          public long getExpiry(SynchronizedEveAccount acct) {
+            return handleStandardExpiry(acct.isCharacterType() ? ESISyncEndpoint.CHAR_KILL_MAIL : ESISyncEndpoint.CORP_KILL_MAIL, acct);
+          }
+        }, request, killID, allianceID, killCharacterID, killCorporationID, damageTaken, factionID, shipTypeID, x, y, z);
   }
 
   @Path("/location")
