@@ -432,214 +432,138 @@ public class ModelCharacterWS {
                                      @QueryParam("at") @DefaultValue(
                                          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                              name = "at",
-                                             required = false,
                                              defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                              value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                          name = "contid",
-                                         required = false,
                                          defaultValue = "-1",
                                          value = "Continuation ID for paged results") long contid,
                                      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                          name = "maxresults",
-                                         required = false,
                                          defaultValue = "1000",
                                          value = "Maximum number of results to retrieve") int maxresults,
                                      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                          name = "reverse",
-                                         required = false,
                                          defaultValue = "false",
                                          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                      @QueryParam("characterID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "characterID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Character ID selector") AttributeSelector characterID,
                                      @QueryParam("name") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "name",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Name selector") AttributeSelector name,
                                      @QueryParam("corporationID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "corporationID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Corporation ID selector") AttributeSelector corporationID,
-                                     @QueryParam("corporationName") @DefaultValue(
+                                     @QueryParam("raceID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
-                                             name = "corporationName",
-                                             required = false,
+                                             name = "raceID",
                                              defaultValue = "{ any: true }",
-                                             value = "Corporation name selector") AttributeSelector corporationName,
-                                     @QueryParam("race") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "race",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Race selector") AttributeSelector race,
+                                             value = "Race selector") AttributeSelector raceID,
                                      @QueryParam("doB") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "doB",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Date of birth selector") AttributeSelector doB,
                                      @QueryParam("bloodlineID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "bloodlineID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Bloodline ID selector") AttributeSelector bloodlineID,
-                                     @QueryParam("bloodline") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "bloodline",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Bloodline selector") AttributeSelector bloodline,
                                      @QueryParam("ancestryID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "ancestryID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Ancestry ID selector") AttributeSelector ancestryID,
-                                     @QueryParam("ancestry") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "ancestry",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Ancestry selector") AttributeSelector ancestry,
                                      @QueryParam("gender") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "gender",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Gender selector") AttributeSelector gender,
-                                     @QueryParam("allianceName") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "allianceName",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Alliance name selector") AttributeSelector allianceName,
                                      @QueryParam("allianceID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "allianceID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Alliance ID selector") AttributeSelector allianceID,
-                                     @QueryParam("factionName") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "factionName",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Faction name selector") AttributeSelector factionName,
                                      @QueryParam("factionID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "factionID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Faction ID selector") AttributeSelector factionID,
-                                     @QueryParam("intelligence") @DefaultValue(
+                                     @QueryParam("description") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
-                                             name = "intelligence",
-                                             required = false,
+                                             name = "description",
                                              defaultValue = "{ any: true }",
-                                             value = "Intelligence selector") AttributeSelector intelligence,
-                                     @QueryParam("memory") @DefaultValue(
+                                             value = "Description selector") AttributeSelector description,
+                                     @QueryParam("securityStatus") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
-                                             name = "memory",
-                                             required = false,
+                                             name = "securityStatus",
                                              defaultValue = "{ any: true }",
-                                             value = "Memory selector") AttributeSelector memory,
-                                     @QueryParam("charisma") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "charisma",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Charisma selector") AttributeSelector charisma,
-                                     @QueryParam("perception") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "perception",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Perception selector") AttributeSelector perception,
-                                     @QueryParam("willpower") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "willpower",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Willpower selector") AttributeSelector willpower,
-                                     @QueryParam("homeStationID") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "homeStationID",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Home station ID selector") AttributeSelector homeStationID,
-                                     @QueryParam("lastRespecDate") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "lastRespecDate",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Last respec date selector") AttributeSelector lastRespecDate,
-                                     @QueryParam("lastTimedRespec") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "lastTimedRespec",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Last timed respec selector") AttributeSelector lastTimedRespec,
-                                     @QueryParam("freeRespecs") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "freeRespecs",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Free respecs selector") AttributeSelector freeRespecs,
-                                     @QueryParam("freeSkillPoints") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "freeSkillPoints",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Free skill points selector") AttributeSelector freeSkillPoints,
-                                     @QueryParam("remoteStationDate") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "remoteStationDate",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Remote station date selector") AttributeSelector remoteStationDate) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, characterID, name, corporationID, corporationName, race, doB, bloodlineID, bloodline, ancestryID, ancestry,
-                                          gender, allianceName, allianceID, factionName, factionID, intelligence, memory, charisma, perception, willpower,
-                                          homeStationID, lastRespecDate, lastTimedRespec, freeRespecs, freeSkillPoints, remoteStationDate);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CHARACTER_SHEET);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CharacterSheet> result = CharacterSheet.accessQuery(cfg.owner, contid, maxresults, reverse, at, characterID, name, corporationID, corporationName,
-                                                               race, doB, bloodlineID, bloodline, ancestryID, ancestry, gender, allianceName, allianceID,
-                                                               factionName, factionID, intelligence, memory, charisma, perception, willpower, homeStationID,
-                                                               lastRespecDate, lastTimedRespec, freeRespecs, freeSkillPoints, remoteStationDate);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                             value = "Security status selector") AttributeSelector securityStatus) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterSheet>() {
+
+                                                          @Override
+                                                          public List<CharacterSheet> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int CHARACTER_ID = 0;
+                                                            final int NAME = 1;
+                                                            final int CORPORATION_ID = 2;
+                                                            final int RACE_ID = 3;
+                                                            final int DOB = 4;
+                                                            final int BLOODLINE_ID = 5;
+                                                            final int ANCESTRY_ID = 6;
+                                                            final int GENDER = 7;
+                                                            final int ALLIANCE_ID = 8;
+                                                            final int FACTION_ID = 9;
+                                                            final int DESCRIPTION = 10;
+                                                            final int SECURITY_STATUS = 11;
+                                                            return CharacterSheet.accessQuery(acct, contid, maxresults,
+                                                                                              reverse, at,
+                                                                                              others[CHARACTER_ID],
+                                                                                              others[NAME],
+                                                                                              others[CORPORATION_ID],
+                                                                                              others[RACE_ID],
+                                                                                              others[DOB],
+                                                                                              others[BLOODLINE_ID],
+                                                                                              others[ANCESTRY_ID],
+                                                                                              others[GENDER],
+                                                                                              others[ALLIANCE_ID],
+                                                                                              others[FACTION_ID],
+                                                                                              others[DESCRIPTION],
+                                                                                              others[SECURITY_STATUS]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_SHEET,
+                                                                                        acct);
+                                                          }
+                                                        }, request, characterID, name, corporationID, raceID, doB,
+                                                        bloodlineID, ancestryID, gender, allianceID, factionID,
+                                                        description, securityStatus);
   }
 
-  @Path("/balance")
+  @Path("/sheet_attributes")
   @GET
   @ApiOperation(
-      value = "Get character sheet balance")
+      value = "Get character sheet attributes")
   @ApiResponses(
       value = {
           @ApiResponse(
               code = 200,
-              message = "list of character sheet balances",
-              response = CharacterSheetBalance.class,
+              message = "list of requested character sheet attributes",
+              response = CharacterSheetAttributes.class,
               responseContainer = "array"),
           @ApiResponse(
               code = 400,
@@ -662,60 +586,110 @@ public class ModelCharacterWS {
               message = "internal service error",
               response = ServiceError.class),
       })
-  public Response getBalances(
-                              @Context HttpServletRequest request,
-                              @QueryParam("accessKey") @ApiParam(
-                                  name = "accessKey",
-                                  required = true,
-                                  value = "Model access key") int accessKey,
-                              @QueryParam("accessCred") @ApiParam(
-                                  name = "accessCred",
-                                  required = true,
-                                  value = "Model access credential") String accessCred,
-                              @QueryParam("at") @DefaultValue(
-                                  value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                      name = "at",
-                                      required = false,
-                                      defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                      value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                              @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                  name = "contid",
-                                  required = false,
-                                  defaultValue = "-1",
-                                  value = "Continuation ID for paged results") long contid,
-                              @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                  name = "maxresults",
-                                  required = false,
-                                  defaultValue = "1000",
-                                  value = "Maximum number of results to retrieve") int maxresults,
-                              @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                  name = "reverse",
-                                  required = false,
-                                  defaultValue = "false",
-                                  value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                              @QueryParam("balance") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "balance",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Balance selector") AttributeSelector balance) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, balance);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CHARACTER_SHEET);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CharacterSheetBalance> result = CharacterSheetBalance.accessQuery(cfg.owner, contid, maxresults, reverse, at, balance);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+  public Response getCharacterSheetAttributes(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("intelligence") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "intelligence",
+          defaultValue = "{ any: true }",
+          value = "Intelligence selector") AttributeSelector intelligence,
+      @QueryParam("memory") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "memory",
+          defaultValue = "{ any: true }",
+          value = "Memory selector") AttributeSelector memory,
+      @QueryParam("charisma") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "charisma",
+          defaultValue = "{ any: true }",
+          value = "Charisma selector") AttributeSelector charisma,
+      @QueryParam("perception") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "perception",
+          defaultValue = "{ any: true }",
+          value = "Perception selector") AttributeSelector perception,
+      @QueryParam("willpower") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "willpower",
+          defaultValue = "{ any: true }",
+          value = "Willpower selector") AttributeSelector willpower,
+      @QueryParam("lastRemapDate") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "lastRemapDate",
+          defaultValue = "{ any: true }",
+          value = "Last remap date selector") AttributeSelector lastRemapDate,
+      @QueryParam("accruedRemapCooldownDate") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "accruedRemapCooldownDate",
+          defaultValue = "{ any: true }",
+          value = "Accrued remap cooldown date selector") AttributeSelector accruedRemapCooldownDate,
+      @QueryParam("bonusRemaps") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "bonusRemaps",
+          defaultValue = "{ any: true }",
+          value = "Bonus remaps selector") AttributeSelector bonusRemaps) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterSheetAttributes>() {
+
+                                                          @Override
+                                                          public List<CharacterSheetAttributes> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int INTELLIGENCE = 0;
+                                                            final int MEMORY = 1;
+                                                            final int CHARISMA = 2;
+                                                            final int PERCEPTION = 3;
+                                                            final int WILLPOWER = 4;
+                                                            final int BONUS_REMAPS = 5;
+                                                            final int LAST_REMAP_DATE = 6;
+                                                            final int ACCRUED_REMAP_COOLDOWN_DATE = 7;
+                                                            return CharacterSheetAttributes.accessQuery(acct, contid, maxresults,
+                                                                                                        reverse, at,
+                                                                                                        others[INTELLIGENCE],
+                                                                                                        others[MEMORY],
+                                                                                                        others[CHARISMA],
+                                                                                                        others[PERCEPTION],
+                                                                                                        others[WILLPOWER],
+                                                                                                        others[BONUS_REMAPS],
+                                                                                                        others[LAST_REMAP_DATE],
+                                                                                                        others[ACCRUED_REMAP_COOLDOWN_DATE]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_SKILLS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, intelligence, memory, charisma, perception,
+                                                        willpower, bonusRemaps, lastRemapDate, accruedRemapCooldownDate);
   }
 
   @Path("/clone_jump_timer")
@@ -763,47 +737,68 @@ public class ModelCharacterWS {
                                      @QueryParam("at") @DefaultValue(
                                          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                              name = "at",
-                                             required = false,
                                              defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                              value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                          name = "contid",
-                                         required = false,
                                          defaultValue = "-1",
                                          value = "Continuation ID for paged results") long contid,
                                      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                          name = "maxresults",
-                                         required = false,
                                          defaultValue = "1000",
                                          value = "Maximum number of results to retrieve") int maxresults,
                                      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                          name = "reverse",
-                                         required = false,
                                          defaultValue = "false",
                                          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                      @QueryParam("cloneJumpDate") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "cloneJumpDate",
-                                             required = false,
                                              defaultValue = "{ any: true }",
-                                             value = "Clone jump date selector") AttributeSelector cloneJumpDate) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, cloneJumpDate);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CHARACTER_SHEET);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CharacterSheetClone> result = CharacterSheetClone.accessQuery(cfg.owner, contid, maxresults, reverse, at, cloneJumpDate);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                             value = "Clone jump date selector") AttributeSelector cloneJumpDate,
+                                     @QueryParam("homeStationID") @DefaultValue(
+                                         value = "{ any: true }") @ApiParam(
+                                         name = "homeStationID",
+                                         defaultValue = "{ any: true }",
+                                         value = "Home station ID selector") AttributeSelector homeStationID,
+                                     @QueryParam("homeStationType") @DefaultValue(
+                                         value = "{ any: true }") @ApiParam(
+                                         name = "homeStationType",
+                                         defaultValue = "{ any: true }",
+                                         value = "Home station type selector") AttributeSelector homeStationType,
+                                     @QueryParam("lastStationChangeDate") @DefaultValue(
+                                         value = "{ any: true }") @ApiParam(
+                                         name = "lastStationChangeDate",
+                                         defaultValue = "{ any: true }",
+                                         value = "Last station change date selector") AttributeSelector lastStationChangeDate) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterSheetClone>() {
+
+                                                          @Override
+                                                          public List<CharacterSheetClone> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int CLONE_JUMP_DATE = 0;
+                                                            final int HOME_STATION_ID = 1;
+                                                            final int HOME_STATION_TYPE = 2;
+                                                            final int LAST_STATION_CHANGE_DATE = 3;
+                                                            return CharacterSheetClone.accessQuery(acct, contid, maxresults,
+                                                                                                   reverse, at,
+                                                                                                   others[CLONE_JUMP_DATE],
+                                                                                                   others[HOME_STATION_ID],
+                                                                                                   others[HOME_STATION_TYPE],
+                                                                                                   others[LAST_STATION_CHANGE_DATE]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_CLONES,
+                                                                                        acct);
+                                                          }
+                                                        }, request, cloneJumpDate, homeStationID, homeStationType, lastStationChangeDate);
   }
 
   @Path("/jump_timer")
@@ -851,59 +846,156 @@ public class ModelCharacterWS {
                                 @QueryParam("at") @DefaultValue(
                                     value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                         name = "at",
-                                        required = false,
                                         defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                         value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                 @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                     name = "contid",
-                                    required = false,
                                     defaultValue = "-1",
                                     value = "Continuation ID for paged results") long contid,
                                 @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                     name = "maxresults",
-                                    required = false,
                                     defaultValue = "1000",
                                     value = "Maximum number of results to retrieve") int maxresults,
                                 @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                     name = "reverse",
-                                    required = false,
                                     defaultValue = "false",
                                     value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                 @QueryParam("jumpActivation") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "jumpActivation",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Jump activation selector") AttributeSelector jumpActivation,
                                 @QueryParam("jumpFatigue") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "jumpFatigue",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Jump fatigue selector") AttributeSelector jumpFatigue,
                                 @QueryParam("jumpLastUpdate") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "jumpLastUpdate",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Jump last update time selector") AttributeSelector jumpLastUpdate) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, jumpActivation, jumpFatigue, jumpLastUpdate);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CHARACTER_SHEET);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CharacterSheetJump> result = CharacterSheetJump.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpActivation, jumpFatigue, jumpLastUpdate);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterSheetJump>() {
+
+                                                          @Override
+                                                          public List<CharacterSheetJump> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int JUMP_ACTIVATION = 0;
+                                                            final int JUMP_FATIGUE = 1;
+                                                            final int JUMP_LAST_UPDATE = 2;
+                                                            return CharacterSheetJump.accessQuery(acct, contid, maxresults,
+                                                                                                  reverse, at,
+                                                                                                  others[JUMP_ACTIVATION],
+                                                                                                  others[JUMP_FATIGUE],
+                                                                                                  others[JUMP_LAST_UPDATE]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_FATIGUE,
+                                                                                        acct);
+                                                          }
+                                                        }, request, jumpActivation, jumpFatigue, jumpLastUpdate);
+  }
+
+  @Path("/skill_points")
+  @GET
+  @ApiOperation(
+      value = "Get character skill points")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested character skill points",
+              response = CharacterSheetSkillPoints.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getSkillPoints(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("totalSkillPoints") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "totalSkillPoints",
+          defaultValue = "{ any: true }",
+          value = "Total skill points selector") AttributeSelector totalSkillPoints,
+      @QueryParam("unallocatedSkillPoints") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "unallocatedSkillPoints",
+          defaultValue = "{ any: true }",
+          value = "Unallocated skill points selector") AttributeSelector unallocatedSkillPoints) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterSheetSkillPoints>() {
+
+                                                          @Override
+                                                          public List<CharacterSheetSkillPoints> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int TOTAL_SKILL_POINTS = 0;
+                                                            final int UNALLOCATED_SKILL_POINTS = 1;
+                                                            return CharacterSheetSkillPoints.accessQuery(acct, contid, maxresults,
+                                                                                                         reverse, at,
+                                                                                                         others[TOTAL_SKILL_POINTS],
+                                                                                                         others[UNALLOCATED_SKILL_POINTS]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_SKILLS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, totalSkillPoints, unallocatedSkillPoints);
   }
 
   @Path("/skill")
@@ -951,65 +1043,68 @@ public class ModelCharacterWS {
                             @QueryParam("at") @DefaultValue(
                                 value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                     name = "at",
-                                    required = false,
                                     defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                     value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                             @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                 name = "contid",
-                                required = false,
                                 defaultValue = "-1",
                                 value = "Continuation ID for paged results") long contid,
                             @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                 name = "maxresults",
-                                required = false,
                                 defaultValue = "1000",
                                 value = "Maximum number of results to retrieve") int maxresults,
                             @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                 name = "reverse",
-                                required = false,
                                 defaultValue = "false",
                                 value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                             @QueryParam("typeID") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "typeID",
-                                    required = false,
                                     defaultValue = "{ any: true }",
                                     value = "Skill type ID selector") AttributeSelector typeID,
-                            @QueryParam("level") @DefaultValue(
+                            @QueryParam("trainedSkillLevel") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
-                                    name = "level",
-                                    required = false,
+                                    name = "trainedSkillLevel",
                                     defaultValue = "{ any: true }",
-                                    value = "Skill level selector") AttributeSelector level,
+                                    value = "Trained skill level selector") AttributeSelector trainedSkillLevel,
                             @QueryParam("skillpoints") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
                                     name = "skillpoints",
-                                    required = false,
                                     defaultValue = "{ any: true }",
                                     value = "Skill points selector") AttributeSelector skillpoints,
-                            @QueryParam("published") @DefaultValue(
+                            @QueryParam("activeSkillLevel") @DefaultValue(
                                 value = "{ any: true }") @ApiParam(
-                                    name = "published",
-                                    required = false,
+                                    name = "activeSkillLevel",
                                     defaultValue = "{ any: true }",
-                                    value = "Published skill selector") AttributeSelector published) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, typeID, level, skillpoints, published);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CHARACTER_SHEET);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CharacterSkill> result = CharacterSkill.accessQuery(cfg.owner, contid, maxresults, reverse, at, typeID, level, skillpoints, published);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                    value = "Active skill level selector") AttributeSelector activeSkillLevel) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterSkill>() {
+
+                                                          @Override
+                                                          public List<CharacterSkill> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int TYPE_ID = 0;
+                                                            final int TRAINED_SKILL_LEVEL = 1;
+                                                            final int SKILLPOINTS = 1;
+                                                            final int ACTIVE_SKILL_LEVEL = 1;
+                                                            return CharacterSkill.accessQuery(acct, contid, maxresults,
+                                                                                              reverse, at,
+                                                                                              others[TYPE_ID],
+                                                                                              others[TRAINED_SKILL_LEVEL],
+                                                                                              others[SKILLPOINTS],
+                                                                                              others[ACTIVE_SKILL_LEVEL]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_SKILLS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, typeID, trainedSkillLevel, skillpoints, activeSkillLevel);
   }
 
   @Path("/title")
@@ -1151,53 +1246,47 @@ public class ModelCharacterWS {
                               @QueryParam("at") @DefaultValue(
                                   value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                       name = "at",
-                                      required = false,
                                       defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                       value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                               @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                   name = "contid",
-                                  required = false,
                                   defaultValue = "-1",
                                   value = "Continuation ID for paged results") long contid,
                               @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                   name = "maxresults",
-                                  required = false,
                                   defaultValue = "1000",
                                   value = "Maximum number of results to retrieve") int maxresults,
                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                   name = "reverse",
-                                  required = false,
                                   defaultValue = "false",
                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                               @QueryParam("typeID") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "typeID",
-                                      required = false,
                                       defaultValue = "{ any: true }",
-                                      value = "Implant type ID selector") AttributeSelector typeID,
-                              @QueryParam("typeName") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "typeName",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Implant type name selector") AttributeSelector typeName) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, typeID, typeName);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CHARACTER_SHEET);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<Implant> result = Implant.accessQuery(cfg.owner, contid, maxresults, reverse, at, typeID, typeName);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                      value = "Implant type ID selector") AttributeSelector typeID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Implant>() {
+
+                                                          @Override
+                                                          public List<Implant> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int TYPE_ID = 0;
+                                                            return Implant.accessQuery(acct, contid, maxresults,
+                                                                                         reverse, at,
+                                                                                         others[TYPE_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_IMPLANTS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, typeID);
   }
 
   @Path("/jump_clone")
@@ -1245,65 +1334,68 @@ public class ModelCharacterWS {
                                 @QueryParam("at") @DefaultValue(
                                     value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                         name = "at",
-                                        required = false,
                                         defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                         value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                 @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                     name = "contid",
-                                    required = false,
                                     defaultValue = "-1",
                                     value = "Continuation ID for paged results") long contid,
                                 @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                     name = "maxresults",
-                                    required = false,
                                     defaultValue = "1000",
                                     value = "Maximum number of results to retrieve") int maxresults,
                                 @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                     name = "reverse",
-                                    required = false,
                                     defaultValue = "false",
                                     value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                 @QueryParam("jumpCloneID") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "jumpCloneID",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Jump clone ID selector") AttributeSelector jumpCloneID,
-                                @QueryParam("typeID") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "typeID",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Jump clone type ID selector") AttributeSelector typeID,
                                 @QueryParam("locationID") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "locationID",
-                                        required = false,
                                         defaultValue = "{ any: true }",
                                         value = "Jump clone location ID selector") AttributeSelector locationID,
                                 @QueryParam("cloneName") @DefaultValue(
                                     value = "{ any: true }") @ApiParam(
                                         name = "cloneName",
-                                        required = false,
                                         defaultValue = "{ any: true }",
-                                        value = "Clone name selector selector") AttributeSelector cloneName) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, jumpCloneID, typeID, locationID, cloneName);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CHARACTER_SHEET);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<JumpClone> result = JumpClone.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpCloneID, typeID, locationID, cloneName);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                        value = "Clone name selector selector") AttributeSelector cloneName,
+                                @QueryParam("locationType") @DefaultValue(
+                                    value = "{ any: true }") @ApiParam(
+                                    name = "locationType",
+                                    defaultValue = "{ any: true }",
+                                    value = "Location type selector") AttributeSelector locationType) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<JumpClone>() {
+
+                                                          @Override
+                                                          public List<JumpClone> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int JUMP_CLONE_ID = 0;
+                                                            final int LOCATION_ID = 1;
+                                                            final int CLONE_NAME = 2;
+                                                            final int LOCATION_TYPE = 3;
+                                                            return JumpClone.accessQuery(acct, contid, maxresults,
+                                                                                         reverse, at,
+                                                                                         others[JUMP_CLONE_ID],
+                                                                                         others[LOCATION_ID],
+                                                                                         others[CLONE_NAME],
+                                                                                         others[LOCATION_TYPE]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_CLONES,
+                                                                                        acct);
+                                                          }
+                                                        }, request, jumpCloneID, locationID, cloneName, locationType);
   }
 
   @Path("/jump_clone_implant")
@@ -1351,59 +1443,54 @@ public class ModelCharacterWS {
                                        @QueryParam("at") @DefaultValue(
                                            value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                                name = "at",
-                                               required = false,
                                                defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                                value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                        @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                            name = "contid",
-                                           required = false,
                                            defaultValue = "-1",
                                            value = "Continuation ID for paged results") long contid,
                                        @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                            name = "maxresults",
-                                           required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
                                        @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                            name = "reverse",
-                                           required = false,
                                            defaultValue = "false",
                                            value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                        @QueryParam("jumpCloneID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "jumpCloneID",
-                                               required = false,
                                                defaultValue = "{ any: true }",
                                                value = "Jump clone ID selector") AttributeSelector jumpCloneID,
                                        @QueryParam("typeID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "typeID",
-                                               required = false,
                                                defaultValue = "{ any: true }",
-                                               value = "Implant type ID selector") AttributeSelector typeID,
-                                       @QueryParam("typeName") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "typeName",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Implant type name selector") AttributeSelector typeName) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, jumpCloneID, typeID, typeName);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CHARACTER_SHEET);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<JumpCloneImplant> result = JumpCloneImplant.accessQuery(cfg.owner, contid, maxresults, reverse, at, jumpCloneID, typeID, typeName);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                               value = "Implant type ID selector") AttributeSelector typeID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<JumpCloneImplant>() {
+
+                                                          @Override
+                                                          public List<JumpCloneImplant> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int JUMP_CLONE_ID = 0;
+                                                            final int TYPE_ID = 1;
+                                                            return JumpCloneImplant.accessQuery(acct, contid, maxresults,
+                                                                                                reverse, at,
+                                                                                                others[JUMP_CLONE_ID],
+                                                                                                others[TYPE_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_CLONES,
+                                                                                        acct);
+                                                          }
+                                                        }, request, jumpCloneID, typeID);
   }
 
   @Path("/medal")
@@ -3161,139 +3248,6 @@ public class ModelCharacterWS {
                                                         researchStartDate, skillTypeID);
   }
 
-  @Path("/skill_in_training")
-  @GET
-  @ApiOperation(
-      value = "Get character skill in training")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              code = 200,
-              message = "list of requested skills in training",
-              response = CharacterSkillInTraining.class,
-              responseContainer = "array"),
-          @ApiResponse(
-              code = 400,
-              message = "invalid attribute selector",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 401,
-              message = "access key credential is invalid",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 403,
-              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 404,
-              message = "access key not found",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 500,
-              message = "internal service error",
-              response = ServiceError.class),
-      })
-  public Response getSkillsInTraining(
-                                      @Context HttpServletRequest request,
-                                      @QueryParam("accessKey") @ApiParam(
-                                          name = "accessKey",
-                                          required = true,
-                                          value = "Model access key") int accessKey,
-                                      @QueryParam("accessCred") @ApiParam(
-                                          name = "accessCred",
-                                          required = true,
-                                          value = "Model access credential") String accessCred,
-                                      @QueryParam("at") @DefaultValue(
-                                          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                              name = "at",
-                                              required = false,
-                                              defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                              value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                          name = "contid",
-                                          required = false,
-                                          defaultValue = "-1",
-                                          value = "Continuation ID for paged results") long contid,
-                                      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                          name = "maxresults",
-                                          required = false,
-                                          defaultValue = "1000",
-                                          value = "Maximum number of results to retrieve") int maxresults,
-                                      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                          name = "reverse",
-                                          required = false,
-                                          defaultValue = "false",
-                                          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                      @QueryParam("skillInTraining") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "skillInTraining",
-                                              required = false,
-                                              defaultValue = "{ any: true }",
-                                              value = "Skill in training selector") AttributeSelector skillInTraining,
-                                      @QueryParam("currentTrainingQueueTime") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "currentTrainingQueueTime",
-                                              required = false,
-                                              defaultValue = "{ any: true }",
-                                              value = "Current taining queue time selector") AttributeSelector currentTrainingQueueTime,
-                                      @QueryParam("trainingStartTime") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "trainingStartTime",
-                                              required = false,
-                                              defaultValue = "{ any: true }",
-                                              value = "Training start time selector") AttributeSelector trainingStartTime,
-                                      @QueryParam("trainingEndTime") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "trainingEndTime",
-                                              required = false,
-                                              defaultValue = "{ any: true }",
-                                              value = "Training end time selector") AttributeSelector trainingEndTime,
-                                      @QueryParam("trainingStartSP") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "trainingStartSP",
-                                              required = false,
-                                              defaultValue = "{ any: true }",
-                                              value = "Training start skill points selector") AttributeSelector trainingStartSP,
-                                      @QueryParam("trainingDestinationSP") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "trainingDestinationSP",
-                                              required = false,
-                                              defaultValue = "{ any: true }",
-                                              value = "Training destination skill points selector") AttributeSelector trainingDestinationSP,
-                                      @QueryParam("trainingToLevel") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "trainingToLevel",
-                                              required = false,
-                                              defaultValue = "{ any: true }",
-                                              value = "Training to level selector") AttributeSelector trainingToLevel,
-                                      @QueryParam("skillTypeID") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "skillTypeID",
-                                              required = false,
-                                              defaultValue = "{ any: true }",
-                                              value = "Skill type ID selector") AttributeSelector skillTypeID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, skillInTraining, currentTrainingQueueTime, trainingStartTime, trainingEndTime, trainingStartSP,
-                                          trainingDestinationSP, trainingToLevel, skillTypeID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_SKILL_IN_TRAINING);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CharacterSkillInTraining> result = CharacterSkillInTraining.accessQuery(cfg.owner, contid, maxresults, reverse, at, skillInTraining,
-                                                                                   currentTrainingQueueTime, trainingStartTime, trainingEndTime,
-                                                                                   trainingStartSP, trainingDestinationSP, trainingToLevel, skillTypeID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
-  }
-
   @Path("/skill_queue")
   @GET
   @ApiOperation(
@@ -3339,84 +3293,97 @@ public class ModelCharacterWS {
                                    @QueryParam("at") @DefaultValue(
                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                            name = "at",
-                                           required = false,
                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                        name = "contid",
-                                       required = false,
                                        defaultValue = "-1",
                                        value = "Continuation ID for paged results") long contid,
                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                        name = "maxresults",
-                                       required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                        name = "reverse",
-                                       required = false,
                                        defaultValue = "false",
                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("endSP") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "endSP",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Skill ending skill points selector") AttributeSelector endSP,
                                    @QueryParam("endTime") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "endTime",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Skill training end time selector") AttributeSelector endTime,
                                    @QueryParam("level") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "level",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Skill training to level selector") AttributeSelector level,
                                    @QueryParam("queuePosition") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "queuePosition",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Queue position selector") AttributeSelector queuePosition,
                                    @QueryParam("startSP") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "startSP",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Starting skill points selector") AttributeSelector startSP,
                                    @QueryParam("startTime") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "startTime",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Training start time selector") AttributeSelector startTime,
                                    @QueryParam("typeID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "typeID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
-                                           value = "Skill type ID selector") AttributeSelector typeID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, endSP, endTime, level, queuePosition, startSP, startTime, typeID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_SKILL_QUEUE);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<SkillInQueue> result = SkillInQueue.accessQuery(cfg.owner, contid, maxresults, reverse, at, endSP, endTime, level, queuePosition, startSP, startTime,
-                                                           typeID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                           value = "Skill type ID selector") AttributeSelector typeID,
+                                   @QueryParam("trainingStartSP") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                       name = "trainingStartSP",
+                                       defaultValue = "{ any: true }",
+                                       value = "Training start skill point selector") AttributeSelector trainingStartSP) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_SKILL_QUEUE,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<SkillInQueue>() {
+
+                                                          @Override
+                                                          public List<SkillInQueue> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int END_SP = 0;
+                                                            final int END_TIME = 1;
+                                                            final int LEVEL = 2;
+                                                            final int QUEUE_POSITION = 3;
+                                                            final int START_SP = 4;
+                                                            final int START_TIME = 5;
+                                                            final int TYPE_ID = 6;
+                                                            final int TRAINING_START_SP = 7;
+                                                            return SkillInQueue.accessQuery(acct, contid, maxresults,
+                                                                                            reverse, at,
+                                                                                            others[END_SP],
+                                                                                            others[END_TIME],
+                                                                                            others[LEVEL],
+                                                                                            others[QUEUE_POSITION],
+                                                                                            others[START_SP],
+                                                                                            others[START_TIME],
+                                                                                            others[TYPE_ID],
+                                                                                            others[TRAINING_START_SP]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_SKILL_QUEUE,
+                                                                                        acct);
+                                                          }
+                                                        }, request, endSP, endTime, level, queuePosition, startSP,
+                                                        startTime, typeID, trainingStartSP);
   }
 
   @Path("/location")
