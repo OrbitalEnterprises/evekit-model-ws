@@ -2246,64 +2246,174 @@ public class ModelCharacterWS {
                                   @QueryParam("at") @DefaultValue(
                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                           name = "at",
-                                          required = false,
                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                       name = "contid",
-                                      required = false,
                                       defaultValue = "-1",
                                       value = "Continuation ID for paged results") long contid,
                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                       name = "maxresults",
-                                      required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                       name = "reverse",
-                                      required = false,
                                       defaultValue = "false",
                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("displayName") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "displayName",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Mailing list display name selector") AttributeSelector displayName,
                                   @QueryParam("listID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "listID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Mailing list ID selector") AttributeSelector listID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, displayName, listID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_MAILING_LISTS);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<MailingList> result = MailingList.accessQuery(cfg.owner, contid, maxresults, reverse, at, displayName, listID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_MAILING_LISTS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<MailingList>() {
+
+                                                          @Override
+                                                          public List<MailingList> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int DISPLAY_NAME = 0;
+                                                            final int LIST_ID = 1;
+                                                            return MailingList.accessQuery(acct, contid, maxresults,
+                                                                                           reverse, at,
+                                                                                           others[DISPLAY_NAME],
+                                                                                           others[LIST_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_MAIL,
+                                                                                        acct);
+                                                          }
+                                                        }, request, displayName, listID);
+  }
+
+  @Path("/mail_label")
+  @GET
+  @ApiOperation(
+      value = "Get character mail labels")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested character mail labels",
+              response = MailLabel.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getMailLabels(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("labelID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "labelID",
+          defaultValue = "{ any: true }",
+          value = "Mail label ID selector") AttributeSelector labelID,
+      @QueryParam("unreadCount") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "unreadCount",
+          defaultValue = "{ any: true }",
+          value = "Mail label unread count selector") AttributeSelector unreadCount,
+      @QueryParam("name") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "name",
+          defaultValue = "{ any: true }",
+          value = "Mail label name selector") AttributeSelector name,
+      @QueryParam("color") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "color",
+          defaultValue = "{ any: true }",
+          value = "Mail label color selector") AttributeSelector color) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_MAIL,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<MailLabel>() {
+
+                                                          @Override
+                                                          public List<MailLabel> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int LABEL_ID = 0;
+                                                            final int UNREAD_COUNT = 1;
+                                                            final int NAME = 1;
+                                                            final int COLOR = 1;
+                                                            return MailLabel.accessQuery(acct, contid, maxresults,
+                                                                                         reverse, at,
+                                                                                         others[LABEL_ID],
+                                                                                         others[UNREAD_COUNT],
+                                                                                         others[NAME],
+                                                                                         others[COLOR]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_MAIL,
+                                                                                        acct);
+                                                          }
+                                                        }, request, labelID, unreadCount, name, color);
   }
 
   @Path("/mail_message")
   @GET
   @ApiOperation(
-      value = "Get character mail messages (not bodies)")
+      value = "Get character mail messages")
   @ApiResponses(
       value = {
           @ApiResponse(
               code = 200,
-              message = "list of requested character mail messages (not bodies)",
+              message = "list of requested character mail messages",
               response = CharacterMailMessage.class,
               responseContainer = "array"),
           @ApiResponse(
@@ -2340,203 +2450,103 @@ public class ModelCharacterWS {
                                   @QueryParam("at") @DefaultValue(
                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                           name = "at",
-                                          required = false,
                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                       name = "contid",
-                                      required = false,
                                       defaultValue = "-1",
                                       value = "Continuation ID for paged results") long contid,
                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                       name = "maxresults",
-                                      required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                       name = "reverse",
-                                      required = false,
                                       defaultValue = "false",
                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("messageID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "messageID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Message ID selector") AttributeSelector messageID,
                                   @QueryParam("senderID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "senderID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Message sender ID selector") AttributeSelector senderID,
-                                  @QueryParam("senderName") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "senderName",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Message sender name selector") AttributeSelector senderName,
-                                  @QueryParam("toCharacterID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "toCharacterID",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Message destination character ID selector") AttributeSelector toCharacterID,
                                   @QueryParam("sentDate") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "sentDate",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Message send date selector") AttributeSelector sentDate,
                                   @QueryParam("title") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "title",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Message title selector") AttributeSelector title,
-                                  @QueryParam("toCorpOrAllianceID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "toCorpOrAllianceID",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Message corporation or alliance ID selector") AttributeSelector toCorpOrAllianceID,
-                                  @QueryParam("toListID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "toListID",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Message destination list ID selector") AttributeSelector toListID,
                                   @QueryParam("msgRead") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "msgRead",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Message read selector") AttributeSelector msgRead,
-                                  @QueryParam("senderTypeID") @DefaultValue(
+                                  @QueryParam("labelID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
-                                          name = "senderTypeID",
-                                          required = false,
+                                          name = "labelID",
                                           defaultValue = "{ any: true }",
-                                          value = "Message sender type ID selector") AttributeSelector senderTypeID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, messageID, senderID, senderName, toCharacterID, sentDate, title, toCorpOrAllianceID, toListID, msgRead,
-                                          senderTypeID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_MAIL);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CharacterMailMessage> result = CharacterMailMessage.accessQuery(cfg.owner, contid, maxresults, reverse, at, messageID, senderID, senderName,
-                                                                           toCharacterID, sentDate, title, toCorpOrAllianceID, toListID, msgRead, senderTypeID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
-  }
+                                          value = "Message label ID selector") AttributeSelector labelID,
+                                  @QueryParam("recipientType") @DefaultValue(
+                                      value = "{ any: true }") @ApiParam(
+                                      name = "recipientType",
+                                      defaultValue = "{ any: true }",
+                                      value = "Message recipient type selector") AttributeSelector recipientType,
+                                  @QueryParam("recipientID") @DefaultValue(
+                                      value = "{ any: true }") @ApiParam(
+                                      name = "recipientID",
+                                      defaultValue = "{ any: true }",
+                                      value = "Message recipient ID selector") AttributeSelector recipientID,
+                                  @QueryParam("body") @DefaultValue(
+                                      value = "{ any: true }") @ApiParam(
+                                      name = "body",
+                                      defaultValue = "{ any: true }",
+                                      value = "Message body selector") AttributeSelector body) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_MAIL,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterMailMessage>() {
 
-  @Path("/mail_message_body")
-  @GET
-  @ApiOperation(
-      value = "Get character mail message bodies")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              code = 200,
-              message = "list of requested character mail message bodies",
-              response = CharacterMailMessageBody.class,
-              responseContainer = "array"),
-          @ApiResponse(
-              code = 400,
-              message = "invalid attribute selector",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 401,
-              message = "access key credential is invalid",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 403,
-              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 404,
-              message = "access key not found",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 500,
-              message = "internal service error",
-              response = ServiceError.class),
-      })
-  public Response getMailMessageBodies(
-                                       @Context HttpServletRequest request,
-                                       @QueryParam("accessKey") @ApiParam(
-                                           name = "accessKey",
-                                           required = true,
-                                           value = "Model access key") int accessKey,
-                                       @QueryParam("accessCred") @ApiParam(
-                                           name = "accessCred",
-                                           required = true,
-                                           value = "Model access credential") String accessCred,
-                                       @QueryParam("at") @DefaultValue(
-                                           value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                               name = "at",
-                                               required = false,
-                                               defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                               value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                       @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                           name = "contid",
-                                           required = false,
-                                           defaultValue = "-1",
-                                           value = "Continuation ID for paged results") long contid,
-                                       @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                           name = "maxresults",
-                                           required = false,
-                                           defaultValue = "1000",
-                                           value = "Maximum number of results to retrieve") int maxresults,
-                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                           name = "reverse",
-                                           required = false,
-                                           defaultValue = "false",
-                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                       @QueryParam("messageID") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "messageID",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Mail message ID selector") AttributeSelector messageID,
-                                       @QueryParam("retrieved") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "retrieved",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Mail message body retrieved selector") AttributeSelector retrieved,
-                                       @QueryParam("body") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "body",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Mail message body selector") AttributeSelector body) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, messageID, retrieved, body);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_MAIL);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CharacterMailMessageBody> result = CharacterMailMessageBody.accessQuery(cfg.owner, contid, maxresults, reverse, at, messageID, retrieved, body);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                                          @Override
+                                                          public List<CharacterMailMessage> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int MESSAGE_ID = 0;
+                                                            final int SENDER_ID = 1;
+                                                            final int SENT_DATE = 2;
+                                                            final int TITLE = 3;
+                                                            final int MSG_READ = 4;
+                                                            final int LABEL_ID = 5;
+                                                            final int RECIPIENT_TYPE = 6;
+                                                            final int RECIPIENT_ID = 7;
+                                                            final int BODY = 8;
+                                                            return CharacterMailMessage.accessQuery(acct, contid, maxresults,
+                                                                                                    reverse, at,
+                                                                                                    others[MESSAGE_ID],
+                                                                                                    others[SENDER_ID],
+                                                                                                    others[SENT_DATE],
+                                                                                                    others[TITLE],
+                                                                                                    others[MSG_READ],
+                                                                                                    others[LABEL_ID],
+                                                                                                    others[RECIPIENT_TYPE],
+                                                                                                    others[RECIPIENT_ID],
+                                                                                                    others[BODY]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_MAIL,
+                                                                                        acct);
+                                                          }
+                                                        }, request, messageID, senderID, sentDate, title, msgRead, labelID, recipientType, recipientID, body);
   }
 
   @Path("/planetary_colony")
