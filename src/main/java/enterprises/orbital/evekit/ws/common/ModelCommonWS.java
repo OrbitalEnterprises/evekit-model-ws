@@ -610,84 +610,92 @@ public class ModelCommonWS {
                               @QueryParam("at") @DefaultValue(
                                   value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                       name = "at",
-                                      required = false,
                                       defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                       value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                               @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                   name = "contid",
-                                  required = false,
                                   defaultValue = "-1",
                                   value = "Continuation ID for paged results") long contid,
                               @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                   name = "maxresults",
-                                  required = false,
                                   defaultValue = "1000",
                                   value = "Maximum number of results to retrieve") int maxresults,
                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                   name = "reverse",
-                                  required = false,
                                   defaultValue = "false",
                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                               @QueryParam("list") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "list",
-                                      required = false,
                                       defaultValue = "{ any: true }",
                                       value = "Contact list selector") AttributeSelector list,
                               @QueryParam("contactID") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "contactID",
-                                      required = false,
                                       defaultValue = "{ any: true }",
                                       value = "Contact ID selector") AttributeSelector contactID,
-                              @QueryParam("contactName") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "contactName",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Contact name selector") AttributeSelector contactName,
                               @QueryParam("standing") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "standing",
-                                      required = false,
                                       defaultValue = "{ any: true }",
                                       value = "Contact standing selector") AttributeSelector standing,
-                              @QueryParam("contactTypeID") @DefaultValue(
+                              @QueryParam("contactType") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
-                                      name = "contactTypeID",
-                                      required = false,
+                                      name = "contactType",
                                       defaultValue = "{ any: true }",
-                                      value = "Contact type ID selector") AttributeSelector contactTypeID,
+                                      value = "Contact type selector") AttributeSelector contactType,
                               @QueryParam("inWatchlist") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
                                       name = "inWatchlist",
-                                      required = false,
                                       defaultValue = "{ any: true }",
                                       value = "Contact in watch list selector") AttributeSelector inWatchlist,
-                              @QueryParam("labelMask") @DefaultValue(
+                              @QueryParam("isBlocked") @DefaultValue(
                                   value = "{ any: true }") @ApiParam(
-                                      name = "labelMask",
-                                      required = false,
+                                  name = "isBlocked",
+                                  defaultValue = "{ any: true }",
+                                  value = "Contact is blocked selector") AttributeSelector isBlocked,
+                              @QueryParam("labelID") @DefaultValue(
+                                  value = "{ any: true }") @ApiParam(
+                                      name = "labelID",
                                       defaultValue = "{ any: true }",
-                                      value = "Contact label mask selector") AttributeSelector labelMask) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, list, contactID, contactName, standing, contactTypeID, inWatchlist, labelMask);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CONTACT_LIST);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<Contact> result = Contact.accessQuery(cfg.owner, contid, maxresults, reverse, at, list, contactID, contactName, standing, contactTypeID, inWatchlist,
-                                                 labelMask);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                      value = "Contact label mask selector") AttributeSelector labelID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CONTACT_LIST,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Contact>() {
+
+                                                          @Override
+                                                          public List<Contact> getList(SynchronizedEveAccount acct,
+                                                                                       long contid, int maxresults,
+                                                                                       boolean reverse,
+                                                                                       AttributeSelector at,
+                                                                                       AttributeSelector... others) throws IOException {
+                                                            final int LIST = 0;
+                                                            final int CONTACT_ID = 1;
+                                                            final int STANDING = 2;
+                                                            final int CONTACT_TYPE = 3;
+                                                            final int IN_WATCH_LIST = 4;
+                                                            final int IS_BLOCKED = 5;
+                                                            final int LABEL_ID = 6;
+
+                                                            return Contact.accessQuery(acct, contid, maxresults,
+                                                                                       reverse, at,
+                                                                                       others[LIST],
+                                                                                       others[CONTACT_ID],
+                                                                                       others[STANDING],
+                                                                                       others[CONTACT_TYPE],
+                                                                                       others[IN_WATCH_LIST],
+                                                                                       others[IS_BLOCKED],
+                                                                                       others[LABEL_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                acct.isCharacterType() ? ESISyncEndpoint.CHAR_CONTACTS : ESISyncEndpoint.CORP_CONTACTS,
+                                                                acct);
+                                                          }
+                                                        }, request, list, contactID, standing, contactType, inWatchlist,
+                                                        isBlocked, labelID);
   }
 
   @Path("/contact_label")
@@ -735,59 +743,62 @@ public class ModelCommonWS {
                                    @QueryParam("at") @DefaultValue(
                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                            name = "at",
-                                           required = false,
                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                        name = "contid",
-                                       required = false,
                                        defaultValue = "-1",
                                        value = "Continuation ID for paged results") long contid,
                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                        name = "maxresults",
-                                       required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                        name = "reverse",
-                                       required = false,
                                        defaultValue = "false",
                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("list") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "list",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contact list selector") AttributeSelector list,
                                    @QueryParam("labelID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "labelID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contact label ID selector") AttributeSelector labelID,
                                    @QueryParam("name") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "name",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Contact label name selector") AttributeSelector name) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, list, labelID, name);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CONTACT_LIST);
-    if (cfg.fail) return cfg.response;
-    // Retrieve requested balance
-    try {
-      List<ContactLabel> result = ContactLabel.accessQuery(cfg.owner, contid, maxresults, reverse, at, list, labelID, name);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CONTACT_LIST,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<ContactLabel>() {
+
+                                                          @Override
+                                                          public List<ContactLabel> getList(SynchronizedEveAccount acct,
+                                                                                            long contid, int maxresults,
+                                                                                            boolean reverse,
+                                                                                            AttributeSelector at,
+                                                                                            AttributeSelector... others) throws IOException {
+                                                            final int LIST = 0;
+                                                            final int LABEL_ID = 1;
+                                                            final int NAME = 2;
+
+                                                            return ContactLabel.accessQuery(acct, contid, maxresults,
+                                                                                            reverse, at,
+                                                                                            others[LIST],
+                                                                                            others[LABEL_ID],
+                                                                                            others[NAME]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_CONTACTS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, list, labelID, name);
   }
 
   @Path("/contract")
