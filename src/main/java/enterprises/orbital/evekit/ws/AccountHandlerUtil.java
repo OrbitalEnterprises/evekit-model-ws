@@ -62,7 +62,9 @@ public class AccountHandlerUtil {
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_IMPLANTS, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_MAIL, TimeUnit.MILLISECONDS.convert(30, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_CONTACTS, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS)),
-      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_CONTACTS, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS))
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_CONTACTS, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_FACTION_WAR, TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)),
+      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_FACTION_WAR, TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS))
                                                                          )
                                                                       .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
