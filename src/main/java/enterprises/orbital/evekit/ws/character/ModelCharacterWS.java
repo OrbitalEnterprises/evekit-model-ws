@@ -2594,111 +2594,90 @@ public class ModelCharacterWS {
                                        @QueryParam("at") @DefaultValue(
                                            value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                                name = "at",
-                                               required = false,
                                                defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                                value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                        @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                            name = "contid",
-                                           required = false,
                                            defaultValue = "-1",
                                            value = "Continuation ID for paged results") long contid,
                                        @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                            name = "maxresults",
-                                           required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
                                        @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                            name = "reverse",
-                                           required = false,
                                            defaultValue = "false",
                                            value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                        @QueryParam("planetID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "planetID",
-                                               required = false,
                                                defaultValue = "{ any: true }",
                                                value = "Planet ID selector") AttributeSelector planetID,
                                        @QueryParam("solarSystemID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "solarSystemID",
-                                               required = false,
                                                defaultValue = "{ any: true }",
                                                value = "Solar system ID selector") AttributeSelector solarSystemID,
-                                       @QueryParam("solarSystemName") @DefaultValue(
+                                       @QueryParam("planetType") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
-                                               name = "solarSystemName",
-                                               required = false,
+                                               name = "planetType",
                                                defaultValue = "{ any: true }",
-                                               value = "Solar system name selector") AttributeSelector solarSystemName,
-                                       @QueryParam("planetName") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "planetName",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Planet name selector") AttributeSelector planetName,
-                                       @QueryParam("planetTypeID") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "planetTypeID",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Planet type ID selector") AttributeSelector planetTypeID,
-                                       @QueryParam("planetTypeName") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "planetTypeName",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Planet type name selector") AttributeSelector planetTypeName,
+                                               value = "Planet type selector") AttributeSelector planetType,
                                        @QueryParam("ownerID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "ownerID",
-                                               required = false,
                                                defaultValue = "{ any: true }",
                                                value = "Colony owner ID selector") AttributeSelector ownerID,
-                                       @QueryParam("ownerName") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "ownerName",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Colony owner name selector") AttributeSelector ownerName,
                                        @QueryParam("lastUpdate") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "lastUpdate",
-                                               required = false,
                                                defaultValue = "{ any: true }",
                                                value = "Colony last update selector") AttributeSelector lastUpdate,
                                        @QueryParam("upgradeLevel") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "upgradeLevel",
-                                               required = false,
                                                defaultValue = "{ any: true }",
                                                value = "Colony upgrade level selector") AttributeSelector upgradeLevel,
                                        @QueryParam("numberOfPins") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "numberOfPins",
-                                               required = false,
                                                defaultValue = "{ any: true }",
                                                value = "Colony number of pins selector") AttributeSelector numberOfPins) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, planetID, solarSystemID, solarSystemName, planetName, planetTypeID, planetTypeName, ownerID, ownerName,
-                                          lastUpdate, upgradeLevel, numberOfPins);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_ASSETS);
-    if (cfg.fail) return cfg.response;
-    cfg.presetExpiry = Capsuleer.getCapsuleer(cfg.owner).getPlanetaryColoniesExpiry();
-    try {
-      // Retrieve
-      List<PlanetaryColony> result = PlanetaryColony.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, solarSystemID, solarSystemName,
-                                                                 planetName, planetTypeID, planetTypeName, ownerID, ownerName, lastUpdate, upgradeLevel,
-                                                                 numberOfPins);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_ASSETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<PlanetaryColony>() {
+
+                                                          @Override
+                                                          public List<PlanetaryColony> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int PLANET_ID = 0;
+                                                            final int SOLAR_SYSTEM_ID = 1;
+                                                            final int PLANET_TYPE = 2;
+                                                            final int OWNER_ID = 3;
+                                                            final int LAST_UPDATE = 4;
+                                                            final int UPGRADE_LEVEL = 5;
+                                                            final int NUMBER_OF_PINS = 6;
+                                                            return PlanetaryColony.accessQuery(acct, contid, maxresults,
+                                                                                               reverse, at,
+                                                                                               others[PLANET_ID],
+                                                                                               others[SOLAR_SYSTEM_ID],
+                                                                                               others[PLANET_TYPE],
+                                                                                               others[OWNER_ID],
+                                                                                               others[LAST_UPDATE],
+                                                                                               others[UPGRADE_LEVEL],
+                                                                                               others[NUMBER_OF_PINS]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_PLANETS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, planetID, solarSystemID, planetType, ownerID,
+                                                        lastUpdate, upgradeLevel, numberOfPins);
   }
 
   @Path("/planetary_link")
@@ -2746,66 +2725,68 @@ public class ModelCharacterWS {
                                     @QueryParam("at") @DefaultValue(
                                         value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                             name = "at",
-                                            required = false,
                                             defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                             value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                     @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                         name = "contid",
-                                        required = false,
                                         defaultValue = "-1",
                                         value = "Continuation ID for paged results") long contid,
                                     @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                         name = "maxresults",
-                                        required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                         name = "reverse",
-                                        required = false,
                                         defaultValue = "false",
                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("planetID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "planetID",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Planet ID selector") AttributeSelector planetID,
                                     @QueryParam("sourcePinID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "sourcePinID",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Link source pin ID selector") AttributeSelector sourcePinID,
                                     @QueryParam("destinationPinID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "destinationPinID",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Link destination pin ID selector") AttributeSelector destinationPinID,
                                     @QueryParam("linkLevel") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "linkLevel",
-                                            required = false,
                                             defaultValue = "{ any: true }",
                                             value = "Link level selector") AttributeSelector linkLevel) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, planetID, sourcePinID, destinationPinID, linkLevel);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_ASSETS);
-    if (cfg.fail) return cfg.response;
-    cfg.presetExpiry = Capsuleer.getCapsuleer(cfg.owner).getPlanetaryColoniesExpiry();
-    try {
-      // Retrieve
-      List<PlanetaryLink> result = PlanetaryLink.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, sourcePinID, destinationPinID, linkLevel);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_ASSETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<PlanetaryLink>() {
+
+                                                          @Override
+                                                          public List<PlanetaryLink> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int PLANET_ID = 0;
+                                                            final int SOURCE_PIN_ID = 1;
+                                                            final int DESTINATION_PIN_ID = 2;
+                                                            final int LINK_LEVEL = 3;
+                                                            return PlanetaryLink.accessQuery(acct, contid, maxresults,
+                                                                                             reverse, at,
+                                                                                             others[PLANET_ID],
+                                                                                             others[SOURCE_PIN_ID],
+                                                                                             others[DESTINATION_PIN_ID],
+                                                                                             others[LINK_LEVEL]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_PLANETS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, planetID, sourcePinID, destinationPinID, linkLevel);
   }
 
   @Path("/planetary_pin")
@@ -2853,135 +2834,170 @@ public class ModelCharacterWS {
                                    @QueryParam("at") @DefaultValue(
                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                            name = "at",
-                                           required = false,
                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                        name = "contid",
-                                       required = false,
                                        defaultValue = "-1",
                                        value = "Continuation ID for paged results") long contid,
                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                        name = "maxresults",
-                                       required = false,
                                        defaultValue = "1000",
                                        value = "Maximum number of results to retrieve") int maxresults,
                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                        name = "reverse",
-                                       required = false,
                                        defaultValue = "false",
                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                    @QueryParam("planetID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "planetID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Planet ID selector") AttributeSelector planetID,
                                    @QueryParam("pinID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "pinID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Pin ID selector") AttributeSelector pinID,
                                    @QueryParam("typeID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "typeID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Pin type ID selector") AttributeSelector typeID,
-                                   @QueryParam("typeName") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "typeName",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Pin type name selector") AttributeSelector typeName,
                                    @QueryParam("schematicID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "schematicID",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Pin schematic ID selector") AttributeSelector schematicID,
-                                   @QueryParam("lastLaunchTime") @DefaultValue(
+                                   @QueryParam("lastCycleStart") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
-                                           name = "lastLaunchTime",
-                                           required = false,
+                                           name = "lastCycleStart",
                                            defaultValue = "{ any: true }",
-                                           value = "Pin last launch time selector") AttributeSelector lastLaunchTime,
+                                           value = "Pin last cycle start selector") AttributeSelector lastCycleStart,
                                    @QueryParam("cycleTime") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "cycleTime",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Pin cycle time selector") AttributeSelector cycleTime,
                                    @QueryParam("quantityPerCycle") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "quantityPerCycle",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Pin quantity per cycle selector") AttributeSelector quantityPerCycle,
                                    @QueryParam("installTime") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "installTime",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Pin install time selector") AttributeSelector installTime,
                                    @QueryParam("expiryTime") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "expiryTime",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Pin expiry time selector") AttributeSelector expiryTime,
-                                   @QueryParam("contentTypeID") @DefaultValue(
+                                   @QueryParam("productTypeID") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
-                                           name = "contentTypeID",
-                                           required = false,
+                                           name = "productTypeID",
                                            defaultValue = "{ any: true }",
-                                           value = "Pin content type ID selector") AttributeSelector contentTypeID,
-                                   @QueryParam("contentTypeName") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "contentTypeName",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Pin content type name selector") AttributeSelector contentTypeName,
-                                   @QueryParam("contentQuantity") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "contentQuantity",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Pin content quantity selector") AttributeSelector contentQuantity,
+                                           value = "Pin product type ID selector") AttributeSelector productTypeID,
                                    @QueryParam("longitude") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "longitude",
-                                           required = false,
                                            defaultValue = "{ any: true }",
                                            value = "Pin longitude selector") AttributeSelector longitude,
                                    @QueryParam("latitude") @DefaultValue(
                                        value = "{ any: true }") @ApiParam(
                                            name = "latitude",
-                                           required = false,
                                            defaultValue = "{ any: true }",
-                                           value = "Pin latitude selector") AttributeSelector latitude) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, planetID, pinID, typeID, typeName, schematicID, lastLaunchTime, cycleTime, quantityPerCycle, installTime,
-                                          expiryTime, contentTypeID, contentTypeName, contentQuantity, longitude, latitude);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_ASSETS);
-    if (cfg.fail) return cfg.response;
-    cfg.presetExpiry = Capsuleer.getCapsuleer(cfg.owner).getPlanetaryColoniesExpiry();
-    try {
-      // Retrieve
-      List<PlanetaryPin> result = PlanetaryPin.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, pinID, typeID, typeName, schematicID,
-                                                           lastLaunchTime, cycleTime, quantityPerCycle, installTime, expiryTime, contentTypeID, contentTypeName,
-                                                           contentQuantity, longitude, latitude);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                           value = "Pin latitude selector") AttributeSelector latitude,
+                                   @QueryParam("headRadius") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                       name = "headRadius",
+                                       defaultValue = "{ any: true }",
+                                       value = "Pin head radius selector") AttributeSelector headRadius,
+                                   @QueryParam("headID") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                       name = "headID",
+                                       defaultValue = "{ any: true }",
+                                       value = "Pin head ID selector") AttributeSelector headID,
+                                   @QueryParam("headLongitude") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                       name = "headLongitude",
+                                       defaultValue = "{ any: true }",
+                                       value = "Pin head longitude selector") AttributeSelector headLongitude,
+                                   @QueryParam("headLatitude") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                       name = "headLatitude",
+                                       defaultValue = "{ any: true }",
+                                       value = "Pin head latitude selector") AttributeSelector headLatitude,
+                                   @QueryParam("contentTypeID") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                       name = "contentTypeID",
+                                       defaultValue = "{ any: true }",
+                                       value = "Pin content type ID selector") AttributeSelector contentTypeID,
+                                   @QueryParam("contentAmount") @DefaultValue(
+                                       value = "{ any: true }") @ApiParam(
+                                       name = "contentAmount",
+                                       defaultValue = "{ any: true }",
+                                       value = "Pin content amount selector") AttributeSelector contentAmount) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_ASSETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<PlanetaryPin>() {
+
+                                                          @Override
+                                                          public List<PlanetaryPin> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int PLANET_ID = 0;
+                                                            final int PIN_ID = 1;
+                                                            final int TYPE_ID = 2;
+                                                            final int SCHEMATIC_ID = 3;
+                                                            final int LAST_CYCLE_START = 4;
+                                                            final int CYCLE_TIME = 5;
+                                                            final int QUANTITY_PER_CYCLE = 6;
+                                                            final int INSTALL_TIME = 7;
+                                                            final int EXPIRY_TIME = 8;
+                                                            final int PRODUCT_TYPE_ID = 9;
+                                                            final int LONGITUDE = 10;
+                                                            final int LATITUDE = 11;
+                                                            final int HEAD_RADIUS = 12;
+                                                            final int HEAD_ID = 13;
+                                                            final int HEAD_LONGITUDE = 14;
+                                                            final int HEAD_LATITUDE = 15;
+                                                            final int CONTENT_TYPE_ID = 16;
+                                                            final int CONTENT_AMOUNT = 17;
+                                                            return PlanetaryPin.accessQuery(acct, contid, maxresults,
+                                                                                            reverse, at,
+                                                                                            others[PLANET_ID],
+                                                                                            others[PIN_ID],
+                                                                                            others[TYPE_ID],
+                                                                                            others[SCHEMATIC_ID],
+                                                                                            others[LAST_CYCLE_START],
+                                                                                            others[CYCLE_TIME],
+                                                                                            others[QUANTITY_PER_CYCLE],
+                                                                                            others[INSTALL_TIME],
+                                                                                            others[EXPIRY_TIME],
+                                                                                            others[PRODUCT_TYPE_ID],
+                                                                                            others[LONGITUDE],
+                                                                                            others[LATITUDE],
+                                                                                            others[HEAD_RADIUS],
+                                                                                            others[HEAD_ID],
+                                                                                            others[HEAD_LONGITUDE],
+                                                                                            others[HEAD_LATITUDE],
+                                                                                            others[CONTENT_TYPE_ID],
+                                                                                            others[CONTENT_AMOUNT]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_PLANETS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, planetID, pinID, typeID, schematicID,
+                                                        lastCycleStart,
+                                                        cycleTime, quantityPerCycle, installTime, expiryTime,
+                                                        productTypeID, longitude, latitude, headRadius, headID,
+                                                        headLongitude, headLatitude, contentTypeID, contentAmount);
   }
 
   @Path("/planetary_route")
@@ -3029,116 +3045,90 @@ public class ModelCharacterWS {
                                      @QueryParam("at") @DefaultValue(
                                          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                              name = "at",
-                                             required = false,
                                              defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                              value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                          name = "contid",
-                                         required = false,
                                          defaultValue = "-1",
                                          value = "Continuation ID for paged results") long contid,
                                      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                          name = "maxresults",
-                                         required = false,
                                          defaultValue = "1000",
                                          value = "Maximum number of results to retrieve") int maxresults,
                                      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                          name = "reverse",
-                                         required = false,
                                          defaultValue = "false",
                                          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                      @QueryParam("planetID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "planetID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Planet ID selector") AttributeSelector planetID,
                                      @QueryParam("routeID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "routeID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Route ID selector") AttributeSelector routeID,
                                      @QueryParam("sourcePinID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "sourcePinID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Route source pin ID selector") AttributeSelector sourcePinID,
                                      @QueryParam("destinationPinID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "destinationPinID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Route destination pin ID selector") AttributeSelector destinationPinID,
                                      @QueryParam("contentTypeID") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "contentTypeID",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Route content type ID selector") AttributeSelector contentTypeID,
-                                     @QueryParam("contentTypeName") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "contentTypeName",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Route content type name selector") AttributeSelector contentTypeName,
                                      @QueryParam("quantity") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
                                              name = "quantity",
-                                             required = false,
                                              defaultValue = "{ any: true }",
                                              value = "Route quantity selector") AttributeSelector quantity,
-                                     @QueryParam("waypoint1") @DefaultValue(
+                                     @QueryParam("waypoint") @DefaultValue(
                                          value = "{ any: true }") @ApiParam(
-                                             name = "waypoint1",
-                                             required = false,
+                                             name = "waypoint",
                                              defaultValue = "{ any: true }",
-                                             value = "Route waypoint 1 selector") AttributeSelector waypoint1,
-                                     @QueryParam("waypoint2") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "waypoint2",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Route waypoint 2 selector") AttributeSelector waypoint2,
-                                     @QueryParam("waypoint3") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "waypoint3",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Route waypoint 3 selector") AttributeSelector waypoint3,
-                                     @QueryParam("waypoint4") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "waypoint4",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Route waypoint 4 selector") AttributeSelector waypoint4,
-                                     @QueryParam("waypoint5") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "waypoint5",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Route waypoint 5 selector") AttributeSelector waypoint5) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, planetID, routeID, sourcePinID, destinationPinID, contentTypeID, contentTypeName, quantity, waypoint1, waypoint2,
-                                          waypoint3, waypoint4, waypoint5);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_ASSETS);
-    if (cfg.fail) return cfg.response;
-    cfg.presetExpiry = Capsuleer.getCapsuleer(cfg.owner).getPlanetaryColoniesExpiry();
-    try {
-      // Retrieve
-      List<PlanetaryRoute> result = PlanetaryRoute.accessQuery(cfg.owner, contid, maxresults, reverse, at, planetID, routeID, sourcePinID, destinationPinID,
-                                                               contentTypeID, contentTypeName, quantity, waypoint1, waypoint2, waypoint3, waypoint4, waypoint5);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                             value = "Route waypoint selector") AttributeSelector waypoint) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_ASSETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<PlanetaryRoute>() {
+
+                                                          @Override
+                                                          public List<PlanetaryRoute> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int PLANET_ID = 0;
+                                                            final int ROUTE_ID = 1;
+                                                            final int SOURCE_PIN_ID = 2;
+                                                            final int DESTINATION_PIN_ID = 3;
+                                                            final int CONTENT_TYPE_ID = 4;
+                                                            final int QUANTITY = 5;
+                                                            final int WAYPOINT = 6;
+                                                            return PlanetaryRoute.accessQuery(acct, contid, maxresults,
+                                                                                              reverse, at,
+                                                                                              others[PLANET_ID],
+                                                                                              others[ROUTE_ID],
+                                                                                              others[SOURCE_PIN_ID],
+                                                                                              others[DESTINATION_PIN_ID],
+                                                                                              others[CONTENT_TYPE_ID],
+                                                                                              others[QUANTITY],
+                                                                                              others[WAYPOINT]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_PLANETS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, planetID, routeID, sourcePinID, destinationPinID,
+                                                        contentTypeID, quantity, waypoint);
   }
 
   @Path("/research_agent")
