@@ -82,102 +82,113 @@ public class ModelCharacterWS {
                                             @QueryParam("at") @DefaultValue(
                                                 value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                                     name = "at",
-                                                    required = false,
                                                     defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                                     value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                             @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                                 name = "contid",
-                                                required = false,
                                                 defaultValue = "-1",
                                                 value = "Continuation ID for paged results") long contid,
                                             @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                                 name = "maxresults",
-                                                required = false,
                                                 defaultValue = "1000",
                                                 value = "Maximum number of results to retrieve") int maxresults,
                                             @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                                 name = "reverse",
-                                                required = false,
                                                 defaultValue = "false",
                                                 value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                             @QueryParam("duration") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "duration",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Event duration selector") AttributeSelector duration,
                                             @QueryParam("eventDate") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "eventDate",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Event date selector (milliseconds UTC)") AttributeSelector eventDate,
                                             @QueryParam("eventID") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "eventID",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Event ID selector") AttributeSelector eventID,
                                             @QueryParam("eventText") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "eventText",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Event text selector") AttributeSelector eventText,
                                             @QueryParam("eventTitle") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "eventTitle",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Event title selector") AttributeSelector eventTitle,
                                             @QueryParam("ownerID") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "ownerID",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Owner ID selector") AttributeSelector ownerID,
                                             @QueryParam("ownerName") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "ownerName",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Owner name selector") AttributeSelector ownerName,
                                             @QueryParam("response") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "response",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Response text selector") AttributeSelector response,
-                                            @QueryParam("important") @DefaultValue(
+                                            @QueryParam("importance") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
-                                                    name = "important",
-                                                    required = false,
+                                                    name = "importance",
                                                     defaultValue = "{ any: true }",
-                                                    value = "Important flag selector") AttributeSelector important,
-                                            @QueryParam("ownerTypeID") @DefaultValue(
+                                                    value = "Importance selector") AttributeSelector importance,
+                                            @QueryParam("ownerType") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
-                                                    name = "ownerTypeID",
-                                                    required = false,
+                                                    name = "ownerType",
                                                     defaultValue = "{ any: true }",
-                                                    value = "Event owner type ID selector") AttributeSelector ownerTypeID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, duration, eventDate, eventID, eventText, eventTitle, ownerID, ownerName, response, important, ownerTypeID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_UPCOMING_CALENDAR_EVENTS);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<UpcomingCalendarEvent> result = UpcomingCalendarEvent.accessQuery(cfg.owner, contid, maxresults, reverse, at, duration, eventDate, eventID,
-                                                                             eventText, eventTitle, ownerID, ownerName, response, important, ownerTypeID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                                    value = "Event owner type selector") AttributeSelector ownerType) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_UPCOMING_CALENDAR_EVENTS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<UpcomingCalendarEvent>() {
+
+                                                          @Override
+                                                          public List<UpcomingCalendarEvent> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int DURATION = 0;
+                                                            final int EVENT_DATE = 1;
+                                                            final int EVENT_ID = 2;
+                                                            final int EVENT_TEXT = 3;
+                                                            final int EVENT_TITLE = 4;
+                                                            final int OWNER_ID = 5;
+                                                            final int OWNER_NAME = 6;
+                                                            final int RESPONSE = 7;
+                                                            final int IMPORTANCE = 8;
+                                                            final int OWNER_TYPE = 9;
+                                                            return UpcomingCalendarEvent.accessQuery(acct, contid,
+                                                                                                     maxresults,
+                                                                                                     reverse, at,
+                                                                                                     others[DURATION],
+                                                                                                     others[EVENT_DATE],
+                                                                                                     others[EVENT_ID],
+                                                                                                     others[EVENT_TEXT],
+                                                                                                     others[EVENT_TITLE],
+                                                                                                     others[OWNER_ID],
+                                                                                                     others[OWNER_NAME],
+                                                                                                     others[RESPONSE],
+                                                                                                     others[IMPORTANCE],
+                                                                                                     others[OWNER_TYPE]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_CALENDAR,
+                                                                                        acct);
+                                                          }
+                                                        }, request, duration, eventDate, eventID, eventText, eventTitle,
+                                                        ownerID, ownerName, response, importance, ownerType);
   }
 
   @Path("/calendar_event_attendees")
@@ -225,66 +236,61 @@ public class ModelCharacterWS {
                                             @QueryParam("at") @DefaultValue(
                                                 value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                                     name = "at",
-                                                    required = false,
                                                     defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                                     value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                             @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                                 name = "contid",
-                                                required = false,
                                                 defaultValue = "-1",
                                                 value = "Continuation ID for paged results") long contid,
                                             @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                                 name = "maxresults",
-                                                required = false,
                                                 defaultValue = "1000",
                                                 value = "Maximum number of results to retrieve") int maxresults,
                                             @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                                 name = "reverse",
-                                                required = false,
                                                 defaultValue = "false",
                                                 value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                             @QueryParam("eventID") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "eventID",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Calendar event ID selector") AttributeSelector eventID,
                                             @QueryParam("characterID") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "characterID",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Attending character ID selector") AttributeSelector characterID,
-                                            @QueryParam("characterName") @DefaultValue(
-                                                value = "{ any: true }") @ApiParam(
-                                                    name = "characterName",
-                                                    required = false,
-                                                    defaultValue = "{ any: true }",
-                                                    value = "Attending character name selector") AttributeSelector characterName,
                                             @QueryParam("response") @DefaultValue(
                                                 value = "{ any: true }") @ApiParam(
                                                     name = "response",
-                                                    required = false,
                                                     defaultValue = "{ any: true }",
                                                     value = "Attendee response selector") AttributeSelector response) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, eventID, characterID, characterName, response);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CALENDAR_EVENT_ATTENDEES);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CalendarEventAttendee> result = CalendarEventAttendee.accessQuery(cfg.owner, contid, maxresults, reverse, at, eventID, characterID, characterName,
-                                                                             response);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CALENDAR_EVENT_ATTENDEES,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CalendarEventAttendee>() {
+
+                                                          @Override
+                                                          public List<CalendarEventAttendee> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int EVENT_ID = 0;
+                                                            final int CHARACTER_ID = 1;
+                                                            final int RESPONSE = 2;
+                                                            return CalendarEventAttendee.accessQuery(acct, contid, maxresults,
+                                                                                                     reverse, at,
+                                                                                                     others[EVENT_ID],
+                                                                                                     others[CHARACTER_ID],
+                                                                                                     others[RESPONSE]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_CALENDAR,
+                                                                                        acct);
+                                                          }
+                                                        }, request, eventID, characterID, response);
   }
 
   @Path("/role")
