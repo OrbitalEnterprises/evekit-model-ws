@@ -12,6 +12,7 @@ import enterprises.orbital.evekit.ws.ServiceUtil;
 import enterprises.orbital.evekit.ws.ServiceUtil.AccessConfig;
 import io.swagger.annotations.*;
 
+import javax.print.attribute.standard.MediaSize;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -1001,59 +1002,64 @@ public class ModelCorporationWS {
                                @QueryParam("at") @DefaultValue(
                                    value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                        name = "at",
-                                       required = false,
                                        defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                        value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                    name = "contid",
-                                   required = false,
                                    defaultValue = "-1",
                                    value = "Continuation ID for paged results") long contid,
                                @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                    name = "maxresults",
-                                   required = false,
                                    defaultValue = "1000",
                                    value = "Maximum number of results to retrieve") int maxresults,
                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                    name = "reverse",
-                                   required = false,
                                    defaultValue = "false",
                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                @QueryParam("wallet") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
                                        name = "wallet",
-                                       required = false,
                                        defaultValue = "{ any: true }",
                                        value = "Division wallet indicator selector") AttributeSelector wallet,
-                               @QueryParam("accountKey") @DefaultValue(
+                               @QueryParam("division") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
-                                       name = "accountKey",
-                                       required = false,
+                                       name = "division",
                                        defaultValue = "{ any: true }",
-                                       value = "Division account key selector") AttributeSelector accountKey,
-                               @QueryParam("description") @DefaultValue(
+                                       value = "Division ID selector") AttributeSelector division,
+                               @QueryParam("name") @DefaultValue(
                                    value = "{ any: true }") @ApiParam(
-                                       name = "description",
-                                       required = false,
+                                       name = "name",
                                        defaultValue = "{ any: true }",
-                                       value = "Division description selector") AttributeSelector description) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, wallet, accountKey, description);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CORPORATION_SHEET);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<Division> result = Division.accessQuery(cfg.owner, contid, maxresults, reverse, at, wallet, accountKey, description);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                       value = "Division name selector") AttributeSelector name) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CORPORATION_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Division>() {
+
+                                                          @Override
+                                                          public List<Division> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int WALLET = 0;
+                                                            final int DIVISION = 1;
+                                                            final int NAME = 2;
+
+                                                            return Division.accessQuery(acct, contid,
+                                                                                           maxresults,
+                                                                                           reverse, at,
+                                                                                           others[WALLET],
+                                                                                           others[DIVISION],
+                                                                                           others[NAME]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_DIVISIONS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, wallet, division, name);
   }
 
   @Path("/facility")
@@ -2416,78 +2422,64 @@ public class ModelCorporationWS {
                                   @QueryParam("at") @DefaultValue(
                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                           name = "at",
-                                          required = false,
                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                       name = "contid",
-                                      required = false,
                                       defaultValue = "-1",
                                       value = "Continuation ID for paged results") long contid,
                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                       name = "maxresults",
-                                      required = false,
                                       defaultValue = "1000",
                                       value = "Maximum number of results to retrieve") int maxresults,
                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                       name = "reverse",
-                                      required = false,
                                       defaultValue = "false",
                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                   @QueryParam("shareholderID") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "shareholderID",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Shareholder ID selector") AttributeSelector shareholderID,
-                                  @QueryParam("isCorporation") @DefaultValue(
+                                  @QueryParam("shareholderType") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
-                                          name = "isCorporation",
-                                          required = false,
+                                          name = "shareholderType",
                                           defaultValue = "{ any: true }",
-                                          value = "Shareholder is corporation selector") AttributeSelector isCorporation,
-                                  @QueryParam("shareholderCorporationID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "shareholderCorporationID",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Shareholder corporation ID selector") AttributeSelector shareholderCorporationID,
-                                  @QueryParam("shareholderCorporationName") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "shareholderCorporationName",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Shareholder corporation name selector") AttributeSelector shareholderCorporationName,
-                                  @QueryParam("shareholderName") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "shareholderName",
-                                          required = false,
-                                          defaultValue = "{ any: true }",
-                                          value = "Shareholder name selector") AttributeSelector shareholderName,
+                                          value = "Shareholder type selector") AttributeSelector shareholderType,
                                   @QueryParam("shares") @DefaultValue(
                                       value = "{ any: true }") @ApiParam(
                                           name = "shares",
-                                          required = false,
                                           defaultValue = "{ any: true }",
                                           value = "Shareholder shares selector") AttributeSelector shares) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, shareholderID, isCorporation, shareholderCorporationID, shareholderCorporationName, shareholderName, shares);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_SHAREHOLDERS);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<Shareholder> result = Shareholder.accessQuery(cfg.owner, contid, maxresults, reverse, at, shareholderID, isCorporation, shareholderCorporationID,
-                                                         shareholderCorporationName, shareholderName, shares);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_SHAREHOLDERS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Shareholder>() {
+
+                                                          @Override
+                                                          public List<Shareholder> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int SHAREHOLDER_ID = 0;
+                                                            final int SHAREHOLDER_TYPE = 1;
+                                                            final int SHARES = 2;
+
+                                                            return Shareholder.accessQuery(acct, contid,
+                                                                                           maxresults,
+                                                                                           reverse, at,
+                                                                                           others[SHAREHOLDER_ID],
+                                                                                           others[SHAREHOLDER_TYPE],
+                                                                                           others[SHARES]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_SHAREHOLDERS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, shareholderID, shareholderType, shares);
   }
 
   @Path("/starbase")
