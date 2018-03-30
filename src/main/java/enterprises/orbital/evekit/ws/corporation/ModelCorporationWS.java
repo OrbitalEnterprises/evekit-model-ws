@@ -686,104 +686,183 @@ public class ModelCorporationWS {
                                        @QueryParam("at") @DefaultValue(
                                            value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                                name = "at",
-                                               required = false,
                                                defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                                value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                        @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                            name = "contid",
-                                           required = false,
                                            defaultValue = "-1",
                                            value = "Continuation ID for paged results") long contid,
                                        @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                            name = "maxresults",
-                                           required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
                                        @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                            name = "reverse",
-                                           required = false,
                                            defaultValue = "false",
                                            value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                        @QueryParam("titleID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "titleID",
-                                               required = false,
                                                defaultValue = "{ any: true }",
                                                value = "Corporation title ID selector") AttributeSelector titleID,
                                        @QueryParam("titleName") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "titleName",
-                                               required = false,
                                                defaultValue = "{ any: true }",
-                                               value = "Corporation title name selector") AttributeSelector titleName,
-                                       @QueryParam("grantableRoles") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "grantableRoles",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title grantable roles selector") AttributeSelector grantableRoles,
-                                       @QueryParam("grantableRolesAtBase") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "grantableRolesAtBase",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title grantable roles at base selector") AttributeSelector grantableRolesAtBase,
-                                       @QueryParam("grantableRolesAtHQ") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "grantableRolesAtHQ",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title grantable roles at HQ selector") AttributeSelector grantableRolesAtHQ,
-                                       @QueryParam("grantableRolesAtOther") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "grantableRolesAtOther",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title grantable roles at other selector") AttributeSelector grantableRolesAtOther,
-                                       @QueryParam("roles") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "roles",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title roles selector") AttributeSelector roles,
-                                       @QueryParam("rolesAtBase") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "rolesAtBase",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title roles at base selector") AttributeSelector rolesAtBase,
-                                       @QueryParam("rolesAtHQ") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "rolesAtHQ",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title roles at HQ selector") AttributeSelector rolesAtHQ,
-                                       @QueryParam("rolesAtOther") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "rolesAtOther",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title roles at other selector") AttributeSelector rolesAtOther) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, titleID, titleName, grantableRoles, grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles,
-                                          rolesAtBase, rolesAtHQ, rolesAtOther);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CORPORATION_TITLES);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<CorporationTitle> result = CorporationTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName, grantableRoles,
-                                                                   grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase,
-                                                                   rolesAtHQ, rolesAtOther);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                               value = "Corporation title name selector") AttributeSelector titleName) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CORPORATION_TITLES,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CorporationTitle>() {
+
+                                                          @Override
+                                                          public List<CorporationTitle> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int TITLE_ID = 0;
+                                                            final int TITLE_NAME = 1;
+
+                                                            return CorporationTitle.accessQuery(acct, contid,
+                                                                                                maxresults,
+                                                                                                reverse, at,
+                                                                                                others[TITLE_ID],
+                                                                                                others[TITLE_NAME]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_TITLES,
+                                                                                        acct);
+                                                          }
+                                                        }, request, titleID, titleName);
+  }
+
+  @Path("/title_role")
+  @GET
+  @ApiOperation(
+      value = "Get corporation title roles")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested corporation title roles",
+              response = CorporationTitleRole.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getCorporationTitleRoles(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("titleID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "titleID",
+          defaultValue = "{ any: true }",
+          value = "Corporation title role ID selector") AttributeSelector titleID,
+      @QueryParam("roleName") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "roleName",
+          defaultValue = "{ any: true }",
+          value = "Corporation title role name selector") AttributeSelector roleName,
+      @QueryParam("grantable") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "grantable",
+          defaultValue = "{ any: true }",
+          value = "Corporation title role grantable selector") AttributeSelector grantable,
+      @QueryParam("atHQ") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "atHQ",
+          defaultValue = "{ any: true }",
+          value = "Corporation title role at HQ selector") AttributeSelector atHQ,
+      @QueryParam("atBase") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "atBase",
+          defaultValue = "{ any: true }",
+          value = "Corporation title role at base selector") AttributeSelector atBase,
+      @QueryParam("atOther") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "atOther",
+          defaultValue = "{ any: true }",
+          value = "Corporation title role at other selector") AttributeSelector atOther) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CORPORATION_TITLES,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CorporationTitleRole>() {
+
+                                                          @Override
+                                                          public List<CorporationTitleRole> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int TITLE_ID = 0;
+                                                            final int ROLE_NAME = 1;
+                                                            final int GRANTABLE = 2;
+                                                            final int AT_HQ = 3;
+                                                            final int AT_BASE = 4;
+                                                            final int AT_OTHER = 5;
+
+                                                            return CorporationTitleRole.accessQuery(acct, contid,
+                                                                                                maxresults,
+                                                                                                reverse, at,
+                                                                                                others[TITLE_ID],
+                                                                                                others[ROLE_NAME],
+                                                                                                others[GRANTABLE],
+                                                                                                others[AT_HQ],
+                                                                                                others[AT_BASE],
+                                                                                                others[AT_OTHER]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_TITLES,
+                                                                                        acct);
+                                                          }
+                                                        }, request, titleID, roleName, grantable, atHQ, atBase, atOther);
   }
 
   @Path("/customs_office")
@@ -1300,16 +1379,16 @@ public class ModelCorporationWS {
     }
   }
 
-  @Path("/member_security")
+  @Path("/member_role")
   @GET
   @ApiOperation(
-      value = "Get corporation member security settings")
+      value = "Get corporation member roles")
   @ApiResponses(
       value = {
           @ApiResponse(
               code = 200,
-              message = "list of requested corporation member security settings",
-              response = MemberSecurity.class,
+              message = "list of requested corporation member security roles",
+              response = MemberRole.class,
               responseContainer = "array"),
           @ApiResponse(
               code = 400,
@@ -1332,7 +1411,7 @@ public class ModelCorporationWS {
               message = "internal service error",
               response = ServiceError.class),
       })
-  public Response getMemberSecurity(
+  public Response getMemberRoles(
                                     @Context HttpServletRequest request,
                                     @QueryParam("accessKey") @ApiParam(
                                         name = "accessKey",
@@ -1345,122 +1424,97 @@ public class ModelCorporationWS {
                                     @QueryParam("at") @DefaultValue(
                                         value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                             name = "at",
-                                            required = false,
                                             defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                             value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                     @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                         name = "contid",
-                                        required = false,
                                         defaultValue = "-1",
                                         value = "Continuation ID for paged results") long contid,
                                     @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                         name = "maxresults",
-                                        required = false,
                                         defaultValue = "1000",
                                         value = "Maximum number of results to retrieve") int maxresults,
                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                         name = "reverse",
-                                        required = false,
                                         defaultValue = "false",
                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
                                     @QueryParam("characterID") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
                                             name = "characterID",
-                                            required = false,
                                             defaultValue = "{ any: true }",
-                                            value = "Member security character ID selector") AttributeSelector characterID,
-                                    @QueryParam("name") @DefaultValue(
+                                            value = "Member role character ID selector") AttributeSelector characterID,
+                                    @QueryParam("roleName") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "name",
-                                            required = false,
+                                            name = "roleName",
                                             defaultValue = "{ any: true }",
-                                            value = "Member security character name selector") AttributeSelector name,
-                                    @QueryParam("grantableRoles") @DefaultValue(
+                                            value = "Member role name selector") AttributeSelector roleName,
+                                    @QueryParam("grantable") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "grantableRoles",
-                                            required = false,
+                                            name = "grantable",
                                             defaultValue = "{ any: true }",
-                                            value = "Member security grantable roles selector") AttributeSelector grantableRoles,
-                                    @QueryParam("grantableRolesAtBase") @DefaultValue(
+                                            value = "Member role grantable selector") AttributeSelector grantable,
+                                    @QueryParam("atHQ") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "grantableRolesAtBase",
-                                            required = false,
+                                            name = "atHQ",
                                             defaultValue = "{ any: true }",
-                                            value = "Member security grantable roles at base selector") AttributeSelector grantableRolesAtBase,
-                                    @QueryParam("grantableRolesAtHQ") @DefaultValue(
+                                            value = "Member role at HQ selector") AttributeSelector atHQ,
+                                    @QueryParam("atBase") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "grantableRolesAtHQ",
-                                            required = false,
+                                            name = "atBase",
                                             defaultValue = "{ any: true }",
-                                            value = "Member security grantable roles at HQ selector") AttributeSelector grantableRolesAtHQ,
-                                    @QueryParam("grantableRolesAtOther") @DefaultValue(
+                                            value = "Member role at base selector") AttributeSelector atBase,
+                                    @QueryParam("atOther") @DefaultValue(
                                         value = "{ any: true }") @ApiParam(
-                                            name = "grantableRolesAtOther",
-                                            required = false,
+                                            name = "atOther",
                                             defaultValue = "{ any: true }",
-                                            value = "Member security grantable roles at other selector") AttributeSelector grantableRolesAtOther,
-                                    @QueryParam("roles") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "roles",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Member security roles selector") AttributeSelector roles,
-                                    @QueryParam("rolesAtBase") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "rolesAtBase",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Member security roles at base selector") AttributeSelector rolesAtBase,
-                                    @QueryParam("rolesAtHQ") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "rolesAtHQ",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Member security roles at HQ selector") AttributeSelector rolesAtHQ,
-                                    @QueryParam("rolesAtOther") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "rolesAtOther",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Member security roles at other selector") AttributeSelector rolesAtOther,
-                                    @QueryParam("titles") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "titles",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Member security titles selector") AttributeSelector titles) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, characterID, name, grantableRoles, grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles,
-                                          rolesAtBase, rolesAtHQ, rolesAtOther, titles);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_MEMBER_SECURITY);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<MemberSecurity> result = MemberSecurity.accessQuery(cfg.owner, contid, maxresults, reverse, at, characterID, name, grantableRoles,
-                                                               grantableRolesAtBase, grantableRolesAtHQ, grantableRolesAtOther, roles, rolesAtBase, rolesAtHQ,
-                                                               rolesAtOther, titles);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                            value = "Member role at other selector") AttributeSelector atOther) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_MEMBER_SECURITY,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<MemberRole>() {
+
+                                                          @Override
+                                                          public List<MemberRole> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int CHARACTER_ID = 0;
+                                                            final int ROLE_NAME = 1;
+                                                            final int GRANTABLE = 2;
+                                                            final int AT_HQ = 3;
+                                                            final int AT_BASE = 4;
+                                                            final int AT_OTHER = 5;
+
+                                                            return MemberRole.accessQuery(acct, contid,
+                                                                                                maxresults,
+                                                                                                reverse, at,
+                                                                                                others[CHARACTER_ID],
+                                                                                                others[ROLE_NAME],
+                                                                                                others[GRANTABLE],
+                                                                                                others[AT_HQ],
+                                                                                                others[AT_BASE],
+                                                                                                others[AT_OTHER]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_MEMBERSHIP,
+                                                                                        acct);
+                                                          }
+                                                        }, request, characterID, roleName, grantable, atHQ, atBase, atOther);
   }
 
-  @Path("/member_security_log")
+  @Path("/member_role_history")
   @GET
   @ApiOperation(
-      value = "Get corporation member security log entries")
+      value = "Get corporation member role history entries")
   @ApiResponses(
       value = {
           @ApiResponse(
               code = 200,
-              message = "list of requested corporation member security log entries",
-              response = MemberSecurityLog.class,
+              message = "list of requested corporation member role history entries",
+              response = MemberRoleHistory.class,
               responseContainer = "array"),
           @ApiResponse(
               code = 400,
@@ -1483,7 +1537,7 @@ public class ModelCorporationWS {
               message = "internal service error",
               response = ServiceError.class),
       })
-  public Response getMemberSecurityLog(
+  public Response getMemberRoleHistory(
                                        @Context HttpServletRequest request,
                                        @QueryParam("accessKey") @ApiParam(
                                            name = "accessKey",
@@ -1496,90 +1550,177 @@ public class ModelCorporationWS {
                                        @QueryParam("at") @DefaultValue(
                                            value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
                                                name = "at",
-                                               required = false,
                                                defaultValue = "{ values: [ \"9223372036854775806\" ] }",
                                                value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
                                        @QueryParam("contid") @DefaultValue("-1") @ApiParam(
                                            name = "contid",
-                                           required = false,
                                            defaultValue = "-1",
                                            value = "Continuation ID for paged results") long contid,
                                        @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
                                            name = "maxresults",
-                                           required = false,
                                            defaultValue = "1000",
                                            value = "Maximum number of results to retrieve") int maxresults,
                                        @QueryParam("reverse") @DefaultValue("false") @ApiParam(
                                            name = "reverse",
-                                           required = false,
                                            defaultValue = "false",
                                            value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                       @QueryParam("changeTime") @DefaultValue(
+                                       @QueryParam("characterID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
-                                               name = "changeTime",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Member security log change time selector") AttributeSelector changeTime,
-                                       @QueryParam("changedCharacterID") @DefaultValue(
+                                           name = "characterID",
+                                           defaultValue = "{ any: true }",
+                                           value = "Member role history character ID selector") AttributeSelector characterID,
+                                       @QueryParam("changedAt") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
-                                               name = "changedCharacterID",
-                                               required = false,
+                                               name = "changedAt",
                                                defaultValue = "{ any: true }",
-                                               value = "Member security log changed character ID selector") AttributeSelector changedCharacterID,
-                                       @QueryParam("changedCharacterName") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "changedCharacterName",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Member security log changed character name selector") AttributeSelector changedCharacterName,
+                                               value = "Member role history change time selector") AttributeSelector changedAt,
                                        @QueryParam("issuerID") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
                                                name = "issuerID",
-                                               required = false,
                                                defaultValue = "{ any: true }",
-                                               value = "Member security log issuer ID selector") AttributeSelector issuerID,
-                                       @QueryParam("issuerName") @DefaultValue(
+                                               value = "Member role history issuer ID selector") AttributeSelector issuerID,
+                                       @QueryParam("roleType") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
-                                               name = "issuerName",
-                                               required = false,
+                                               name = "roleType",
                                                defaultValue = "{ any: true }",
-                                               value = "Member security log issuer name selector") AttributeSelector issuerName,
-                                       @QueryParam("roleLocationType") @DefaultValue(
+                                               value = "Member role history role type selector") AttributeSelector roleType,
+                                       @QueryParam("roleName") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
-                                               name = "roleLocationType",
-                                               required = false,
+                                               name = "roleName",
                                                defaultValue = "{ any: true }",
-                                               value = "Member security log role location type selector") AttributeSelector roleLocationType,
-                                       @QueryParam("oldRoles") @DefaultValue(
+                                               value = "Member role history roel name selector") AttributeSelector roleName,
+                                       @QueryParam("old") @DefaultValue(
                                            value = "{ any: true }") @ApiParam(
-                                               name = "oldRoles",
-                                               required = false,
+                                               name = "old",
                                                defaultValue = "{ any: true }",
-                                               value = "Member security log old roles selector") AttributeSelector oldRoles,
-                                       @QueryParam("newRoles") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "newRoles",
-                                               required = false,
-                                               defaultValue = "{ any: true }",
-                                               value = "Member security log new roles selector") AttributeSelector newRoles) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, changeTime, changedCharacterID, changedCharacterName, issuerID, issuerName, roleLocationType, oldRoles, newRoles);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_MEMBER_SECURITY_LOG);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<MemberSecurityLog> result = MemberSecurityLog.accessQuery(cfg.owner, contid, maxresults, reverse, at, changeTime, changedCharacterID,
-                                                                     changedCharacterName, issuerID, issuerName, roleLocationType, oldRoles, newRoles);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+                                               value = "Member role history is old selector") AttributeSelector old) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_MEMBER_SECURITY_LOG,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<MemberRoleHistory>() {
+
+                                                          @Override
+                                                          public List<MemberRoleHistory> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int CHARACTER_ID = 0;
+                                                            final int CHANGED_AT = 1;
+                                                            final int ISSUER_ID = 2;
+                                                            final int ROLE_TYPE = 3;
+                                                            final int ROLE_NAME = 4;
+                                                            final int OLD = 5;
+
+                                                            return MemberRoleHistory.accessQuery(acct, contid,
+                                                                                                maxresults,
+                                                                                                reverse, at,
+                                                                                                others[CHARACTER_ID],
+                                                                                                others[CHANGED_AT],
+                                                                                                others[ISSUER_ID],
+                                                                                                others[ROLE_TYPE],
+                                                                                                others[ROLE_NAME],
+                                                                                                others[OLD]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_MEMBERSHIP,
+                                                                                        acct);
+                                                          }
+                                                        }, request, characterID, changedAt, issuerID, roleType,
+                                                        roleName, old);
+  }
+
+  @Path("/members")
+  @GET
+  @ApiOperation(
+      value = "Get corporation members")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested corporation members",
+              response = Member.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getMembers(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("characterID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "characterID",
+          defaultValue = "{ any: true }",
+          value = "Corporation character ID selector") AttributeSelector characterID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_MEMBER_SECURITY,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Member>() {
+
+                                                          @Override
+                                                          public List<Member> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int CHARACTER_ID = 0;
+
+                                                            return Member.accessQuery(acct, contid,
+                                                                                                maxresults,
+                                                                                                reverse, at,
+                                                                                                others[CHARACTER_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_MEMBERSHIP,
+                                                                                        acct);
+                                                          }
+                                                        }, request, characterID);
   }
 
   @Path("/member_limit")
@@ -1671,6 +1812,104 @@ public class ModelCorporationWS {
                                                                                         acct);
                                                           }
                                                         }, request, memberLimit);
+  }
+
+  @Path("/member_title")
+  @GET
+  @ApiOperation(
+      value = "Get corporation member titles")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested corporation member titles",
+              response = MemberTitle.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getMemberTitles(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("characterID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "characterID",
+          defaultValue = "{ any: true }",
+          value = "Corporation member title character ID selector") AttributeSelector characterID,
+      @QueryParam("titleID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "titleID",
+          defaultValue = "{ any: true }",
+          value = "Corporation member title ID selector") AttributeSelector titleID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_MEMBER_SECURITY,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<MemberTitle>() {
+
+                                                          @Override
+                                                          public List<MemberTitle> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int CHARACTER_ID = 0;
+                                                            final int TITLE_ID = 1;
+
+                                                            return MemberTitle.accessQuery(acct, contid,
+                                                                                                maxresults,
+                                                                                                reverse, at,
+                                                                                                others[CHARACTER_ID],
+                                                                                                others[TITLE_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_TITLES,
+                                                                                        acct);
+                                                          }
+                                                        }, request, characterID, titleID);
   }
 
   @Path("/member_tracking")
@@ -2078,294 +2317,6 @@ public class ModelCorporationWS {
       // Retrieve
       List<OutpostServiceDetail> result = OutpostServiceDetail.accessQuery(cfg.owner, contid, maxresults, reverse, at, stationID, serviceName, ownerID,
                                                                            minStanding, surchargePerBadStanding, discountPerGoodStanding);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
-  }
-
-  @Path("/role")
-  @GET
-  @ApiOperation(
-      value = "Get corporation title roles")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              code = 200,
-              message = "list of requested corporation title roles",
-              response = Role.class,
-              responseContainer = "array"),
-          @ApiResponse(
-              code = 400,
-              message = "invalid attribute selector",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 401,
-              message = "access key credential is invalid",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 403,
-              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 404,
-              message = "access key not found",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 500,
-              message = "internal service error",
-              response = ServiceError.class),
-      })
-  public Response getRoles(
-                           @Context HttpServletRequest request,
-                           @QueryParam("accessKey") @ApiParam(
-                               name = "accessKey",
-                               required = true,
-                               value = "Model access key") int accessKey,
-                           @QueryParam("accessCred") @ApiParam(
-                               name = "accessCred",
-                               required = true,
-                               value = "Model access credential") String accessCred,
-                           @QueryParam("at") @DefaultValue(
-                               value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                   name = "at",
-                                   required = false,
-                                   defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                   value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                           @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                               name = "contid",
-                               required = false,
-                               defaultValue = "-1",
-                               value = "Continuation ID for paged results") long contid,
-                           @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                               name = "maxresults",
-                               required = false,
-                               defaultValue = "1000",
-                               value = "Maximum number of results to retrieve") int maxresults,
-                           @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                               name = "reverse",
-                               required = false,
-                               defaultValue = "false",
-                               value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                           @QueryParam("roleID") @DefaultValue(
-                               value = "{ any: true }") @ApiParam(
-                                   name = "roleID",
-                                   required = false,
-                                   defaultValue = "{ any: true }",
-                                   value = "Corporation tile role ID selector") AttributeSelector roleID,
-                           @QueryParam("roleDescription") @DefaultValue(
-                               value = "{ any: true }") @ApiParam(
-                                   name = "roleDescription",
-                                   required = false,
-                                   defaultValue = "{ any: true }",
-                                   value = "Corporation title role description selector") AttributeSelector roleDescription,
-                           @QueryParam("roleName") @DefaultValue(
-                               value = "{ any: true }") @ApiParam(
-                                   name = "roleName",
-                                   required = false,
-                                   defaultValue = "{ any: true }",
-                                   value = "Corporation title role name selector") AttributeSelector roleName) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, roleID, roleDescription, roleName);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_CORPORATION_TITLES);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<Role> result = Role.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleID, roleDescription, roleName);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
-  }
-
-  @Path("/security_role")
-  @GET
-  @ApiOperation(
-      value = "Get corporation security roles")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              code = 200,
-              message = "list of requested corporation security roles",
-              response = SecurityRole.class,
-              responseContainer = "array"),
-          @ApiResponse(
-              code = 400,
-              message = "invalid attribute selector",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 401,
-              message = "access key credential is invalid",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 403,
-              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 404,
-              message = "access key not found",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 500,
-              message = "internal service error",
-              response = ServiceError.class),
-      })
-  public Response getSecurityRoles(
-                                   @Context HttpServletRequest request,
-                                   @QueryParam("accessKey") @ApiParam(
-                                       name = "accessKey",
-                                       required = true,
-                                       value = "Model access key") int accessKey,
-                                   @QueryParam("accessCred") @ApiParam(
-                                       name = "accessCred",
-                                       required = true,
-                                       value = "Model access credential") String accessCred,
-                                   @QueryParam("at") @DefaultValue(
-                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                           name = "at",
-                                           required = false,
-                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                       name = "contid",
-                                       required = false,
-                                       defaultValue = "-1",
-                                       value = "Continuation ID for paged results") long contid,
-                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                       name = "maxresults",
-                                       required = false,
-                                       defaultValue = "1000",
-                                       value = "Maximum number of results to retrieve") int maxresults,
-                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                       name = "reverse",
-                                       required = false,
-                                       defaultValue = "false",
-                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                   @QueryParam("roleID") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "roleID",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Security role ID selector") AttributeSelector roleID,
-                                   @QueryParam("roleName") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "roleName",
-                                           required = false,
-                                           defaultValue = "{ any: true }",
-                                           value = "Security role name selector") AttributeSelector roleName) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, roleID, roleName);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_MEMBER_SECURITY);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<SecurityRole> result = SecurityRole.accessQuery(cfg.owner, contid, maxresults, reverse, at, roleID, roleName);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
-  }
-
-  @Path("/security_title")
-  @GET
-  @ApiOperation(
-      value = "Get corporation security titles")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              code = 200,
-              message = "list of requested corporation security titles",
-              response = SecurityTitle.class,
-              responseContainer = "array"),
-          @ApiResponse(
-              code = 400,
-              message = "invalid attribute selector",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 401,
-              message = "access key credential is invalid",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 403,
-              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 404,
-              message = "access key not found",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 500,
-              message = "internal service error",
-              response = ServiceError.class),
-      })
-  public Response getSecurityTitles(
-                                    @Context HttpServletRequest request,
-                                    @QueryParam("accessKey") @ApiParam(
-                                        name = "accessKey",
-                                        required = true,
-                                        value = "Model access key") int accessKey,
-                                    @QueryParam("accessCred") @ApiParam(
-                                        name = "accessCred",
-                                        required = true,
-                                        value = "Model access credential") String accessCred,
-                                    @QueryParam("at") @DefaultValue(
-                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                            name = "at",
-                                            required = false,
-                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                        name = "contid",
-                                        required = false,
-                                        defaultValue = "-1",
-                                        value = "Continuation ID for paged results") long contid,
-                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                        name = "maxresults",
-                                        required = false,
-                                        defaultValue = "1000",
-                                        value = "Maximum number of results to retrieve") int maxresults,
-                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                        name = "reverse",
-                                        required = false,
-                                        defaultValue = "false",
-                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                    @QueryParam("titleID") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "titleID",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Security title ID selector") AttributeSelector titleID,
-                                    @QueryParam("titleName") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "titleName",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Security title name selector") AttributeSelector titleName) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, titleID, titleName);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_MEMBER_SECURITY);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<SecurityTitle> result = SecurityTitle.accessQuery(cfg.owner, contid, maxresults, reverse, at, titleID, titleName);
       for (CachedData next : result) {
         next.prepareTransient();
       }
