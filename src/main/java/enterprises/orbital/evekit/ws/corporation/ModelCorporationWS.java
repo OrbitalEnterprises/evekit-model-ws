@@ -3,21 +3,16 @@ package enterprises.orbital.evekit.ws.corporation;
 import enterprises.orbital.evekit.account.AccountAccessMask;
 import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
-import enterprises.orbital.evekit.model.CachedData;
 import enterprises.orbital.evekit.model.ESISyncEndpoint;
 import enterprises.orbital.evekit.model.corporation.*;
 import enterprises.orbital.evekit.ws.AccountHandlerUtil;
 import enterprises.orbital.evekit.ws.ServiceError;
-import enterprises.orbital.evekit.ws.ServiceUtil;
-import enterprises.orbital.evekit.ws.ServiceUtil.AccessConfig;
 import io.swagger.annotations.*;
 
-import javax.print.attribute.standard.MediaSize;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
 import java.util.List;
 
@@ -71,131 +66,139 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getContainerLogs(
-                                   @Context HttpServletRequest request,
-                                   @QueryParam("accessKey") @ApiParam(
-                                       name = "accessKey",
-                                       required = true,
-                                       value = "Model access key") int accessKey,
-                                   @QueryParam("accessCred") @ApiParam(
-                                       name = "accessCred",
-                                       required = true,
-                                       value = "Model access credential") String accessCred,
-                                   @QueryParam("at") @DefaultValue(
-                                       value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                           name = "at",
-                                           defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                           value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                   @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                       name = "contid",
-                                       defaultValue = "-1",
-                                       value = "Continuation ID for paged results") long contid,
-                                   @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                       name = "maxresults",
-                                       defaultValue = "1000",
-                                       value = "Maximum number of results to retrieve") int maxresults,
-                                   @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                       name = "reverse",
-                                       defaultValue = "false",
-                                       value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                   @QueryParam("logTime") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "logTime",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log time selector") AttributeSelector logTime,
-                                   @QueryParam("action") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "action",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log action selector") AttributeSelector action,
-                                   @QueryParam("characterID") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "characterID",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log character ID selector") AttributeSelector characterID,
-                                   @QueryParam("locationFlag") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "locationFlag",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log location flag selector") AttributeSelector locationFlag,
-                                   @QueryParam("containerID") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "containerID",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log container ID selector") AttributeSelector containerID,
-                                   @QueryParam("containerTypeID") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "containerTypeID",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log container type ID selector") AttributeSelector containerTypeID,
-                                   @QueryParam("locationID") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "locationID",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log location ID selector") AttributeSelector locationID,
-                                   @QueryParam("newConfiguration") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "newConfiguration",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log new configuration selector") AttributeSelector newConfiguration,
-                                   @QueryParam("oldConfiguration") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "oldConfiguration",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log old configuration selector") AttributeSelector oldConfiguration,
-                                   @QueryParam("passwordType") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "passwordType",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log password type selector") AttributeSelector passwordType,
-                                   @QueryParam("quantity") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "quantity",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log quantity selector") AttributeSelector quantity,
-                                   @QueryParam("typeID") @DefaultValue(
-                                       value = "{ any: true }") @ApiParam(
-                                           name = "typeID",
-                                           defaultValue = "{ any: true }",
-                                           value = "Corporation container log type ID selector") AttributeSelector typeID) {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("logTime") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "logTime",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log time selector") AttributeSelector logTime,
+      @QueryParam("action") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "action",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log action selector") AttributeSelector action,
+      @QueryParam("characterID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "characterID",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log character ID selector") AttributeSelector characterID,
+      @QueryParam("locationFlag") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "locationFlag",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log location flag selector") AttributeSelector locationFlag,
+      @QueryParam("containerID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "containerID",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log container ID selector") AttributeSelector containerID,
+      @QueryParam("containerTypeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "containerTypeID",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log container type ID selector") AttributeSelector containerTypeID,
+      @QueryParam("locationID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "locationID",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log location ID selector") AttributeSelector locationID,
+      @QueryParam("newConfiguration") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "newConfiguration",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log new configuration selector") AttributeSelector newConfiguration,
+      @QueryParam("oldConfiguration") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "oldConfiguration",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log old configuration selector") AttributeSelector oldConfiguration,
+      @QueryParam("passwordType") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "passwordType",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log password type selector") AttributeSelector passwordType,
+      @QueryParam("quantity") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "quantity",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log quantity selector") AttributeSelector quantity,
+      @QueryParam("typeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "typeID",
+          defaultValue = "{ any: true }",
+          value = "Corporation container log type ID selector") AttributeSelector typeID) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CONTAINER_LOG,
-                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<ContainerLog>() {
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<ContainerLog>() {
 
-          @Override
-          public List<ContainerLog> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
-                                           AttributeSelector at, AttributeSelector... others) throws IOException {
-            final int LOG_TIME = 0;
-            final int ACTION = 1;
-            final int CHARACTER_ID = 2;
-            final int LOCATION_FLAG = 3;
-            final int CONTAINER_ID = 4;
-            final int CONTAINER_TYPE_ID = 5;
-            final int LOCATION_ID = 6;
-            final int NEW_CONFIGURATION = 7;
-            final int OLD_CONFIGURATION = 8;
-            final int PASSWORD_TYPE = 9;
-            final int QUANTITY = 10;
-            final int TYPE_ID = 11;
+                                                          @Override
+                                                          public List<ContainerLog> getList(SynchronizedEveAccount acct,
+                                                                                            long contid, int maxresults,
+                                                                                            boolean reverse,
+                                                                                            AttributeSelector at,
+                                                                                            AttributeSelector... others) throws IOException {
+                                                            final int LOG_TIME = 0;
+                                                            final int ACTION = 1;
+                                                            final int CHARACTER_ID = 2;
+                                                            final int LOCATION_FLAG = 3;
+                                                            final int CONTAINER_ID = 4;
+                                                            final int CONTAINER_TYPE_ID = 5;
+                                                            final int LOCATION_ID = 6;
+                                                            final int NEW_CONFIGURATION = 7;
+                                                            final int OLD_CONFIGURATION = 8;
+                                                            final int PASSWORD_TYPE = 9;
+                                                            final int QUANTITY = 10;
+                                                            final int TYPE_ID = 11;
 
-            return ContainerLog.accessQuery(acct, contid, maxresults, reverse, at,
-                                           others[LOG_TIME],
-                                           others[ACTION],
-                                           others[CHARACTER_ID],
-                                           others[LOCATION_FLAG],
-                                           others[CONTAINER_ID],
-                                           others[CONTAINER_TYPE_ID],
-                                           others[LOCATION_ID],
-                                           others[NEW_CONFIGURATION],
-                                           others[OLD_CONFIGURATION],
-                                           others[PASSWORD_TYPE],
-                                           others[QUANTITY],
-                                           others[TYPE_ID]);
-          }
+                                                            return ContainerLog.accessQuery(acct, contid, maxresults,
+                                                                                            reverse, at,
+                                                                                            others[LOG_TIME],
+                                                                                            others[ACTION],
+                                                                                            others[CHARACTER_ID],
+                                                                                            others[LOCATION_FLAG],
+                                                                                            others[CONTAINER_ID],
+                                                                                            others[CONTAINER_TYPE_ID],
+                                                                                            others[LOCATION_ID],
+                                                                                            others[NEW_CONFIGURATION],
+                                                                                            others[OLD_CONFIGURATION],
+                                                                                            others[PASSWORD_TYPE],
+                                                                                            others[QUANTITY],
+                                                                                            others[TYPE_ID]);
+                                                          }
 
-          @Override
-          public long getExpiry(SynchronizedEveAccount acct) {
-            return handleStandardExpiry(ESISyncEndpoint.CORP_CONTAINER_LOGS, acct);
-          }
-        }, request, logTime, action, characterID, locationFlag, containerID, containerTypeID, locationID, newConfiguration, oldConfiguration, passwordType, quantity, typeID);
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CORP_CONTAINER_LOGS, acct);
+                                                          }
+                                                        }, request, logTime, action, characterID, locationFlag,
+                                                        containerID, containerTypeID, locationID, newConfiguration,
+                                                        oldConfiguration, passwordType, quantity, typeID);
   }
 
   @Path("/medal")
@@ -231,82 +234,89 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getCorporationMedals(
-                                       @Context HttpServletRequest request,
-                                       @QueryParam("accessKey") @ApiParam(
-                                           name = "accessKey",
-                                           required = true,
-                                           value = "Model access key") int accessKey,
-                                       @QueryParam("accessCred") @ApiParam(
-                                           name = "accessCred",
-                                           required = true,
-                                           value = "Model access credential") String accessCred,
-                                       @QueryParam("at") @DefaultValue(
-                                           value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                               name = "at",
-                                               defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                               value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                       @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                           name = "contid",
-                                           defaultValue = "-1",
-                                           value = "Continuation ID for paged results") long contid,
-                                       @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                           name = "maxresults",
-                                           defaultValue = "1000",
-                                           value = "Maximum number of results to retrieve") int maxresults,
-                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                           name = "reverse",
-                                           defaultValue = "false",
-                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                       @QueryParam("medalID") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "medalID",
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation medal ID selector") AttributeSelector medalID,
-                                       @QueryParam("description") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "description",
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation medal description selector") AttributeSelector description,
-                                       @QueryParam("title") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "title",
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation medal title selector") AttributeSelector title,
-                                       @QueryParam("created") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "created",
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation medal created date selector") AttributeSelector created,
-                                       @QueryParam("creatorID") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "creatorID",
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation medal creator ID selector") AttributeSelector creatorID) {
-    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CORPORATION_MEDALS,
-                                                        at, contid, maxresults, reverse, new AccountHandlerUtil.QueryCaller<CorporationMedal>() {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("medalID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "medalID",
+          defaultValue = "{ any: true }",
+          value = "Corporation medal ID selector") AttributeSelector medalID,
+      @QueryParam("description") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "description",
+          defaultValue = "{ any: true }",
+          value = "Corporation medal description selector") AttributeSelector description,
+      @QueryParam("title") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "title",
+          defaultValue = "{ any: true }",
+          value = "Corporation medal title selector") AttributeSelector title,
+      @QueryParam("created") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "created",
+          defaultValue = "{ any: true }",
+          value = "Corporation medal created date selector") AttributeSelector created,
+      @QueryParam("creatorID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "creatorID",
+          defaultValue = "{ any: true }",
+          value = "Corporation medal creator ID selector") AttributeSelector creatorID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CORPORATION_MEDALS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CorporationMedal>() {
 
-          @Override
-          public List<CorporationMedal> getList(SynchronizedEveAccount acct, long contid, int maxresults, boolean reverse,
-                                            AttributeSelector at, AttributeSelector... others) throws IOException {
-            final int MEDAL_ID = 0;
-            final int DESCRIPTION = 1;
-            final int TITLE = 2;
-            final int CREATED = 3;
-            final int CREATOR_ID = 4;
+                                                          @Override
+                                                          public List<CorporationMedal> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int MEDAL_ID = 0;
+                                                            final int DESCRIPTION = 1;
+                                                            final int TITLE = 2;
+                                                            final int CREATED = 3;
+                                                            final int CREATOR_ID = 4;
 
-            return CorporationMedal.accessQuery(acct, contid, maxresults, reverse, at,
-                                            others[MEDAL_ID],
-                                            others[DESCRIPTION],
-                                            others[TITLE],
-                                            others[CREATED],
-                                            others[CREATOR_ID]);
-          }
+                                                            return CorporationMedal.accessQuery(acct, contid,
+                                                                                                maxresults, reverse, at,
+                                                                                                others[MEDAL_ID],
+                                                                                                others[DESCRIPTION],
+                                                                                                others[TITLE],
+                                                                                                others[CREATED],
+                                                                                                others[CREATOR_ID]);
+                                                          }
 
-          @Override
-          public long getExpiry(SynchronizedEveAccount acct) {
-            return handleStandardExpiry(ESISyncEndpoint.CORP_MEDALS, acct);
-          }
-        }, request, medalID, description, title, created, creatorID);
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_MEDALS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, medalID, description, title, created, creatorID);
   }
 
   @Path("/member_medal")
@@ -342,62 +352,62 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getMemberMedals(
-                                  @Context HttpServletRequest request,
-                                  @QueryParam("accessKey") @ApiParam(
-                                      name = "accessKey",
-                                      required = true,
-                                      value = "Model access key") int accessKey,
-                                  @QueryParam("accessCred") @ApiParam(
-                                      name = "accessCred",
-                                      required = true,
-                                      value = "Model access credential") String accessCred,
-                                  @QueryParam("at") @DefaultValue(
-                                      value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                          name = "at",
-                                          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                  @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                      name = "contid",
-                                      defaultValue = "-1",
-                                      value = "Continuation ID for paged results") long contid,
-                                  @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                      name = "maxresults",
-                                      defaultValue = "1000",
-                                      value = "Maximum number of results to retrieve") int maxresults,
-                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                      name = "reverse",
-                                      defaultValue = "false",
-                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                  @QueryParam("medalID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "medalID",
-                                          defaultValue = "{ any: true }",
-                                          value = "Member medal ID selector") AttributeSelector medalID,
-                                  @QueryParam("characterID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "characterID",
-                                          defaultValue = "{ any: true }",
-                                          value = "Member medal character ID selector") AttributeSelector characterID,
-                                  @QueryParam("issued") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "issued",
-                                          defaultValue = "{ any: true }",
-                                          value = "Member medal issued date selector") AttributeSelector issued,
-                                  @QueryParam("issuerID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "issuerID",
-                                          defaultValue = "{ any: true }",
-                                          value = "Member medal issuer ID selector") AttributeSelector issuerID,
-                                  @QueryParam("reason") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "reason",
-                                          defaultValue = "{ any: true }",
-                                          value = "Member medal reason selector") AttributeSelector reason,
-                                  @QueryParam("status") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "status",
-                                          defaultValue = "{ any: true }",
-                                          value = "Member medal status selector") AttributeSelector status) {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("medalID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "medalID",
+          defaultValue = "{ any: true }",
+          value = "Member medal ID selector") AttributeSelector medalID,
+      @QueryParam("characterID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "characterID",
+          defaultValue = "{ any: true }",
+          value = "Member medal character ID selector") AttributeSelector characterID,
+      @QueryParam("issued") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "issued",
+          defaultValue = "{ any: true }",
+          value = "Member medal issued date selector") AttributeSelector issued,
+      @QueryParam("issuerID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "issuerID",
+          defaultValue = "{ any: true }",
+          value = "Member medal issuer ID selector") AttributeSelector issuerID,
+      @QueryParam("reason") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "reason",
+          defaultValue = "{ any: true }",
+          value = "Member medal reason selector") AttributeSelector reason,
+      @QueryParam("status") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "status",
+          defaultValue = "{ any: true }",
+          value = "Member medal status selector") AttributeSelector status) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_MEMBER_MEDALS,
                                                         at, contid, maxresults, reverse,
                                                         new AccountHandlerUtil.QueryCaller<CorporationMemberMedal>() {
@@ -468,117 +478,117 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getCorporationSheet(
-                                      @Context HttpServletRequest request,
-                                      @QueryParam("accessKey") @ApiParam(
-                                          name = "accessKey",
-                                          required = true,
-                                          value = "Model access key") int accessKey,
-                                      @QueryParam("accessCred") @ApiParam(
-                                          name = "accessCred",
-                                          required = true,
-                                          value = "Model access credential") String accessCred,
-                                      @QueryParam("at") @DefaultValue(
-                                          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                              name = "at",
-                                              defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                              value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                          name = "contid",
-                                          defaultValue = "-1",
-                                          value = "Continuation ID for paged results") long contid,
-                                      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                          name = "maxresults",
-                                          defaultValue = "1000",
-                                          value = "Maximum number of results to retrieve") int maxresults,
-                                      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                          name = "reverse",
-                                          defaultValue = "false",
-                                          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                      @QueryParam("allianceID") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "allianceID",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation alliance ID selector") AttributeSelector allianceID,
-                                      @QueryParam("ceoID") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "ceoID",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation CEO ID selector") AttributeSelector ceoID,
-                                      @QueryParam("corporationID") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "corporationID",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation ID selector") AttributeSelector corporationID,
-                                      @QueryParam("corporationName") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "corporationName",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation name selector") AttributeSelector corporationName,
-                                      @QueryParam("description") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "description",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation description selector") AttributeSelector description,
-                                      @QueryParam("memberCount") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "memberCount",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation member count selector") AttributeSelector memberCount,
-                                      @QueryParam("shares") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "shares",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation shares selector") AttributeSelector shares,
-                                      @QueryParam("stationID") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "stationID",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation station ID selector") AttributeSelector stationID,
-                                      @QueryParam("taxRate") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "taxRate",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation tax rate selector") AttributeSelector taxRate,
-                                      @QueryParam("ticker") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "ticker",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation ticker selector") AttributeSelector ticker,
-                                      @QueryParam("url") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                              name = "url",
-                                              defaultValue = "{ any: true }",
-                                              value = "Corporation URL selector") AttributeSelector url,
-                                      @QueryParam("dateFounded") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                          name = "dateFounded",
-                                          defaultValue = "{ any: true }",
-                                          value = "Corporation founding date selector") AttributeSelector dateFounded,
-                                      @QueryParam("creatorID") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                          name = "creatorID",
-                                          defaultValue = "{ any: true }",
-                                          value = "Corporation creator ID selector") AttributeSelector creatorID,
-                                      @QueryParam("factionID") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                          name = "factionID",
-                                          defaultValue = "{ any: true }",
-                                          value = "Corporation faction ID selector") AttributeSelector factionID,
-                                      @QueryParam("px64x64") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                          name = "px64x64",
-                                          defaultValue = "{ any: true }",
-                                          value = "Corporation 64x64 image URL selector") AttributeSelector px64x64,
-                                      @QueryParam("px128x128") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                          name = "px128x128",
-                                          defaultValue = "{ any: true }",
-                                          value = "Corporation 128x128 image URL selector") AttributeSelector px128x128,
-                                      @QueryParam("px256x256") @DefaultValue(
-                                          value = "{ any: true }") @ApiParam(
-                                          name = "px256x256",
-                                          defaultValue = "{ any: true }",
-                                          value = "Corporation 256x256 image URL selector") AttributeSelector px256x256) {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("allianceID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "allianceID",
+          defaultValue = "{ any: true }",
+          value = "Corporation alliance ID selector") AttributeSelector allianceID,
+      @QueryParam("ceoID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "ceoID",
+          defaultValue = "{ any: true }",
+          value = "Corporation CEO ID selector") AttributeSelector ceoID,
+      @QueryParam("corporationID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "corporationID",
+          defaultValue = "{ any: true }",
+          value = "Corporation ID selector") AttributeSelector corporationID,
+      @QueryParam("corporationName") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "corporationName",
+          defaultValue = "{ any: true }",
+          value = "Corporation name selector") AttributeSelector corporationName,
+      @QueryParam("description") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "description",
+          defaultValue = "{ any: true }",
+          value = "Corporation description selector") AttributeSelector description,
+      @QueryParam("memberCount") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "memberCount",
+          defaultValue = "{ any: true }",
+          value = "Corporation member count selector") AttributeSelector memberCount,
+      @QueryParam("shares") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shares",
+          defaultValue = "{ any: true }",
+          value = "Corporation shares selector") AttributeSelector shares,
+      @QueryParam("stationID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "stationID",
+          defaultValue = "{ any: true }",
+          value = "Corporation station ID selector") AttributeSelector stationID,
+      @QueryParam("taxRate") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "taxRate",
+          defaultValue = "{ any: true }",
+          value = "Corporation tax rate selector") AttributeSelector taxRate,
+      @QueryParam("ticker") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "ticker",
+          defaultValue = "{ any: true }",
+          value = "Corporation ticker selector") AttributeSelector ticker,
+      @QueryParam("url") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "url",
+          defaultValue = "{ any: true }",
+          value = "Corporation URL selector") AttributeSelector url,
+      @QueryParam("dateFounded") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "dateFounded",
+          defaultValue = "{ any: true }",
+          value = "Corporation founding date selector") AttributeSelector dateFounded,
+      @QueryParam("creatorID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "creatorID",
+          defaultValue = "{ any: true }",
+          value = "Corporation creator ID selector") AttributeSelector creatorID,
+      @QueryParam("factionID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "factionID",
+          defaultValue = "{ any: true }",
+          value = "Corporation faction ID selector") AttributeSelector factionID,
+      @QueryParam("px64x64") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "px64x64",
+          defaultValue = "{ any: true }",
+          value = "Corporation 64x64 image URL selector") AttributeSelector px64x64,
+      @QueryParam("px128x128") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "px128x128",
+          defaultValue = "{ any: true }",
+          value = "Corporation 128x128 image URL selector") AttributeSelector px128x128,
+      @QueryParam("px256x256") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "px256x256",
+          defaultValue = "{ any: true }",
+          value = "Corporation 256x256 image URL selector") AttributeSelector px256x256) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
                                                         AccountAccessMask.ACCESS_CORPORATION_SHEET,
                                                         at, contid, maxresults, reverse,
@@ -674,42 +684,42 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getCorporationTitles(
-                                       @Context HttpServletRequest request,
-                                       @QueryParam("accessKey") @ApiParam(
-                                           name = "accessKey",
-                                           required = true,
-                                           value = "Model access key") int accessKey,
-                                       @QueryParam("accessCred") @ApiParam(
-                                           name = "accessCred",
-                                           required = true,
-                                           value = "Model access credential") String accessCred,
-                                       @QueryParam("at") @DefaultValue(
-                                           value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                               name = "at",
-                                               defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                               value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                       @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                           name = "contid",
-                                           defaultValue = "-1",
-                                           value = "Continuation ID for paged results") long contid,
-                                       @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                           name = "maxresults",
-                                           defaultValue = "1000",
-                                           value = "Maximum number of results to retrieve") int maxresults,
-                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                           name = "reverse",
-                                           defaultValue = "false",
-                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                       @QueryParam("titleID") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "titleID",
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title ID selector") AttributeSelector titleID,
-                                       @QueryParam("titleName") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "titleName",
-                                               defaultValue = "{ any: true }",
-                                               value = "Corporation title name selector") AttributeSelector titleName) {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("titleID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "titleID",
+          defaultValue = "{ any: true }",
+          value = "Corporation title ID selector") AttributeSelector titleID,
+      @QueryParam("titleName") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "titleName",
+          defaultValue = "{ any: true }",
+          value = "Corporation title name selector") AttributeSelector titleName) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
                                                         AccountAccessMask.ACCESS_CORPORATION_TITLES,
                                                         at, contid, maxresults, reverse,
@@ -847,14 +857,14 @@ public class ModelCorporationWS {
                                                             final int AT_OTHER = 5;
 
                                                             return CorporationTitleRole.accessQuery(acct, contid,
-                                                                                                maxresults,
-                                                                                                reverse, at,
-                                                                                                others[TITLE_ID],
-                                                                                                others[ROLE_NAME],
-                                                                                                others[GRANTABLE],
-                                                                                                others[AT_HQ],
-                                                                                                others[AT_BASE],
-                                                                                                others[AT_OTHER]);
+                                                                                                    maxresults,
+                                                                                                    reverse, at,
+                                                                                                    others[TITLE_ID],
+                                                                                                    others[ROLE_NAME],
+                                                                                                    others[GRANTABLE],
+                                                                                                    others[AT_HQ],
+                                                                                                    others[AT_BASE],
+                                                                                                    others[AT_OTHER]);
                                                           }
 
                                                           @Override
@@ -862,7 +872,8 @@ public class ModelCorporationWS {
                                                             return handleStandardExpiry(ESISyncEndpoint.CORP_TITLES,
                                                                                         acct);
                                                           }
-                                                        }, request, titleID, roleName, grantable, atHQ, atBase, atOther);
+                                                        }, request, titleID, roleName, grantable, atHQ, atBase,
+                                                        atOther);
   }
 
   @Path("/customs_office")
@@ -898,142 +909,158 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getCustomsOffices(
-                                    @Context HttpServletRequest request,
-                                    @QueryParam("accessKey") @ApiParam(
-                                        name = "accessKey",
-                                        required = true,
-                                        value = "Model access key") int accessKey,
-                                    @QueryParam("accessCred") @ApiParam(
-                                        name = "accessCred",
-                                        required = true,
-                                        value = "Model access credential") String accessCred,
-                                    @QueryParam("at") @DefaultValue(
-                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                            name = "at",
-                                            required = false,
-                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                        name = "contid",
-                                        required = false,
-                                        defaultValue = "-1",
-                                        value = "Continuation ID for paged results") long contid,
-                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                        name = "maxresults",
-                                        required = false,
-                                        defaultValue = "1000",
-                                        value = "Maximum number of results to retrieve") int maxresults,
-                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                        name = "reverse",
-                                        required = false,
-                                        defaultValue = "false",
-                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                    @QueryParam("itemID") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "itemID",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office item ID selector") AttributeSelector itemID,
-                                    @QueryParam("solarSystemID") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "solarSystemID",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office solar system ID selector") AttributeSelector solarSystemID,
-                                    @QueryParam("solarSystemName") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "solarSystemName",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office solar system name selector") AttributeSelector solarSystemName,
-                                    @QueryParam("reinforceHour") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "reinforceHour",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office reinforce hour selector") AttributeSelector reinforceHour,
-                                    @QueryParam("allowAlliance") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "allowAlliance",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office allow alliance selector") AttributeSelector allowAlliance,
-                                    @QueryParam("allowStandings") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "allowStandings",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office allow standings selector") AttributeSelector allowStandings,
-                                    @QueryParam("standingLevel") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "standingLevel",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office standing level selector") AttributeSelector standingLevel,
-                                    @QueryParam("taxRateAlliance") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "taxRateAlliance",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office tax rate alliance selector") AttributeSelector taxRateAlliance,
-                                    @QueryParam("taxRateCorp") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "taxRateCorp",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office tax rate corporation selector") AttributeSelector taxRateCorp,
-                                    @QueryParam("taxRateStandingHigh") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "taxRateStandingHigh",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office tax rate standing high selector") AttributeSelector taxRateStandingHigh,
-                                    @QueryParam("taxRateStandingGood") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "taxRateStandingGood",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office tax rate standing good selector") AttributeSelector taxRateStandingGood,
-                                    @QueryParam("taxRateStandingNeutral") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "taxRateStandingNeutral",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office tax rate standing neutral selector") AttributeSelector taxRateStandingNeutral,
-                                    @QueryParam("taxRateStandingBad") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "taxRateStandingBad",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office tax rate standing bad selector") AttributeSelector taxRateStandingBad,
-                                    @QueryParam("taxRateStandingHorrible") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "taxRateStandingHorrible",
-                                            required = false,
-                                            defaultValue = "{ any: true }",
-                                            value = "Customs office tax rate standing horrible selector") AttributeSelector taxRateStandingHorrible) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, itemID, solarSystemID, solarSystemName, reinforceHour, allowAlliance, allowStandings, standingLevel,
-                                          taxRateAlliance, taxRateCorp, taxRateStandingHigh, taxRateStandingGood, taxRateStandingNeutral, taxRateStandingBad,
-                                          taxRateStandingHorrible);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_ASSETS);
-    if (cfg.fail) return cfg.response;
-    cfg.presetExpiry = Corporation.getCorporation(cfg.owner).getCustomsOfficeExpiry();
-    try {
-      // Retrieve
-      List<CustomsOffice> result = CustomsOffice.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, solarSystemID, solarSystemName, reinforceHour,
-                                                             allowAlliance, allowStandings, standingLevel, taxRateAlliance, taxRateCorp, taxRateStandingHigh,
-                                                             taxRateStandingGood, taxRateStandingNeutral, taxRateStandingBad, taxRateStandingHorrible);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("orficeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "officeID",
+          defaultValue = "{ any: true }",
+          value = "Customs office ID selector") AttributeSelector officeID,
+      @QueryParam("solarSystemID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "solarSystemID",
+          defaultValue = "{ any: true }",
+          value = "Customs office solar system ID selector") AttributeSelector solarSystemID,
+      @QueryParam("reinforceExitStart") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "reinforceExitStart",
+          defaultValue = "{ any: true }",
+          value = "Customs office reinforce exit timer start selector") AttributeSelector reinforceExitStart,
+      @QueryParam("reinforceExitEnd") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "reinforceExitEnd",
+          defaultValue = "{ any: true }",
+          value = "Customs office reinforce exit timer end selector") AttributeSelector reinforceExitEnd,
+      @QueryParam("allowAlliance") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "allowAlliance",
+          defaultValue = "{ any: true }",
+          value = "Customs office allow alliance selector") AttributeSelector allowAlliance,
+      @QueryParam("allowStandings") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "allowStandings",
+          defaultValue = "{ any: true }",
+          value = "Customs office allow standings selector") AttributeSelector allowStandings,
+      @QueryParam("standingLevel") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "standingLevel",
+          defaultValue = "{ any: true }",
+          value = "Customs office standing level selector") AttributeSelector standingLevel,
+      @QueryParam("taxRateAlliance") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "taxRateAlliance",
+          defaultValue = "{ any: true }",
+          value = "Customs office tax rate alliance selector") AttributeSelector taxRateAlliance,
+      @QueryParam("taxRateCorp") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "taxRateCorp",
+          defaultValue = "{ any: true }",
+          value = "Customs office tax rate corporation selector") AttributeSelector taxRateCorp,
+      @QueryParam("taxRateStandingExcellent") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "taxRateStandingExcellent",
+          defaultValue = "{ any: true }",
+          value = "Customs office tax rate standing excellent selector") AttributeSelector taxRateStandingExcellent,
+      @QueryParam("taxRateStandingGood") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "taxRateStandingGood",
+          defaultValue = "{ any: true }",
+          value = "Customs office tax rate standing good selector") AttributeSelector taxRateStandingGood,
+      @QueryParam("taxRateStandingNeutral") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "taxRateStandingNeutral",
+          defaultValue = "{ any: true }",
+          value = "Customs office tax rate standing neutral selector") AttributeSelector taxRateStandingNeutral,
+      @QueryParam("taxRateStandingBad") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "taxRateStandingBad",
+          defaultValue = "{ any: true }",
+          value = "Customs office tax rate standing bad selector") AttributeSelector taxRateStandingBad,
+      @QueryParam("taxRateStandingTerrible") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "taxRateStandingTerrible",
+          defaultValue = "{ any: true }",
+          value = "Customs office tax rate standing terrible selector") AttributeSelector taxRateStandingTerrible) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_ASSETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CustomsOffice>() {
+
+                                                          @Override
+                                                          public List<CustomsOffice> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int OFFICE_ID = 0;
+                                                            final int SOLAR_SYSTEM_ID = 1;
+                                                            final int REINFORCE_EXIT_START = 2;
+                                                            final int REINFORCE_EXIT_END = 3;
+                                                            final int ALLOW_ALLIANCE = 4;
+                                                            final int ALLOW_STANDINGS = 5;
+                                                            final int STANDING_LEVEL = 6;
+                                                            final int TAX_RATE_ALLIANCE = 7;
+                                                            final int TAX_RATE_CORP = 8;
+                                                            final int TAX_RATE_STANDING_EXCELLENT = 9;
+                                                            final int TAX_RATE_STANDING_GOOD = 10;
+                                                            final int TAX_RATE_STANDING_NEUTRAL = 11;
+                                                            final int TAX_RATE_STANDING_BAD = 12;
+                                                            final int TAX_RATE_STANDING_TERRIBLE = 13;
+
+                                                            return CustomsOffice.accessQuery(acct, contid,
+                                                                                             maxresults,
+                                                                                             reverse, at,
+                                                                                             others[OFFICE_ID],
+                                                                                             others[SOLAR_SYSTEM_ID],
+                                                                                             others[REINFORCE_EXIT_START],
+                                                                                             others[REINFORCE_EXIT_END],
+                                                                                             others[ALLOW_ALLIANCE],
+                                                                                             others[ALLOW_STANDINGS],
+                                                                                             others[STANDING_LEVEL],
+                                                                                             others[TAX_RATE_ALLIANCE],
+                                                                                             others[TAX_RATE_CORP],
+                                                                                             others[TAX_RATE_STANDING_EXCELLENT],
+                                                                                             others[TAX_RATE_STANDING_GOOD],
+                                                                                             others[TAX_RATE_STANDING_NEUTRAL],
+                                                                                             others[TAX_RATE_STANDING_BAD],
+                                                                                             others[TAX_RATE_STANDING_TERRIBLE]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_CUSTOMS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, officeID, solarSystemID, reinforceExitStart,
+                                                        reinforceExitEnd,
+                                                        allowAlliance, allowStandings, standingLevel, taxRateAlliance,
+                                                        taxRateCorp, taxRateStandingExcellent, taxRateStandingGood,
+                                                        taxRateStandingNeutral, taxRateStandingBad,
+                                                        taxRateStandingTerrible);
   }
 
   @Path("/division")
@@ -1069,47 +1096,47 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getDivisions(
-                               @Context HttpServletRequest request,
-                               @QueryParam("accessKey") @ApiParam(
-                                   name = "accessKey",
-                                   required = true,
-                                   value = "Model access key") int accessKey,
-                               @QueryParam("accessCred") @ApiParam(
-                                   name = "accessCred",
-                                   required = true,
-                                   value = "Model access credential") String accessCred,
-                               @QueryParam("at") @DefaultValue(
-                                   value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                       name = "at",
-                                       defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                       value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                               @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                   name = "contid",
-                                   defaultValue = "-1",
-                                   value = "Continuation ID for paged results") long contid,
-                               @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                   name = "maxresults",
-                                   defaultValue = "1000",
-                                   value = "Maximum number of results to retrieve") int maxresults,
-                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                   name = "reverse",
-                                   defaultValue = "false",
-                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                               @QueryParam("wallet") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "wallet",
-                                       defaultValue = "{ any: true }",
-                                       value = "Division wallet indicator selector") AttributeSelector wallet,
-                               @QueryParam("division") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "division",
-                                       defaultValue = "{ any: true }",
-                                       value = "Division ID selector") AttributeSelector division,
-                               @QueryParam("name") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "name",
-                                       defaultValue = "{ any: true }",
-                                       value = "Division name selector") AttributeSelector name) {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("wallet") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "wallet",
+          defaultValue = "{ any: true }",
+          value = "Division wallet indicator selector") AttributeSelector wallet,
+      @QueryParam("division") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "division",
+          defaultValue = "{ any: true }",
+          value = "Division ID selector") AttributeSelector division,
+      @QueryParam("name") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "name",
+          defaultValue = "{ any: true }",
+          value = "Division name selector") AttributeSelector name) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
                                                         AccountAccessMask.ACCESS_CORPORATION_SHEET,
                                                         at, contid, maxresults, reverse,
@@ -1126,11 +1153,11 @@ public class ModelCorporationWS {
                                                             final int NAME = 2;
 
                                                             return Division.accessQuery(acct, contid,
-                                                                                           maxresults,
-                                                                                           reverse, at,
-                                                                                           others[WALLET],
-                                                                                           others[DIVISION],
-                                                                                           others[NAME]);
+                                                                                        maxresults,
+                                                                                        reverse, at,
+                                                                                        others[WALLET],
+                                                                                        others[DIVISION],
+                                                                                        others[NAME]);
                                                           }
 
                                                           @Override
@@ -1174,109 +1201,76 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getFacilities(
-                                @Context HttpServletRequest request,
-                                @QueryParam("accessKey") @ApiParam(
-                                    name = "accessKey",
-                                    required = true,
-                                    value = "Model access key") int accessKey,
-                                @QueryParam("accessCred") @ApiParam(
-                                    name = "accessCred",
-                                    required = true,
-                                    value = "Model access credential") String accessCred,
-                                @QueryParam("at") @DefaultValue(
-                                    value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                        name = "at",
-                                        required = false,
-                                        defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                        value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                    name = "contid",
-                                    required = false,
-                                    defaultValue = "-1",
-                                    value = "Continuation ID for paged results") long contid,
-                                @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                    name = "maxresults",
-                                    required = false,
-                                    defaultValue = "1000",
-                                    value = "Maximum number of results to retrieve") int maxresults,
-                                @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                    name = "reverse",
-                                    required = false,
-                                    defaultValue = "false",
-                                    value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                @QueryParam("facilityID") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "facilityID",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Facility ID selector") AttributeSelector facilityID,
-                                @QueryParam("typeID") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "typeID",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Facility type ID selector") AttributeSelector typeID,
-                                @QueryParam("typeName") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "typeName",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Facility type name selector") AttributeSelector typeName,
-                                @QueryParam("solarSystemID") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "solarSystemID",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Facility solar system ID selector") AttributeSelector solarSystemID,
-                                @QueryParam("solarSystemName") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "solarSystemName",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Facility solar system name selector") AttributeSelector solarSystemName,
-                                @QueryParam("regionID") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "regionID",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Facility region ID selector") AttributeSelector regionID,
-                                @QueryParam("regionName") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "regionName",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Facility region name selector") AttributeSelector regionName,
-                                @QueryParam("starbaseModifier") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "starbaseModifier",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Facility starbase modifier selector") AttributeSelector starbaseModifier,
-                                @QueryParam("tax") @DefaultValue(
-                                    value = "{ any: true }") @ApiParam(
-                                        name = "tax",
-                                        required = false,
-                                        defaultValue = "{ any: true }",
-                                        value = "Facility tax selector") AttributeSelector tax) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, facilityID, typeID, typeName, solarSystemID, solarSystemName, regionID, regionName, starbaseModifier, tax);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_INDUSTRY_JOBS);
-    if (cfg.fail) return cfg.response;
-    cfg.presetExpiry = Corporation.getCorporation(cfg.owner).getFacilitiesExpiry();
-    try {
-      // Retrieve
-      List<Facility> result = Facility.accessQuery(cfg.owner, contid, maxresults, reverse, at, facilityID, typeID, typeName, solarSystemID, solarSystemName,
-                                                   regionID, regionName, starbaseModifier, tax);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("facilityID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "facilityID",
+          defaultValue = "{ any: true }",
+          value = "Facility ID selector") AttributeSelector facilityID,
+      @QueryParam("typeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "typeID",
+          defaultValue = "{ any: true }",
+          value = "Facility type ID selector") AttributeSelector typeID,
+      @QueryParam("solarSystemID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "solarSystemID",
+          defaultValue = "{ any: true }",
+          value = "Facility solar system ID selector") AttributeSelector solarSystemID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_INDUSTRY_JOBS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Facility>() {
+
+                                                          @Override
+                                                          public List<Facility> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int FACILITY_ID = 0;
+                                                            final int TYPE_ID = 1;
+                                                            final int SOLAR_SYSTEM_ID = 2;
+
+                                                            return Facility.accessQuery(acct, contid,
+                                                                                        maxresults,
+                                                                                        reverse, at,
+                                                                                        others[FACILITY_ID],
+                                                                                        others[TYPE_ID],
+                                                                                        others[SOLAR_SYSTEM_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_FACILITIES,
+                                                                                        acct);
+                                                          }
+                                                        }, request, facilityID, typeID, solarSystemID);
   }
 
   @Path("/fuel")
@@ -1312,71 +1306,76 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getFuel(
-                          @Context HttpServletRequest request,
-                          @QueryParam("accessKey") @ApiParam(
-                              name = "accessKey",
-                              required = true,
-                              value = "Model access key") int accessKey,
-                          @QueryParam("accessCred") @ApiParam(
-                              name = "accessCred",
-                              required = true,
-                              value = "Model access credential") String accessCred,
-                          @QueryParam("at") @DefaultValue(
-                              value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                  name = "at",
-                                  required = false,
-                                  defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                  value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                          @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                              name = "contid",
-                              required = false,
-                              defaultValue = "-1",
-                              value = "Continuation ID for paged results") long contid,
-                          @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                              name = "maxresults",
-                              required = false,
-                              defaultValue = "1000",
-                              value = "Maximum number of results to retrieve") int maxresults,
-                          @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                              name = "reverse",
-                              required = false,
-                              defaultValue = "false",
-                              value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                          @QueryParam("itemID") @DefaultValue(
-                              value = "{ any: true }") @ApiParam(
-                                  name = "itemID",
-                                  required = false,
-                                  defaultValue = "{ any: true }",
-                                  value = "Fuel item ID selector") AttributeSelector itemID,
-                          @QueryParam("typeID") @DefaultValue(
-                              value = "{ any: true }") @ApiParam(
-                                  name = "typeID",
-                                  required = false,
-                                  defaultValue = "{ any: true }",
-                                  value = "Fuel type ID selector") AttributeSelector typeID,
-                          @QueryParam("quantity") @DefaultValue(
-                              value = "{ any: true }") @ApiParam(
-                                  name = "quantity",
-                                  required = false,
-                                  defaultValue = "{ any: true }",
-                                  value = "Fuel quantity selector") AttributeSelector quantity) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, itemID, typeID, quantity);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_STARBASE_LIST);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<Fuel> result = Fuel.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, typeID, quantity);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("starbaseID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "starbaseID",
+          defaultValue = "{ any: true }",
+          value = "Fuel starbase ID selector") AttributeSelector starbaseID,
+      @QueryParam("typeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "typeID",
+          defaultValue = "{ any: true }",
+          value = "Fuel type ID selector") AttributeSelector typeID,
+      @QueryParam("quantity") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "quantity",
+          defaultValue = "{ any: true }",
+          value = "Fuel quantity selector") AttributeSelector quantity) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_STARBASE_LIST,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Fuel>() {
+
+                                                          @Override
+                                                          public List<Fuel> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int STARBASE_ID = 0;
+                                                            final int TYPE_ID = 1;
+                                                            final int QUANTITY = 2;
+
+                                                            return Fuel.accessQuery(acct, contid,
+                                                                                    maxresults,
+                                                                                    reverse, at,
+                                                                                    others[STARBASE_ID],
+                                                                                    others[TYPE_ID],
+                                                                                    others[QUANTITY]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_STARBASES,
+                                                                                        acct);
+                                                          }
+                                                        }, request, starbaseID, typeID, quantity);
   }
 
   @Path("/member_role")
@@ -1412,62 +1411,62 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getMemberRoles(
-                                    @Context HttpServletRequest request,
-                                    @QueryParam("accessKey") @ApiParam(
-                                        name = "accessKey",
-                                        required = true,
-                                        value = "Model access key") int accessKey,
-                                    @QueryParam("accessCred") @ApiParam(
-                                        name = "accessCred",
-                                        required = true,
-                                        value = "Model access credential") String accessCred,
-                                    @QueryParam("at") @DefaultValue(
-                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                            name = "at",
-                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                        name = "contid",
-                                        defaultValue = "-1",
-                                        value = "Continuation ID for paged results") long contid,
-                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                        name = "maxresults",
-                                        defaultValue = "1000",
-                                        value = "Maximum number of results to retrieve") int maxresults,
-                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                        name = "reverse",
-                                        defaultValue = "false",
-                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                    @QueryParam("characterID") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "characterID",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member role character ID selector") AttributeSelector characterID,
-                                    @QueryParam("roleName") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "roleName",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member role name selector") AttributeSelector roleName,
-                                    @QueryParam("grantable") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "grantable",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member role grantable selector") AttributeSelector grantable,
-                                    @QueryParam("atHQ") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "atHQ",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member role at HQ selector") AttributeSelector atHQ,
-                                    @QueryParam("atBase") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "atBase",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member role at base selector") AttributeSelector atBase,
-                                    @QueryParam("atOther") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "atOther",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member role at other selector") AttributeSelector atOther) {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("characterID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "characterID",
+          defaultValue = "{ any: true }",
+          value = "Member role character ID selector") AttributeSelector characterID,
+      @QueryParam("roleName") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "roleName",
+          defaultValue = "{ any: true }",
+          value = "Member role name selector") AttributeSelector roleName,
+      @QueryParam("grantable") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "grantable",
+          defaultValue = "{ any: true }",
+          value = "Member role grantable selector") AttributeSelector grantable,
+      @QueryParam("atHQ") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "atHQ",
+          defaultValue = "{ any: true }",
+          value = "Member role at HQ selector") AttributeSelector atHQ,
+      @QueryParam("atBase") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "atBase",
+          defaultValue = "{ any: true }",
+          value = "Member role at base selector") AttributeSelector atBase,
+      @QueryParam("atOther") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "atOther",
+          defaultValue = "{ any: true }",
+          value = "Member role at other selector") AttributeSelector atOther) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
                                                         AccountAccessMask.ACCESS_MEMBER_SECURITY,
                                                         at, contid, maxresults, reverse,
@@ -1487,14 +1486,14 @@ public class ModelCorporationWS {
                                                             final int AT_OTHER = 5;
 
                                                             return MemberRole.accessQuery(acct, contid,
-                                                                                                maxresults,
-                                                                                                reverse, at,
-                                                                                                others[CHARACTER_ID],
-                                                                                                others[ROLE_NAME],
-                                                                                                others[GRANTABLE],
-                                                                                                others[AT_HQ],
-                                                                                                others[AT_BASE],
-                                                                                                others[AT_OTHER]);
+                                                                                          maxresults,
+                                                                                          reverse, at,
+                                                                                          others[CHARACTER_ID],
+                                                                                          others[ROLE_NAME],
+                                                                                          others[GRANTABLE],
+                                                                                          others[AT_HQ],
+                                                                                          others[AT_BASE],
+                                                                                          others[AT_OTHER]);
                                                           }
 
                                                           @Override
@@ -1502,7 +1501,8 @@ public class ModelCorporationWS {
                                                             return handleStandardExpiry(ESISyncEndpoint.CORP_MEMBERSHIP,
                                                                                         acct);
                                                           }
-                                                        }, request, characterID, roleName, grantable, atHQ, atBase, atOther);
+                                                        }, request, characterID, roleName, grantable, atHQ, atBase,
+                                                        atOther);
   }
 
   @Path("/member_role_history")
@@ -1538,62 +1538,62 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getMemberRoleHistory(
-                                       @Context HttpServletRequest request,
-                                       @QueryParam("accessKey") @ApiParam(
-                                           name = "accessKey",
-                                           required = true,
-                                           value = "Model access key") int accessKey,
-                                       @QueryParam("accessCred") @ApiParam(
-                                           name = "accessCred",
-                                           required = true,
-                                           value = "Model access credential") String accessCred,
-                                       @QueryParam("at") @DefaultValue(
-                                           value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                               name = "at",
-                                               defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                               value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                       @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                           name = "contid",
-                                           defaultValue = "-1",
-                                           value = "Continuation ID for paged results") long contid,
-                                       @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                           name = "maxresults",
-                                           defaultValue = "1000",
-                                           value = "Maximum number of results to retrieve") int maxresults,
-                                       @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                           name = "reverse",
-                                           defaultValue = "false",
-                                           value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                       @QueryParam("characterID") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                           name = "characterID",
-                                           defaultValue = "{ any: true }",
-                                           value = "Member role history character ID selector") AttributeSelector characterID,
-                                       @QueryParam("changedAt") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "changedAt",
-                                               defaultValue = "{ any: true }",
-                                               value = "Member role history change time selector") AttributeSelector changedAt,
-                                       @QueryParam("issuerID") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "issuerID",
-                                               defaultValue = "{ any: true }",
-                                               value = "Member role history issuer ID selector") AttributeSelector issuerID,
-                                       @QueryParam("roleType") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "roleType",
-                                               defaultValue = "{ any: true }",
-                                               value = "Member role history role type selector") AttributeSelector roleType,
-                                       @QueryParam("roleName") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "roleName",
-                                               defaultValue = "{ any: true }",
-                                               value = "Member role history roel name selector") AttributeSelector roleName,
-                                       @QueryParam("old") @DefaultValue(
-                                           value = "{ any: true }") @ApiParam(
-                                               name = "old",
-                                               defaultValue = "{ any: true }",
-                                               value = "Member role history is old selector") AttributeSelector old) {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("characterID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "characterID",
+          defaultValue = "{ any: true }",
+          value = "Member role history character ID selector") AttributeSelector characterID,
+      @QueryParam("changedAt") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "changedAt",
+          defaultValue = "{ any: true }",
+          value = "Member role history change time selector") AttributeSelector changedAt,
+      @QueryParam("issuerID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "issuerID",
+          defaultValue = "{ any: true }",
+          value = "Member role history issuer ID selector") AttributeSelector issuerID,
+      @QueryParam("roleType") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "roleType",
+          defaultValue = "{ any: true }",
+          value = "Member role history role type selector") AttributeSelector roleType,
+      @QueryParam("roleName") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "roleName",
+          defaultValue = "{ any: true }",
+          value = "Member role history roel name selector") AttributeSelector roleName,
+      @QueryParam("old") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "old",
+          defaultValue = "{ any: true }",
+          value = "Member role history is old selector") AttributeSelector old) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
                                                         AccountAccessMask.ACCESS_MEMBER_SECURITY_LOG,
                                                         at, contid, maxresults, reverse,
@@ -1613,14 +1613,14 @@ public class ModelCorporationWS {
                                                             final int OLD = 5;
 
                                                             return MemberRoleHistory.accessQuery(acct, contid,
-                                                                                                maxresults,
-                                                                                                reverse, at,
-                                                                                                others[CHARACTER_ID],
-                                                                                                others[CHANGED_AT],
-                                                                                                others[ISSUER_ID],
-                                                                                                others[ROLE_TYPE],
-                                                                                                others[ROLE_NAME],
-                                                                                                others[OLD]);
+                                                                                                 maxresults,
+                                                                                                 reverse, at,
+                                                                                                 others[CHARACTER_ID],
+                                                                                                 others[CHANGED_AT],
+                                                                                                 others[ISSUER_ID],
+                                                                                                 others[ROLE_TYPE],
+                                                                                                 others[ROLE_NAME],
+                                                                                                 others[OLD]);
                                                           }
 
                                                           @Override
@@ -1710,9 +1710,9 @@ public class ModelCorporationWS {
                                                             final int CHARACTER_ID = 0;
 
                                                             return Member.accessQuery(acct, contid,
-                                                                                                maxresults,
-                                                                                                reverse, at,
-                                                                                                others[CHARACTER_ID]);
+                                                                                      maxresults,
+                                                                                      reverse, at,
+                                                                                      others[CHARACTER_ID]);
                                                           }
 
                                                           @Override
@@ -1801,15 +1801,16 @@ public class ModelCorporationWS {
                                                             final int MEMBER_LIMIT = 0;
 
                                                             return MemberLimit.accessQuery(acct, contid,
-                                                                                                maxresults,
-                                                                                                reverse, at,
-                                                                                                others[MEMBER_LIMIT]);
+                                                                                           maxresults,
+                                                                                           reverse, at,
+                                                                                           others[MEMBER_LIMIT]);
                                                           }
 
                                                           @Override
                                                           public long getExpiry(SynchronizedEveAccount acct) {
-                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_TRACK_MEMBERS,
-                                                                                        acct);
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CORP_TRACK_MEMBERS,
+                                                                acct);
                                                           }
                                                         }, request, memberLimit);
   }
@@ -1898,10 +1899,10 @@ public class ModelCorporationWS {
                                                             final int TITLE_ID = 1;
 
                                                             return MemberTitle.accessQuery(acct, contid,
-                                                                                                maxresults,
-                                                                                                reverse, at,
-                                                                                                others[CHARACTER_ID],
-                                                                                                others[TITLE_ID]);
+                                                                                           maxresults,
+                                                                                           reverse, at,
+                                                                                           others[CHARACTER_ID],
+                                                                                           others[TITLE_ID]);
                                                           }
 
                                                           @Override
@@ -1945,67 +1946,67 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getMemberTracking(
-                                    @Context HttpServletRequest request,
-                                    @QueryParam("accessKey") @ApiParam(
-                                        name = "accessKey",
-                                        required = true,
-                                        value = "Model access key") int accessKey,
-                                    @QueryParam("accessCred") @ApiParam(
-                                        name = "accessCred",
-                                        required = true,
-                                        value = "Model access credential") String accessCred,
-                                    @QueryParam("at") @DefaultValue(
-                                        value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                            name = "at",
-                                            defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                            value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                    @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                        name = "contid",
-                                        defaultValue = "-1",
-                                        value = "Continuation ID for paged results") long contid,
-                                    @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                        name = "maxresults",
-                                        defaultValue = "1000",
-                                        value = "Maximum number of results to retrieve") int maxresults,
-                                    @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                        name = "reverse",
-                                        defaultValue = "false",
-                                        value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                    @QueryParam("characterID") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "characterID",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member character ID selector") AttributeSelector characterID,
-                                    @QueryParam("baseID") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "baseID",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member base ID selector") AttributeSelector baseID,
-                                    @QueryParam("locationID") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "locationID",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member location ID selector") AttributeSelector locationID,
-                                    @QueryParam("logoffDateTime") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "logoffDateTime",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member logoff time selector") AttributeSelector logoffDateTime,
-                                    @QueryParam("logonDateTime") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "logonDateTime",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member logon time selector") AttributeSelector logonDateTime,
-                                    @QueryParam("shipTypeID") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "shipTypeID",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member ship type ID selector") AttributeSelector shipTypeID,
-                                    @QueryParam("startDateTime") @DefaultValue(
-                                        value = "{ any: true }") @ApiParam(
-                                            name = "startDateTime",
-                                            defaultValue = "{ any: true }",
-                                            value = "Member start time selector") AttributeSelector startDateTime) {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("characterID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "characterID",
+          defaultValue = "{ any: true }",
+          value = "Member character ID selector") AttributeSelector characterID,
+      @QueryParam("baseID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "baseID",
+          defaultValue = "{ any: true }",
+          value = "Member base ID selector") AttributeSelector baseID,
+      @QueryParam("locationID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "locationID",
+          defaultValue = "{ any: true }",
+          value = "Member location ID selector") AttributeSelector locationID,
+      @QueryParam("logoffDateTime") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "logoffDateTime",
+          defaultValue = "{ any: true }",
+          value = "Member logoff time selector") AttributeSelector logoffDateTime,
+      @QueryParam("logonDateTime") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "logonDateTime",
+          defaultValue = "{ any: true }",
+          value = "Member logon time selector") AttributeSelector logonDateTime,
+      @QueryParam("shipTypeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shipTypeID",
+          defaultValue = "{ any: true }",
+          value = "Member ship type ID selector") AttributeSelector shipTypeID,
+      @QueryParam("startDateTime") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "startDateTime",
+          defaultValue = "{ any: true }",
+          value = "Member start time selector") AttributeSelector startDateTime) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
                                                         AccountAccessMask.ACCESS_MEMBER_TRACKING,
                                                         at, contid, maxresults, reverse,
@@ -2026,306 +2027,25 @@ public class ModelCorporationWS {
                                                             final int START_DATE_TIME = 6;
 
                                                             return MemberTracking.accessQuery(acct, contid,
-                                                                                                maxresults,
-                                                                                                reverse, at,
-                                                                                                others[CHARACTER_ID],
-                                                                                                others[BASE_ID],
-                                                                                                others[LOCATION_ID],
-                                                                                                others[LOGOFF_DATE_TIME],
-                                                                                                others[LOGON_DATE_TIME],
-                                                                                                others[SHIP_TYPE_ID],
-                                                                                                others[START_DATE_TIME]);
+                                                                                              maxresults,
+                                                                                              reverse, at,
+                                                                                              others[CHARACTER_ID],
+                                                                                              others[BASE_ID],
+                                                                                              others[LOCATION_ID],
+                                                                                              others[LOGOFF_DATE_TIME],
+                                                                                              others[LOGON_DATE_TIME],
+                                                                                              others[SHIP_TYPE_ID],
+                                                                                              others[START_DATE_TIME]);
                                                           }
 
                                                           @Override
                                                           public long getExpiry(SynchronizedEveAccount acct) {
-                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_TRACK_MEMBERS,
-                                                                                        acct);
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CORP_TRACK_MEMBERS,
+                                                                acct);
                                                           }
                                                         }, request, characterID, baseID, locationID, logoffDateTime,
                                                         logonDateTime, shipTypeID, startDateTime);
-  }
-
-  @Path("/outpost")
-  @GET
-  @ApiOperation(
-      value = "Get corporation outposts")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              code = 200,
-              message = "list of requested corporation outposts",
-              response = Outpost.class,
-              responseContainer = "array"),
-          @ApiResponse(
-              code = 400,
-              message = "invalid attribute selector",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 401,
-              message = "access key credential is invalid",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 403,
-              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 404,
-              message = "access key not found",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 500,
-              message = "internal service error",
-              response = ServiceError.class),
-      })
-  public Response getOutposts(
-                              @Context HttpServletRequest request,
-                              @QueryParam("accessKey") @ApiParam(
-                                  name = "accessKey",
-                                  required = true,
-                                  value = "Model access key") int accessKey,
-                              @QueryParam("accessCred") @ApiParam(
-                                  name = "accessCred",
-                                  required = true,
-                                  value = "Model access credential") String accessCred,
-                              @QueryParam("at") @DefaultValue(
-                                  value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                      name = "at",
-                                      required = false,
-                                      defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                      value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                              @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                  name = "contid",
-                                  required = false,
-                                  defaultValue = "-1",
-                                  value = "Continuation ID for paged results") long contid,
-                              @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                  name = "maxresults",
-                                  required = false,
-                                  defaultValue = "1000",
-                                  value = "Maximum number of results to retrieve") int maxresults,
-                              @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                  name = "reverse",
-                                  required = false,
-                                  defaultValue = "false",
-                                  value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                              @QueryParam("stationID") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "stationID",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost station ID selector") AttributeSelector stationID,
-                              @QueryParam("ownerID") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "ownerID",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost owner ID selector") AttributeSelector ownerID,
-                              @QueryParam("stationName") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "stationName",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost station name selector") AttributeSelector stationName,
-                              @QueryParam("solarSystemID") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "solarSystemID",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost solar system ID selector") AttributeSelector solarSystemID,
-                              @QueryParam("dockingCostPerShipVolume") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "dockingCostPerShipVolume",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost docking cost per ship volume selector") AttributeSelector dockingCostPerShipVolume,
-                              @QueryParam("officeRentalCost") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "officeRentalCost",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost office rental cost selector") AttributeSelector officeRentalCost,
-                              @QueryParam("stationTypeID") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "stationTypeID",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost station type ID selector") AttributeSelector stationTypeID,
-                              @QueryParam("reprocessingEfficiency") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "reprocessingEfficiency",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost reprocessing efficiency selector") AttributeSelector reprocessingEfficiency,
-                              @QueryParam("reprocessingStationTake") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "reprocessingStationTake",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost reprocessing station take selector") AttributeSelector reprocessingStationTake,
-                              @QueryParam("standingOwnerID") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "standingOwnerID",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost standing owner ID selector") AttributeSelector standingOwnerID,
-                              @QueryParam("x") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "x",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost x coordinate selector") AttributeSelector x,
-                              @QueryParam("y") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "y",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost y coordinate selector") AttributeSelector y,
-                              @QueryParam("z") @DefaultValue(
-                                  value = "{ any: true }") @ApiParam(
-                                      name = "z",
-                                      required = false,
-                                      defaultValue = "{ any: true }",
-                                      value = "Outpost z coordinate selector") AttributeSelector z) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, stationID, ownerID, stationName, solarSystemID, dockingCostPerShipVolume, officeRentalCost, stationTypeID,
-                                          reprocessingEfficiency, reprocessingStationTake, standingOwnerID, x, y, z);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_OUTPOST_LIST);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<Outpost> result = Outpost.accessQuery(cfg.owner, contid, maxresults, reverse, at, stationID, ownerID, stationName, solarSystemID,
-                                                 dockingCostPerShipVolume, officeRentalCost, stationTypeID, reprocessingEfficiency, reprocessingStationTake,
-                                                 standingOwnerID, x, y, z);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
-  }
-
-  @Path("/outpost_service_detail")
-  @GET
-  @ApiOperation(
-      value = "Get corporation outpost service detail")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              code = 200,
-              message = "list of requested corporation outpost service details",
-              response = OutpostServiceDetail.class,
-              responseContainer = "array"),
-          @ApiResponse(
-              code = 400,
-              message = "invalid attribute selector",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 401,
-              message = "access key credential is invalid",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 403,
-              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 404,
-              message = "access key not found",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 500,
-              message = "internal service error",
-              response = ServiceError.class),
-      })
-  public Response getOutpostServiceDetails(
-                                           @Context HttpServletRequest request,
-                                           @QueryParam("accessKey") @ApiParam(
-                                               name = "accessKey",
-                                               required = true,
-                                               value = "Model access key") int accessKey,
-                                           @QueryParam("accessCred") @ApiParam(
-                                               name = "accessCred",
-                                               required = true,
-                                               value = "Model access credential") String accessCred,
-                                           @QueryParam("at") @DefaultValue(
-                                               value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                                   name = "at",
-                                                   required = false,
-                                                   defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                                   value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                           @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                               name = "contid",
-                                               required = false,
-                                               defaultValue = "-1",
-                                               value = "Continuation ID for paged results") long contid,
-                                           @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                               name = "maxresults",
-                                               required = false,
-                                               defaultValue = "1000",
-                                               value = "Maximum number of results to retrieve") int maxresults,
-                                           @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                               name = "reverse",
-                                               required = false,
-                                               defaultValue = "false",
-                                               value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                           @QueryParam("stationID") @DefaultValue(
-                                               value = "{ any: true }") @ApiParam(
-                                                   name = "stationID",
-                                                   required = false,
-                                                   defaultValue = "{ any: true }",
-                                                   value = "Outpost service detail station ID selector") AttributeSelector stationID,
-                                           @QueryParam("serviceName") @DefaultValue(
-                                               value = "{ any: true }") @ApiParam(
-                                                   name = "serviceName",
-                                                   required = false,
-                                                   defaultValue = "{ any: true }",
-                                                   value = "Outpost service detail service name selector") AttributeSelector serviceName,
-                                           @QueryParam("ownerID") @DefaultValue(
-                                               value = "{ any: true }") @ApiParam(
-                                                   name = "ownerID",
-                                                   required = false,
-                                                   defaultValue = "{ any: true }",
-                                                   value = "Outpost service owner ID selector") AttributeSelector ownerID,
-                                           @QueryParam("minStanding") @DefaultValue(
-                                               value = "{ any: true }") @ApiParam(
-                                                   name = "minStanding",
-                                                   required = false,
-                                                   defaultValue = "{ any: true }",
-                                                   value = "Outpost service minimum standing selector") AttributeSelector minStanding,
-                                           @QueryParam("surchargePerBadStanding") @DefaultValue(
-                                               value = "{ any: true }") @ApiParam(
-                                                   name = "surchargePerBadStanding",
-                                                   required = false,
-                                                   defaultValue = "{ any: true }",
-                                                   value = "Outpost service surcharge per bad standing selector") AttributeSelector surchargePerBadStanding,
-                                           @QueryParam("discountPerGoodStanding") @DefaultValue(
-                                               value = "{ any: true }") @ApiParam(
-                                                   name = "discountPerGoodStanding",
-                                                   required = false,
-                                                   defaultValue = "{ any: true }",
-                                                   value = "Outpost service discount per good standing selector") AttributeSelector discountPerGoodStanding) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, stationID, serviceName, ownerID, minStanding, surchargePerBadStanding, discountPerGoodStanding);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_OUTPOST_LIST);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<OutpostServiceDetail> result = OutpostServiceDetail.accessQuery(cfg.owner, contid, maxresults, reverse, at, stationID, serviceName, ownerID,
-                                                                           minStanding, surchargePerBadStanding, discountPerGoodStanding);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
   }
 
   @Path("/shareholder")
@@ -2361,47 +2081,47 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getShareholders(
-                                  @Context HttpServletRequest request,
-                                  @QueryParam("accessKey") @ApiParam(
-                                      name = "accessKey",
-                                      required = true,
-                                      value = "Model access key") int accessKey,
-                                  @QueryParam("accessCred") @ApiParam(
-                                      name = "accessCred",
-                                      required = true,
-                                      value = "Model access credential") String accessCred,
-                                  @QueryParam("at") @DefaultValue(
-                                      value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                          name = "at",
-                                          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                  @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                      name = "contid",
-                                      defaultValue = "-1",
-                                      value = "Continuation ID for paged results") long contid,
-                                  @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                      name = "maxresults",
-                                      defaultValue = "1000",
-                                      value = "Maximum number of results to retrieve") int maxresults,
-                                  @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                      name = "reverse",
-                                      defaultValue = "false",
-                                      value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                  @QueryParam("shareholderID") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "shareholderID",
-                                          defaultValue = "{ any: true }",
-                                          value = "Shareholder ID selector") AttributeSelector shareholderID,
-                                  @QueryParam("shareholderType") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "shareholderType",
-                                          defaultValue = "{ any: true }",
-                                          value = "Shareholder type selector") AttributeSelector shareholderType,
-                                  @QueryParam("shares") @DefaultValue(
-                                      value = "{ any: true }") @ApiParam(
-                                          name = "shares",
-                                          defaultValue = "{ any: true }",
-                                          value = "Shareholder shares selector") AttributeSelector shares) {
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("shareholderID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shareholderID",
+          defaultValue = "{ any: true }",
+          value = "Shareholder ID selector") AttributeSelector shareholderID,
+      @QueryParam("shareholderType") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shareholderType",
+          defaultValue = "{ any: true }",
+          value = "Shareholder type selector") AttributeSelector shareholderType,
+      @QueryParam("shares") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shares",
+          defaultValue = "{ any: true }",
+          value = "Shareholder shares selector") AttributeSelector shares) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
                                                         AccountAccessMask.ACCESS_SHAREHOLDERS,
                                                         at, contid, maxresults, reverse,
@@ -2427,8 +2147,9 @@ public class ModelCorporationWS {
 
                                                           @Override
                                                           public long getExpiry(SynchronizedEveAccount acct) {
-                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_SHAREHOLDERS,
-                                                                                        acct);
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CORP_SHAREHOLDERS,
+                                                                acct);
                                                           }
                                                         }, request, shareholderID, shareholderType, shares);
   }
@@ -2466,291 +2187,209 @@ public class ModelCorporationWS {
               response = ServiceError.class),
       })
   public Response getStarbases(
-                               @Context HttpServletRequest request,
-                               @QueryParam("accessKey") @ApiParam(
-                                   name = "accessKey",
-                                   required = true,
-                                   value = "Model access key") int accessKey,
-                               @QueryParam("accessCred") @ApiParam(
-                                   name = "accessCred",
-                                   required = true,
-                                   value = "Model access credential") String accessCred,
-                               @QueryParam("at") @DefaultValue(
-                                   value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                       name = "at",
-                                       required = false,
-                                       defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                       value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                               @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                   name = "contid",
-                                   required = false,
-                                   defaultValue = "-1",
-                                   value = "Continuation ID for paged results") long contid,
-                               @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                   name = "maxresults",
-                                   required = false,
-                                   defaultValue = "1000",
-                                   value = "Maximum number of results to retrieve") int maxresults,
-                               @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                   name = "reverse",
-                                   required = false,
-                                   defaultValue = "false",
-                                   value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                               @QueryParam("itemID") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "itemID",
-                                       required = false,
-                                       defaultValue = "{ any: true }",
-                                       value = "Starbase item ID selector") AttributeSelector itemID,
-                               @QueryParam("locationID") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "locationID",
-                                       required = false,
-                                       defaultValue = "{ any: true }",
-                                       value = "Starbase location ID selector") AttributeSelector locationID,
-                               @QueryParam("moonID") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "moonID",
-                                       required = false,
-                                       defaultValue = "{ any: true }",
-                                       value = "Starbase moon ID selector") AttributeSelector moonID,
-                               @QueryParam("onlineTimestamp") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "onlineTimestamp",
-                                       required = false,
-                                       defaultValue = "{ any: true }",
-                                       value = "Starbase online timestamp selector") AttributeSelector onlineTimestamp,
-                               @QueryParam("state") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "state",
-                                       required = false,
-                                       defaultValue = "{ any: true }",
-                                       value = "Starbase state selector") AttributeSelector state,
-                               @QueryParam("stateTimestamp") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "stateTimestamp",
-                                       required = false,
-                                       defaultValue = "{ any: true }",
-                                       value = "Starbase state timestamp selector") AttributeSelector stateTimestamp,
-                               @QueryParam("typeID") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "typeID",
-                                       required = false,
-                                       defaultValue = "{ any: true }",
-                                       value = "Starbase type ID selector") AttributeSelector typeID,
-                               @QueryParam("standingOwnerID") @DefaultValue(
-                                   value = "{ any: true }") @ApiParam(
-                                       name = "standingOwnerID",
-                                       required = false,
-                                       defaultValue = "{ any: true }",
-                                       value = "Starbase standing owner ID selector") AttributeSelector standingOwnerID) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, itemID, locationID, moonID, onlineTimestamp, state, stateTimestamp, typeID, standingOwnerID);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_STARBASE_LIST);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<Starbase> result = Starbase.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, locationID, moonID, onlineTimestamp, state,
-                                                   stateTimestamp, typeID, standingOwnerID);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("starbaseID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "starbaseID",
+          defaultValue = "{ any: true }",
+          value = "Starbase ID selector") AttributeSelector starbaseID,
+      @QueryParam("typeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "typeID",
+          defaultValue = "{ any: true }",
+          value = "Starbase type ID selector") AttributeSelector typeID,
+      @QueryParam("systemID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "systemID",
+          defaultValue = "{ any: true }",
+          value = "Starbase system ID selector") AttributeSelector systemID,
+      @QueryParam("moonID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "moonID",
+          defaultValue = "{ any: true }",
+          value = "Starbase moon ID selector") AttributeSelector moonID,
+      @QueryParam("state") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "state",
+          defaultValue = "{ any: true }",
+          value = "Starbase state selector") AttributeSelector state,
+      @QueryParam("unanchorAt") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "unanchorAt",
+          defaultValue = "{ any: true }",
+          value = "Starbase unanchor at timestamp selector") AttributeSelector unanchorAt,
+      @QueryParam("reinforcedUntil") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "reinforcedUntil",
+          defaultValue = "{ any: true }",
+          value = "Starbase reinforced until timestamp selector") AttributeSelector reinforcedUntil,
+      @QueryParam("onlinedSince") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "onlinedSince",
+          defaultValue = "{ any: true }",
+          value = "Starbase onlined since timestamp selector") AttributeSelector onlinedSince,
+      @QueryParam("fuelBayView") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fuelBayView",
+          defaultValue = "{ any: true }",
+          value = "Starbase fuel bay view selector") AttributeSelector fuelBayView,
+      @QueryParam("fuelBayTake") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fuelBayTake",
+          defaultValue = "{ any: true }",
+          value = "Starbase fuel bay take selector") AttributeSelector fuelBayTake,
+      @QueryParam("anchor") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "anchor",
+          defaultValue = "{ any: true }",
+          value = "Starbase anchor selector") AttributeSelector anchor,
+      @QueryParam("unanchor") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "unanchor",
+          defaultValue = "{ any: true }",
+          value = "Starbase unanchor selector") AttributeSelector unanchor,
+      @QueryParam("online") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "online",
+          defaultValue = "{ any: true }",
+          value = "Starbase online selector") AttributeSelector online,
+      @QueryParam("offline") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "offline",
+          defaultValue = "{ any: true }",
+          value = "Starbase offline selector") AttributeSelector offline,
+      @QueryParam("allowCorporationMembers") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "allowCorporationMembers",
+          defaultValue = "{ any: true }",
+          value = "Starbase allow corporation members selector") AttributeSelector allowCorporationMembers,
+      @QueryParam("allowAllianceMembers") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "allowAllianceMembers",
+          defaultValue = "{ any: true }",
+          value = "Starbase allow alliance members selector") AttributeSelector allowAllianceMembers,
+      @QueryParam("useAllianceStandings") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "useAllianceStandings",
+          defaultValue = "{ any: true }",
+          value = "Starbase use alliance standings selector") AttributeSelector useAllianceStandings,
+      @QueryParam("attackStandingThreshold") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "attackStandingThreshold",
+          defaultValue = "{ any: true }",
+          value = "Starbase attack standing threshold selector") AttributeSelector attackStandingThreshold,
+      @QueryParam("attackSecurityStatusThreshold") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "attackSecurityStatusThreshold",
+          defaultValue = "{ any: true }",
+          value = "Starbase attack security status threshold selector") AttributeSelector attackSecurityStatusThreshold,
+      @QueryParam("attackIfOtherSecurityStatusDropping") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "attackIfOtherSecurityStatusDropping",
+          defaultValue = "{ any: true }",
+          value = "Starbase attack if other security status dropping selector") AttributeSelector attackIfOtherSecurityStatusDropping,
+      @QueryParam("attackIfAtWar") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "attackIfAtWar",
+          defaultValue = "{ any: true }",
+          value = "Starbase attack if at war selector") AttributeSelector attackIfAtWar) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_STARBASE_LIST,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Starbase>() {
+
+                                                          @Override
+                                                          public List<Starbase> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int STARBASE_ID = 0;
+                                                            final int TYPE_ID = 1;
+                                                            final int SYSTEM_ID = 2;
+                                                            final int MOON_ID = 3;
+                                                            final int STATE = 4;
+                                                            final int UNANCHOR_AT = 5;
+                                                            final int REINFORCED_UNTIL = 6;
+                                                            final int ONLINED_SINCE = 7;
+                                                            final int FUEL_BAY_VIEW = 8;
+                                                            final int FUEL_BAY_TAKE = 9;
+                                                            final int ANCHOR = 10;
+                                                            final int UNANCHOR = 11;
+                                                            final int ONLINE = 12;
+                                                            final int OFFLINE = 13;
+                                                            final int ALLOW_CORPORATION_MEMBERS = 14;
+                                                            final int ALLOW_ALLIANCE_MEMBERS = 15;
+                                                            final int USE_ALLIANCE_STANDINGS = 16;
+                                                            final int ATTACK_STANDING_THRESHOLD = 17;
+                                                            final int ATTACK_SECURITY_STATUS_THRESHOLD = 18;
+                                                            final int ATTACK_IF_OTHER_SECURITY_STATUS_DROPPING = 19;
+                                                            final int ATTACK_IF_AT_WAR = 20;
+
+                                                            return Starbase.accessQuery(acct, contid,
+                                                                                        maxresults,
+                                                                                        reverse, at,
+                                                                                        others[STARBASE_ID],
+                                                                                        others[TYPE_ID],
+                                                                                        others[SYSTEM_ID],
+                                                                                        others[MOON_ID],
+                                                                                        others[STATE],
+                                                                                        others[UNANCHOR_AT],
+                                                                                        others[REINFORCED_UNTIL],
+                                                                                        others[ONLINED_SINCE],
+                                                                                        others[FUEL_BAY_VIEW],
+                                                                                        others[FUEL_BAY_TAKE],
+                                                                                        others[ANCHOR],
+                                                                                        others[UNANCHOR],
+                                                                                        others[ONLINE],
+                                                                                        others[OFFLINE],
+                                                                                        others[ALLOW_CORPORATION_MEMBERS],
+                                                                                        others[ALLOW_ALLIANCE_MEMBERS],
+                                                                                        others[USE_ALLIANCE_STANDINGS],
+                                                                                        others[ATTACK_STANDING_THRESHOLD],
+                                                                                        others[ATTACK_SECURITY_STATUS_THRESHOLD],
+                                                                                        others[ATTACK_IF_OTHER_SECURITY_STATUS_DROPPING],
+                                                                                        others[ATTACK_IF_AT_WAR]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CORP_STARBASES,
+                                                                                        acct);
+                                                          }
+                                                        }, request, starbaseID, typeID, systemID, moonID, state,
+                                                        unanchorAt, reinforcedUntil, onlinedSince, fuelBayView,
+                                                        fuelBayTake, anchor, unanchor, online, offline,
+                                                        allowCorporationMembers, allowAllianceMembers,
+                                                        useAllianceStandings, attackStandingThreshold,
+                                                        attackSecurityStatusThreshold,
+                                                        attackIfOtherSecurityStatusDropping, attackIfAtWar);
   }
 
-  @Path("/starbase_detail")
-  @GET
-  @ApiOperation(
-      value = "Get corporation starbase details")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              code = 200,
-              message = "list of requested corporation starbase details",
-              response = StarbaseDetail.class,
-              responseContainer = "array"),
-          @ApiResponse(
-              code = 400,
-              message = "invalid attribute selector",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 401,
-              message = "access key credential is invalid",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 403,
-              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 404,
-              message = "access key not found",
-              response = ServiceError.class),
-          @ApiResponse(
-              code = 500,
-              message = "internal service error",
-              response = ServiceError.class),
-      })
-  public Response getStarbaseDetails(
-                                     @Context HttpServletRequest request,
-                                     @QueryParam("accessKey") @ApiParam(
-                                         name = "accessKey",
-                                         required = true,
-                                         value = "Model access key") int accessKey,
-                                     @QueryParam("accessCred") @ApiParam(
-                                         name = "accessCred",
-                                         required = true,
-                                         value = "Model access credential") String accessCred,
-                                     @QueryParam("at") @DefaultValue(
-                                         value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
-                                             name = "at",
-                                             required = false,
-                                             defaultValue = "{ values: [ \"9223372036854775806\" ] }",
-                                             value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
-                                     @QueryParam("contid") @DefaultValue("-1") @ApiParam(
-                                         name = "contid",
-                                         required = false,
-                                         defaultValue = "-1",
-                                         value = "Continuation ID for paged results") long contid,
-                                     @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
-                                         name = "maxresults",
-                                         required = false,
-                                         defaultValue = "1000",
-                                         value = "Maximum number of results to retrieve") int maxresults,
-                                     @QueryParam("reverse") @DefaultValue("false") @ApiParam(
-                                         name = "reverse",
-                                         required = false,
-                                         defaultValue = "false",
-                                         value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
-                                     @QueryParam("itemID") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "itemID",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase item ID selector") AttributeSelector itemID,
-                                     @QueryParam("state") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "state",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details state selector") AttributeSelector state,
-                                     @QueryParam("stateTimestamp") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "stateTimestamp",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details state timestamp selector") AttributeSelector stateTimestamp,
-                                     @QueryParam("onlineTimestamp") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "onlineTimestamp",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details online timestamp selector") AttributeSelector onlineTimestamp,
-                                     @QueryParam("usageFlags") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "usageFlags",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details usage flags selector") AttributeSelector usageFlags,
-                                     @QueryParam("deployFlags") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "deployFlags",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details deploy flags selector") AttributeSelector deployFlags,
-                                     @QueryParam("allowAllianceMembers") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "allowAllianceMembers",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details allow alliance members enabled selector") AttributeSelector allowAllianceMembers,
-                                     @QueryParam("allowCorporationMembers") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "allowCorporationMembers",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details allow corporation members enabled selector") AttributeSelector allowCorporationMembers,
-                                     @QueryParam("useStandingsFrom") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "useStandingsFrom",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details standings from selector") AttributeSelector useStandingsFrom,
-                                     @QueryParam("onAggressionEnabled") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "onAggressionEnabled",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details on aggression enabled selector") AttributeSelector onAggressionEnabled,
-                                     @QueryParam("onAggressionStanding") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "onAggressionStanding",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details standing for aggression selector") AttributeSelector onAggressionStanding,
-                                     @QueryParam("onCorporationWarEnabled") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "onCorporationWarEnabled",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details on corporation war enabled selector") AttributeSelector onCorporationWarEnabled,
-                                     @QueryParam("onCorporationWarStanding") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "onCorporationWarStanding",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details standing for corporation war selector") AttributeSelector onCorporationWarStanding,
-                                     @QueryParam("onStandingDropEnabled") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "onStandingDropEnabled",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details on standing drop enabled selector") AttributeSelector onStandingDropEnabled,
-                                     @QueryParam("onStandingDropStanding") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "onStandingDropStanding",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details standing for standing drop selector") AttributeSelector onStandingDropStanding,
-                                     @QueryParam("onStatusDropEnabled") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "onStatusDropEnabled",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details on status drop enabled selector") AttributeSelector onStatusDropEnabled,
-                                     @QueryParam("onStatusDropStanding") @DefaultValue(
-                                         value = "{ any: true }") @ApiParam(
-                                             name = "onStatusDropStanding",
-                                             required = false,
-                                             defaultValue = "{ any: true }",
-                                             value = "Starbase details standing for status drop selector") AttributeSelector onStatusDropStanding) {
-    // Verify access key and authorization for requested data
-    ServiceUtil.sanitizeAttributeSelector(at, itemID, state, stateTimestamp, onlineTimestamp, usageFlags, deployFlags, allowAllianceMembers,
-                                          allowCorporationMembers, useStandingsFrom, onAggressionEnabled, onAggressionStanding, onCorporationWarEnabled,
-                                          onCorporationWarStanding, onStandingDropEnabled, onStandingDropStanding, onStatusDropEnabled, onStatusDropStanding);
-    maxresults = Math.min(1000, maxresults);
-    AccessConfig cfg = ServiceUtil.start(accessKey, accessCred, at, AccountAccessMask.ACCESS_STARBASE_LIST);
-    if (cfg.fail) return cfg.response;
-    try {
-      // Retrieve
-      List<StarbaseDetail> result = StarbaseDetail.accessQuery(cfg.owner, contid, maxresults, reverse, at, itemID, state, stateTimestamp, onlineTimestamp,
-                                                               usageFlags, deployFlags, allowAllianceMembers, allowCorporationMembers, useStandingsFrom,
-                                                               onAggressionEnabled, onAggressionStanding, onCorporationWarEnabled, onCorporationWarStanding,
-                                                               onStandingDropEnabled, onStandingDropStanding, onStatusDropEnabled, onStatusDropStanding);
-      for (CachedData next : result) {
-        next.prepareTransient();
-      }
-      // Finish
-      return ServiceUtil.finish(cfg, result, request);
-    } catch (NumberFormatException e) {
-      ServiceError errMsg = new ServiceError(Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
-      return Response.status(Status.BAD_REQUEST).entity(errMsg).build();
-    }
-  }
 
 }
