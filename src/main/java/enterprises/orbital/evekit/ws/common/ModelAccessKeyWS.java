@@ -80,12 +80,13 @@ public class ModelAccessKeyWS {
     cfg.key = result.key;
     cfg.key.generateMaskValue();
     cfg.owner = result.key.getSyncAccount();
+    cfg.owner.updateValid();
     cfg.presetExpiry = now + TimeUnit.MINUTES.toMillis(5);
     KeyInfo ki = new KeyInfo(
         cfg.owner.isCharacterType() ? "character" : "corporation",
         cfg.owner.isCharacterType() ? cfg.owner.getEveCharacterName() : cfg.owner.getEveCorporationName(),
         cfg.owner.isCharacterType() ? cfg.owner.getEveCharacterID() : cfg.owner.getEveCorporationID(), cfg.key.getMaskValue().longValue(), cfg.key.getExpiry(),
-        cfg.key.getLimit());
+        cfg.key.getLimit(), cfg.owner.isValid());
     return ServiceUtil.finish(cfg, ki, request);
   }
 

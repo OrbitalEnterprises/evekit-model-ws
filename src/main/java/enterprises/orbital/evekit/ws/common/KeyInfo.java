@@ -24,8 +24,12 @@ public class KeyInfo {
   @ApiModelProperty(
       value = "if no -1, then the time (millis UTC) of the oldest model entities this key will allow access to")
   public long   limit;
+  @ApiModelProperty(
+      value = "if true, then the ESI token associated with the synchronized account which owns this key is still" +
+          "valid.  Otherwise, the key is not valid and may need to be re-authorized")
+  public boolean tokenValid;
 
-  public KeyInfo(String keyType, String entityName, long entityID, long mask, long expiry, long limit) {
+  public KeyInfo(String keyType, String entityName, long entityID, long mask, long expiry, long limit, boolean valid) {
     super();
     this.keyType = keyType;
     this.entityName = entityName;
@@ -33,6 +37,7 @@ public class KeyInfo {
     this.mask = mask;
     this.expiry = expiry;
     this.limit = limit;
+    this.tokenValid = valid;
   }
 
 }
