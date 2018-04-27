@@ -1212,6 +1212,224 @@ public class ModelCharacterWS {
                                                         }, request, titleID, titleName);
   }
 
+  @Path("/fittings")
+  @GET
+  @ApiOperation(
+      value = "Get character ship fittings")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested ship fittings",
+              response = Fitting.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getFittings(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("fittingID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fittingID",
+          defaultValue = "{ any: true }",
+          value = "Ship fitting ID selector") AttributeSelector fittingID,
+      @QueryParam("name") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "name",
+          defaultValue = "{ any: true }",
+          value = "Ship fitting name selector") AttributeSelector name,
+      @QueryParam("description") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "description",
+          defaultValue = "{ any: true }",
+          value = "Ship fitting description selector") AttributeSelector description,
+      @QueryParam("shipTypeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shipTypeID",
+          defaultValue = "{ any: true }",
+          value = "Ship fitting ship type ID selector") AttributeSelector shipTypeID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_FITTINGS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Fitting>() {
+
+                                                          @Override
+                                                          public List<Fitting> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int FITTING_ID = 0;
+                                                            final int NAME = 1;
+                                                            final int DESCRIPTION = 2;
+                                                            final int SHIP_TYPE_ID = 3;
+                                                            return Fitting.accessQuery(acct, contid, maxresults,
+                                                                                       reverse, at,
+                                                                                       others[FITTING_ID],
+                                                                                       others[NAME],
+                                                                                       others[DESCRIPTION],
+                                                                                       others[SHIP_TYPE_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_FITTINGS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, fittingID, name, description, shipTypeID);
+  }
+
+  @Path("/fitting_items")
+  @GET
+  @ApiOperation(
+      value = "Get character ship fitting items")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested ship fitting items",
+              response = FittingItem.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getFittingItems(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("fittingID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fittingID",
+          defaultValue = "{ any: true }",
+          value = "Ship fitting item fitting ID selector") AttributeSelector fittingID,
+      @QueryParam("typeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "typeID",
+          defaultValue = "{ any: true }",
+          value = "Ship fitting item type ID selector") AttributeSelector typeID,
+      @QueryParam("flag") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "flag",
+          defaultValue = "{ any: true }",
+          value = "Ship fitting item flag selector") AttributeSelector flag,
+      @QueryParam("quantity") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "quantity",
+          defaultValue = "{ any: true }",
+          value = "Ship fitting item quantity selector") AttributeSelector quantity) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_FITTINGS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<FittingItem>() {
+
+                                                          @Override
+                                                          public List<FittingItem> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int FITTING_ID = 0;
+                                                            final int TYPE_ID = 1;
+                                                            final int FLAG = 2;
+                                                            final int QUANTITY = 3;
+                                                            return FittingItem.accessQuery(acct, contid, maxresults,
+                                                                                           reverse, at,
+                                                                                           others[FITTING_ID],
+                                                                                           others[TYPE_ID],
+                                                                                           others[FLAG],
+                                                                                           others[QUANTITY]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_FITTINGS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, fittingID, typeID, flag, quantity);
+  }
+
   @Path("/implant")
   @GET
   @ApiOperation(
