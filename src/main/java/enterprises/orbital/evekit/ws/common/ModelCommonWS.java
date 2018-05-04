@@ -2805,21 +2805,11 @@ public class ModelCommonWS {
           name = "firstPartyID",
           defaultValue = "{ any: true }",
           value = "Journal entry first party ID selector") AttributeSelector firstPartyID,
-      @QueryParam("firstPartyType") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "firstPartyType",
-          defaultValue = "{ any: true }",
-          value = "Journal entry first party type selector") AttributeSelector firstPartyType,
       @QueryParam("secondPartyID") @DefaultValue(
           value = "{ any: true }") @ApiParam(
           name = "secondPartyID",
           defaultValue = "{ any: true }",
           value = "Journal entry second party ID selector") AttributeSelector secondPartyID,
-      @QueryParam("secondPartyType") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "secondPartyType",
-          defaultValue = "{ any: true }",
-          value = "Journal entry second party type selector") AttributeSelector secondPartyType,
       @QueryParam("argName1") @DefaultValue(
           value = "{ any: true }") @ApiParam(
           name = "argName1",
@@ -2855,66 +2845,21 @@ public class ModelCommonWS {
           name = "taxAmount",
           defaultValue = "{ any: true }",
           value = "Journal entry tax amount selector") AttributeSelector taxAmount,
-      @QueryParam("locationID") @DefaultValue(
+      @QueryParam("contextID") @DefaultValue(
           value = "{ any: true }") @ApiParam(
-          name = "locationID",
+          name = "contextID",
           defaultValue = "{ any: true }",
-          value = "Location ID selector") AttributeSelector locationID,
-      @QueryParam("transactionID") @DefaultValue(
+          value = "Context ID selector") AttributeSelector contextID,
+      @QueryParam("contextType") @DefaultValue(
           value = "{ any: true }") @ApiParam(
-          name = "transactionID",
+          name = "contextType",
           defaultValue = "{ any: true }",
-          value = "Transaction ID selector") AttributeSelector transactionID,
-      @QueryParam("npcName") @DefaultValue(
+          value = "Context type selector") AttributeSelector contextType,
+      @QueryParam("description") @DefaultValue(
           value = "{ any: true }") @ApiParam(
-          name = "npcName",
+          name = "description",
           defaultValue = "{ any: true }",
-          value = "NPC name selector") AttributeSelector npcName,
-      @QueryParam("npcID") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "npcID",
-          defaultValue = "{ any: true }",
-          value = "NPC ID selector") AttributeSelector npcID,
-      @QueryParam("destroyedShipTypeID") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "destroyedShipTypeID",
-          defaultValue = "{ any: true }",
-          value = "Destroyed ship type ID selector") AttributeSelector destroyedShipTypeID,
-      @QueryParam("characterID") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "characterID",
-          defaultValue = "{ any: true }",
-          value = "Character ID selector") AttributeSelector characterID,
-      @QueryParam("corporationID") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "corporationID",
-          defaultValue = "{ any: true }",
-          value = "Corporation ID selector") AttributeSelector corporationID,
-      @QueryParam("allianceID") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "allianceID",
-          defaultValue = "{ any: true }",
-          value = "Alliance ID selector") AttributeSelector allianceID,
-      @QueryParam("jobID") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "jobID",
-          defaultValue = "{ any: true }",
-          value = "Job ID selector") AttributeSelector jobID,
-      @QueryParam("contractID") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "contractID",
-          defaultValue = "{ any: true }",
-          value = "Contract ID selector") AttributeSelector contractID,
-      @QueryParam("systemID") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "systemID",
-          defaultValue = "{ any: true }",
-          value = "System ID selector") AttributeSelector systemID,
-      @QueryParam("planetID") @DefaultValue(
-          value = "{ any: true }") @ApiParam(
-          name = "planetID",
-          defaultValue = "{ any: true }",
-          value = "Planet ID selector") AttributeSelector planetID) {
+          value = "Description selector") AttributeSelector description) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
                                                         AccountAccessMask.ACCESS_WALLET_JOURNAL,
                                                         at, contid, maxresults, reverse,
@@ -2931,28 +2876,17 @@ public class ModelCommonWS {
                                                             final int DATE = 2;
                                                             final int REF_TYPE = 3;
                                                             final int FIRST_PARTY_ID = 4;
-                                                            final int FIRST_PARTY_TYPE = 5;
-                                                            final int SECOND_PARTY_ID = 6;
-                                                            final int SECOND_PARTY_TYPE = 7;
-                                                            final int ARG_NAME_1 = 8;
-                                                            final int ARG_ID_1 = 9;
-                                                            final int AMOUNT = 10;
-                                                            final int BALANCE = 11;
-                                                            final int REASON = 12;
-                                                            final int TAX_RECEIVER_ID = 13;
-                                                            final int TAX_AMOUNT = 14;
-                                                            final int LOCATION_ID = 15;
-                                                            final int TRANSACTION_ID = 16;
-                                                            final int NPC_NAME = 17;
-                                                            final int NPC_ID = 18;
-                                                            final int DESTROYED_SHIP_TYPE_ID = 19;
-                                                            final int CHARACTER_ID = 20;
-                                                            final int CORPORATION_ID = 21;
-                                                            final int ALLIANCE_ID = 22;
-                                                            final int JOB_ID = 23;
-                                                            final int CONTRACT_ID = 24;
-                                                            final int SYSTEM_ID = 25;
-                                                            final int PLANET_ID = 26;
+                                                            final int SECOND_PARTY_ID = 5;
+                                                            final int ARG_NAME_1 = 6;
+                                                            final int ARG_ID_1 = 7;
+                                                            final int AMOUNT = 8;
+                                                            final int BALANCE = 9;
+                                                            final int REASON = 10;
+                                                            final int TAX_RECEIVER_ID = 11;
+                                                            final int TAX_AMOUNT = 12;
+                                                            final int CONTEXT_ID = 13;
+                                                            final int CONTEXT_TYPE = 14;
+                                                            final int DESCRIPTION = 15;
                                                             return WalletJournal.accessQuery(acct, contid,
                                                                                              maxresults, reverse,
                                                                                              at,
@@ -2961,9 +2895,7 @@ public class ModelCommonWS {
                                                                                              others[DATE],
                                                                                              others[REF_TYPE],
                                                                                              others[FIRST_PARTY_ID],
-                                                                                             others[FIRST_PARTY_TYPE],
                                                                                              others[SECOND_PARTY_ID],
-                                                                                             others[SECOND_PARTY_TYPE],
                                                                                              others[ARG_NAME_1],
                                                                                              others[ARG_ID_1],
                                                                                              others[AMOUNT],
@@ -2971,18 +2903,9 @@ public class ModelCommonWS {
                                                                                              others[REASON],
                                                                                              others[TAX_RECEIVER_ID],
                                                                                              others[TAX_AMOUNT],
-                                                                                             others[LOCATION_ID],
-                                                                                             others[TRANSACTION_ID],
-                                                                                             others[NPC_NAME],
-                                                                                             others[NPC_ID],
-                                                                                             others[DESTROYED_SHIP_TYPE_ID],
-                                                                                             others[CHARACTER_ID],
-                                                                                             others[CORPORATION_ID],
-                                                                                             others[ALLIANCE_ID],
-                                                                                             others[JOB_ID],
-                                                                                             others[CONTRACT_ID],
-                                                                                             others[SYSTEM_ID],
-                                                                                             others[PLANET_ID]);
+                                                                                             others[CONTEXT_ID],
+                                                                                             others[CONTEXT_TYPE],
+                                                                                             others[DESCRIPTION]);
                                                           }
 
                                                           @Override
@@ -2998,9 +2921,7 @@ public class ModelCommonWS {
                                                         date,
                                                         refType,
                                                         firstPartyID,
-                                                        firstPartyType,
                                                         secondPartyID,
-                                                        secondPartyType,
                                                         argName1,
                                                         argID1,
                                                         amount,
@@ -3008,18 +2929,9 @@ public class ModelCommonWS {
                                                         reason,
                                                         taxReceiverID,
                                                         taxAmount,
-                                                        locationID,
-                                                        transactionID,
-                                                        npcName,
-                                                        npcID,
-                                                        destroyedShipTypeID,
-                                                        characterID,
-                                                        corporationID,
-                                                        allianceID,
-                                                        jobID,
-                                                        contractID,
-                                                        systemID,
-                                                        planetID);
+                                                        contextID,
+                                                        contextType,
+                                                        description);
   }
 
   @Path("/wallet_transaction")

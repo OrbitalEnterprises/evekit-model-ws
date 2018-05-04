@@ -1,5 +1,6 @@
 package enterprises.orbital.evekit.ws.character;
 
+import enterprises.orbital.base.OrbitalProperties;
 import enterprises.orbital.evekit.account.AccountAccessMask;
 import enterprises.orbital.evekit.account.SynchronizedEveAccount;
 import enterprises.orbital.evekit.model.AttributeSelector;
@@ -2243,8 +2244,8 @@ public class ModelCharacterWS {
 
                                                           @Override
                                                           public long getExpiry(SynchronizedEveAccount acct) {
-                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_CHANNELS,
-                                                                                        acct);
+                                                            // Always expired for now as endpoint no longer exists
+                                                            return OrbitalProperties.getCurrentTime();
                                                           }
                                                         }, request, channelID, ownerID, displayName, comparisonKey,
                                                         hasPassword, motd);
@@ -2368,8 +2369,8 @@ public class ModelCharacterWS {
 
                                                           @Override
                                                           public long getExpiry(SynchronizedEveAccount acct) {
-                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_CHANNELS,
-                                                                                        acct);
+                                                            // Always expired for now as endpoint no longer exists
+                                                            return OrbitalProperties.getCurrentTime();
                                                           }
                                                         }, request, channelID, category, accessorID, accessorType,
                                                         untilWhen, reason);

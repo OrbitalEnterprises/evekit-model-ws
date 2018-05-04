@@ -377,8 +377,6 @@ public class ServiceUtil {
             makeEPSet(ESISyncEndpoint.CHAR_MEDALS));
     map.put(Pair.of(AccountAccessMask.ACCESS_NOTIFICATIONS, true),
             makeEPSet(ESISyncEndpoint.CHAR_NOTIFICATIONS));
-    map.put(Pair.of(AccountAccessMask.ACCESS_CHAT_CHANNELS, true),
-            makeEPSet(ESISyncEndpoint.CHAR_CHANNELS));
     map.put(Pair.of(AccountAccessMask.ACCESS_CONTACT_NOTIFICATIONS, true),
             makeEPSet(ESISyncEndpoint.CHAR_NOTIFICATIONS));
     map.put(Pair.of(AccountAccessMask.ACCESS_MAILING_LISTS, true),

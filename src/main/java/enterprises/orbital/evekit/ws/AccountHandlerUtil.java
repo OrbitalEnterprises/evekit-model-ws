@@ -26,6 +26,7 @@ public class AccountHandlerUtil {
   private static final int DEF_RESULT_LIMIT = 1000;
 
   // Endpoint expiry map
+  @SuppressWarnings("JavacQuirks")
   private static final Map<ESISyncEndpoint, Long> modelExpiry = Stream.of(
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_WALLET_BALANCE, TimeUnit.MILLISECONDS.convert(120, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_WALLET_BALANCE, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS)),
@@ -71,7 +72,6 @@ public class AccountHandlerUtil {
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_NOTIFICATIONS, TimeUnit.MILLISECONDS.convert(600, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_MEDALS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_TITLES, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
-      new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CHAR_CHANNELS, TimeUnit.MILLISECONDS.convert(300, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_MEDALS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_SHEET, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
       new AbstractMap.SimpleEntry<>(ESISyncEndpoint.CORP_TRACK_MEMBERS, TimeUnit.MILLISECONDS.convert(3600, TimeUnit.SECONDS)),
