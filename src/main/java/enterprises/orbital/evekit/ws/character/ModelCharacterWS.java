@@ -908,6 +908,102 @@ public class ModelCharacterWS {
                                                         }, request, jumpActivation, jumpFatigue, jumpLastUpdate);
   }
 
+  @Path("/loyalty_points")
+  @GET
+  @ApiOperation(
+      value = "Get character loyalty points")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested character loyalty points",
+              response = LoyaltyPoints.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getLoyaltyPoints(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("corporationID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "corporationID",
+          defaultValue = "{ any: true }",
+          value = "Corporation ID selector") AttributeSelector corporationID,
+      @QueryParam("loyaltyPoints") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "loyaltyPoints",
+          defaultValue = "{ any: true }",
+          value = "Loyalty points selector") AttributeSelector loyaltyPoints) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<LoyaltyPoints>() {
+
+                                                          @Override
+                                                          public List<LoyaltyPoints> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int CORPORATION_ID = 0;
+                                                            final int LOYALTY_POINTS = 1;
+                                                            return LoyaltyPoints.accessQuery(acct, contid,
+                                                                                                  maxresults,
+                                                                                                  reverse, at,
+                                                                                                  others[CORPORATION_ID],
+                                                                                                  others[LOYALTY_POINTS]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_LOYALTY,
+                                                                                        acct);
+                                                          }
+                                                        }, request, corporationID, loyaltyPoints);
+  }
+
   @Path("/skill_points")
   @GET
   @ApiOperation(
