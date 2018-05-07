@@ -2048,6 +2048,361 @@ public class ModelCorporationWS {
                                                         logonDateTime, shipTypeID, startDateTime);
   }
 
+  @Path("/mining_extractions")
+  @GET
+  @ApiOperation(
+      value = "Get mining extractions information")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of mining extractions",
+              response = MiningExtraction.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getMiningExtractions(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("moonID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "moonID",
+          defaultValue = "{ any: true }",
+          value = "Moon ID selector") AttributeSelector moonID,
+      @QueryParam("structureID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "structureID",
+          defaultValue = "{ any: true }",
+          value = "Structure ID selector") AttributeSelector structureID,
+      @QueryParam("extractionStartTime") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "extractionStartTime",
+          defaultValue = "{ any: true }",
+          value = "Extraction start time selector") AttributeSelector extractionStartTime,
+      @QueryParam("chunkArrivalTime") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "chunkArrivalTime",
+          defaultValue = "{ any: true }",
+          value = "Chunk arrival time selector") AttributeSelector chunkArrivalTime,
+      @QueryParam("naturalDecayTime") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "naturalDecayTime",
+          defaultValue = "{ any: true }",
+          value = "Natural decay time selector") AttributeSelector naturalDecayTime) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_MINING_LEDGER,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<MiningExtraction>() {
+
+                                                          @Override
+                                                          public List<MiningExtraction> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int MOON_ID = 0;
+                                                            final int STRUCTURE_ID = 1;
+                                                            final int EXTRACTION_START_TIME = 2;
+                                                            final int CHUNK_ARRIVAL_TIME = 3;
+                                                            final int NATURAL_DECAY_TIME = 4;
+
+                                                            return MiningExtraction.accessQuery(acct, contid,
+                                                                                                maxresults,
+                                                                                                reverse, at,
+                                                                                                others[MOON_ID],
+                                                                                                others[STRUCTURE_ID],
+                                                                                                others[EXTRACTION_START_TIME],
+                                                                                                others[CHUNK_ARRIVAL_TIME],
+                                                                                                others[NATURAL_DECAY_TIME]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CORP_MINING,
+                                                                acct);
+                                                          }
+                                                        }, request, moonID, structureID, extractionStartTime,
+                                                        chunkArrivalTime, naturalDecayTime);
+  }
+
+  @Path("/mining_observers")
+  @GET
+  @ApiOperation(
+      value = "Get mining observers information")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of mining observers",
+              response = MiningObserver.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getMiningObservers(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("observerID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "observerID",
+          defaultValue = "{ any: true }",
+          value = "Observer ID selector") AttributeSelector observerID,
+      @QueryParam("observerType") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "observerType",
+          defaultValue = "{ any: true }",
+          value = "Observer type selector") AttributeSelector observerType,
+      @QueryParam("lastUpdated") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "lastUpdated",
+          defaultValue = "{ any: true }",
+          value = "Last updated time selector") AttributeSelector lastUpdated) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_MINING_LEDGER,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<MiningObserver>() {
+
+                                                          @Override
+                                                          public List<MiningObserver> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int OBSERVER_ID = 0;
+                                                            final int OBSERVER_TYPE = 1;
+                                                            final int LAST_UPDATED = 2;
+
+                                                            return MiningObserver.accessQuery(acct, contid,
+                                                                                              maxresults,
+                                                                                              reverse, at,
+                                                                                              others[OBSERVER_ID],
+                                                                                              others[OBSERVER_TYPE],
+                                                                                              others[LAST_UPDATED]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CORP_MINING,
+                                                                acct);
+                                                          }
+                                                        }, request, observerID, observerType, lastUpdated);
+  }
+
+  @Path("/mining_observations")
+  @GET
+  @ApiOperation(
+      value = "Get mining observations information")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of mining observations",
+              response = MiningObservation.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getMiningObservations(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("observerID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "observerID",
+          defaultValue = "{ any: true }",
+          value = "Observer ID selector") AttributeSelector observerID,
+      @QueryParam("characterID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "characterID",
+          defaultValue = "{ any: true }",
+          value = "Character ID selector") AttributeSelector characterID,
+      @QueryParam("typeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "typeID",
+          defaultValue = "{ any: true }",
+          value = "Type ID selector") AttributeSelector typeID,
+      @QueryParam("recordedCorporationID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "recordedCorporationID",
+          defaultValue = "{ any: true }",
+          value = "Recorded corporation ID selector") AttributeSelector recordedCorporationID,
+      @QueryParam("quantity") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "quantity",
+          defaultValue = "{ any: true }",
+          value = "Quantity selector") AttributeSelector quantity,
+      @QueryParam("lastUpdated") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "lastUpdated",
+          defaultValue = "{ any: true }",
+          value = "Last updated time selector") AttributeSelector lastUpdated) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_MINING_LEDGER,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<MiningObservation>() {
+
+                                                          @Override
+                                                          public List<MiningObservation> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int OBSERVER_ID = 0;
+                                                            final int CHARACTER_ID = 1;
+                                                            final int TYPE_ID = 2;
+                                                            final int RECORDED_CORPORATION_ID = 3;
+                                                            final int QUANTITY = 4;
+                                                            final int LAST_UPDATED = 5;
+
+                                                            return MiningObservation.accessQuery(acct, contid,
+                                                                                                 maxresults,
+                                                                                                 reverse, at,
+                                                                                                 others[OBSERVER_ID],
+                                                                                                 others[CHARACTER_ID],
+                                                                                                 others[TYPE_ID],
+                                                                                                 others[RECORDED_CORPORATION_ID],
+                                                                                                 others[QUANTITY],
+                                                                                                 others[LAST_UPDATED]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CORP_MINING,
+                                                                acct);
+                                                          }
+                                                        }, request, observerID, characterID, typeID,
+                                                        recordedCorporationID, quantity, lastUpdated);
+  }
+
   @Path("/shareholder")
   @GET
   @ApiOperation(

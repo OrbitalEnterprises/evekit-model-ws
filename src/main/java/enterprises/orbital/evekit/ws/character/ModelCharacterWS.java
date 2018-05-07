@@ -1004,6 +1004,116 @@ public class ModelCharacterWS {
                                                         }, request, corporationID, loyaltyPoints);
   }
 
+  @Path("/mining_ledger")
+  @GET
+  @ApiOperation(
+      value = "Get character mining ledger")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested character mining ledger entries",
+              response = MiningLedger.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getMiningLedger(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("date") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "date",
+          defaultValue = "{ any: true }",
+          value = "Date selector") AttributeSelector date,
+      @QueryParam("solarSystemID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "solarSystemID",
+          defaultValue = "{ any: true }",
+          value = "Solar system ID selector") AttributeSelector solarSystemID,
+      @QueryParam("typeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "typeID",
+          defaultValue = "{ any: true }",
+          value = "Type ID selector") AttributeSelector typeID,
+      @QueryParam("quantity") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "quantity",
+          defaultValue = "{ any: true }",
+          value = "Quantity selector") AttributeSelector quantity) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_MINING_LEDGER,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<MiningLedger>() {
+
+                                                          @Override
+                                                          public List<MiningLedger> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int DATE = 0;
+                                                            final int SOLAR_SYSTEM_ID = 1;
+                                                            final int TYPE_ID = 2;
+                                                            final int QUANTITY = 3;
+                                                            return MiningLedger.accessQuery(acct, contid,
+                                                                                             maxresults,
+                                                                                             reverse, at,
+                                                                                             others[DATE],
+                                                                                            others[SOLAR_SYSTEM_ID],
+                                                                                            others[TYPE_ID],
+                                                                                             others[QUANTITY]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_MINING,
+                                                                                        acct);
+                                                          }
+                                                        }, request, date, solarSystemID, typeID, quantity);
+  }
+
   @Path("/skill_points")
   @GET
   @ApiOperation(
