@@ -2403,6 +2403,306 @@ public class ModelCorporationWS {
                                                         recordedCorporationID, quantity, lastUpdated);
   }
 
+  @Path("/structures")
+  @GET
+  @ApiOperation(
+      value = "Get structures")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of structures",
+              response = Structure.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getStructures(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("structureID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "structureID",
+          defaultValue = "{ any: true }",
+          value = "Structure ID selector") AttributeSelector structureID,
+      @QueryParam("corporationID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "corporationID",
+          defaultValue = "{ any: true }",
+          value = "Structure owning corporation ID selector") AttributeSelector corporationID,
+      @QueryParam("fuelExpires") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fuelExpires",
+          defaultValue = "{ any: true }",
+          value = "Structure fuel expires time selector") AttributeSelector fuelExpires,
+      @QueryParam("nextReinforceApply") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "nextReinforceApply",
+          defaultValue = "{ any: true }",
+          value = "Structure next reinforce apply time selector") AttributeSelector nextReinforceApply,
+      @QueryParam("nextReinforceHour") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "nextReinforceHour",
+          defaultValue = "{ any: true }",
+          value = "Structure next reinforce hour selector") AttributeSelector nextReinforceHour,
+      @QueryParam("nextReinforceWeekday") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "nextReinforceWeekday",
+          defaultValue = "{ any: true }",
+          value = "Structure next reinforce weekday selector") AttributeSelector nextReinforceWeekday,
+      @QueryParam("profileID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "profileID",
+          defaultValue = "{ any: true }",
+          value = "Structure profile ID selector") AttributeSelector profileID,
+      @QueryParam("reinforceHour") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "reinforceHour",
+          defaultValue = "{ any: true }",
+          value = "Structure reinforce hour selector") AttributeSelector reinforceHour,
+      @QueryParam("reinforceWeekday") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "reinforceWeekday",
+          defaultValue = "{ any: true }",
+          value = "Structure reinforce weekday selector") AttributeSelector reinforceWeekday,
+      @QueryParam("state") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "state",
+          defaultValue = "{ any: true }",
+          value = "Structure state selector") AttributeSelector state,
+      @QueryParam("stateTimerEnd") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "stateTimerEnd",
+          defaultValue = "{ any: true }",
+          value = "Structure state timer end selector") AttributeSelector stateTimerEnd,
+      @QueryParam("stateTimerStart") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "stateTimerStart",
+          defaultValue = "{ any: true }",
+          value = "Structure state timer start selector") AttributeSelector stateTimerStart,
+      @QueryParam("systemID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "systemID",
+          defaultValue = "{ any: true }",
+          value = "Structure system ID selector") AttributeSelector systemID,
+      @QueryParam("typeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "typeID",
+          defaultValue = "{ any: true }",
+          value = "Structure type ID selector") AttributeSelector typeID,
+      @QueryParam("unanchorsAt") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "unanchorsAt",
+          defaultValue = "{ any: true }",
+          value = "Strcucture 'unanchors at' time selector") AttributeSelector unanchorsAt) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_STRUCTURES,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Structure>() {
+
+                                                          @Override
+                                                          public List<Structure> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int STRUCTURE_ID = 0;
+                                                            final int CORPORATION_ID = 1;
+                                                            final int FUEL_EXPIRES = 2;
+                                                            final int NEXT_REINFORCE_APPLY = 3;
+                                                            final int NEXT_REINFORCE_HOUR = 4;
+                                                            final int NEXT_REINFORCE_WEEKDAY = 5;
+                                                            final int PROFILE_ID = 6;
+                                                            final int REINFORCE_HOUR = 7;
+                                                            final int REINFORCE_WEEKDAY = 8;
+                                                            final int STATE = 9;
+                                                            final int STATE_TIMER_END = 10;
+                                                            final int STATE_TIMER_START = 11;
+                                                            final int SYSTEM_ID = 12;
+                                                            final int TYPE_ID = 13;
+                                                            final int UNANCHORS_AT = 14;
+
+                                                            return Structure.accessQuery(acct, contid,
+                                                                                         maxresults,
+                                                                                         reverse, at,
+                                                                                         others[STRUCTURE_ID],
+                                                                                         others[CORPORATION_ID],
+                                                                                         others[FUEL_EXPIRES],
+                                                                                         others[NEXT_REINFORCE_APPLY],
+                                                                                         others[NEXT_REINFORCE_HOUR],
+                                                                                         others[NEXT_REINFORCE_WEEKDAY],
+                                                                                         others[PROFILE_ID],
+                                                                                         others[REINFORCE_HOUR],
+                                                                                         others[REINFORCE_WEEKDAY],
+                                                                                         others[STATE],
+                                                                                         others[STATE_TIMER_END],
+                                                                                         others[STATE_TIMER_START],
+                                                                                         others[SYSTEM_ID],
+                                                                                         others[TYPE_ID],
+                                                                                         others[UNANCHORS_AT]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CORP_STRUCTURES,
+                                                                acct);
+                                                          }
+                                                        }, request, structureID, corporationID, fuelExpires,
+                                                        nextReinforceApply, nextReinforceHour, nextReinforceWeekday,
+                                                        profileID, reinforceHour, reinforceWeekday, state,
+                                                        stateTimerEnd, stateTimerStart, systemID, typeID,
+                                                        unanchorsAt);
+  }
+
+  @Path("/structure_services")
+  @GET
+  @ApiOperation(
+      value = "Get structure services")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of structure services",
+              response = StructureService.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getStructureServices(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("structureID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "structureID",
+          defaultValue = "{ any: true }",
+          value = "Structure ID selector") AttributeSelector structureID,
+      @QueryParam("name") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "name",
+          defaultValue = "{ any: true }",
+          value = "Structure service name selector") AttributeSelector name,
+      @QueryParam("state") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "state",
+          defaultValue = "{ any: true }",
+          value = "Structure service state selector") AttributeSelector state) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_STRUCTURES,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<StructureService>() {
+
+                                                          @Override
+                                                          public List<StructureService> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int STRUCTURE_ID = 0;
+                                                            final int NAME = 1;
+                                                            final int STATE = 2;
+
+                                                            return StructureService.accessQuery(acct, contid,
+                                                                                                maxresults,
+                                                                                                reverse, at,
+                                                                                                others[STRUCTURE_ID],
+                                                                                                others[NAME],
+                                                                                                others[STATE]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CORP_STRUCTURES,
+                                                                acct);
+                                                          }
+                                                        }, request, structureID, name, state);
+  }
+
   @Path("/shareholder")
   @GET
   @ApiOperation(

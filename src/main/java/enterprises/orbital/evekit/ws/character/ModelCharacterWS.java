@@ -990,10 +990,10 @@ public class ModelCharacterWS {
                                                             final int CORPORATION_ID = 0;
                                                             final int LOYALTY_POINTS = 1;
                                                             return LoyaltyPoints.accessQuery(acct, contid,
-                                                                                                  maxresults,
-                                                                                                  reverse, at,
-                                                                                                  others[CORPORATION_ID],
-                                                                                                  others[LOYALTY_POINTS]);
+                                                                                             maxresults,
+                                                                                             reverse, at,
+                                                                                             others[CORPORATION_ID],
+                                                                                             others[LOYALTY_POINTS]);
                                                           }
 
                                                           @Override
@@ -1098,12 +1098,12 @@ public class ModelCharacterWS {
                                                             final int TYPE_ID = 2;
                                                             final int QUANTITY = 3;
                                                             return MiningLedger.accessQuery(acct, contid,
-                                                                                             maxresults,
-                                                                                             reverse, at,
-                                                                                             others[DATE],
+                                                                                            maxresults,
+                                                                                            reverse, at,
+                                                                                            others[DATE],
                                                                                             others[SOLAR_SYSTEM_ID],
                                                                                             others[TYPE_ID],
-                                                                                             others[QUANTITY]);
+                                                                                            others[QUANTITY]);
                                                           }
 
                                                           @Override
@@ -1112,6 +1112,711 @@ public class ModelCharacterWS {
                                                                                         acct);
                                                           }
                                                         }, request, date, solarSystemID, typeID, quantity);
+  }
+
+  @Path("/char_fleet")
+  @GET
+  @ApiOperation(
+      value = "Get character fleets")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested character fleets",
+              response = CharacterFleet.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getCharacterFleet(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("fleetID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fleetID",
+          defaultValue = "{ any: true }",
+          value = "Fleet ID selector") AttributeSelector fleetID,
+      @QueryParam("role") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "role",
+          defaultValue = "{ any: true }",
+          value = "Fleet role selector") AttributeSelector role,
+      @QueryParam("squadID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "squadID",
+          defaultValue = "{ any: true }",
+          value = "Fleet squad ID selector") AttributeSelector squadID,
+      @QueryParam("wingID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "wingID",
+          defaultValue = "{ any: true }",
+          value = "Fleet wing ID selector") AttributeSelector wingID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CHARACTER_FLEETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<CharacterFleet>() {
+
+                                                          @Override
+                                                          public List<CharacterFleet> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int FLEET_ID = 0;
+                                                            final int ROLE = 1;
+                                                            final int SQUAD_ID = 2;
+                                                            final int WING_ID = 3;
+                                                            return CharacterFleet.accessQuery(acct, contid,
+                                                                                              maxresults,
+                                                                                              reverse, at,
+                                                                                              others[FLEET_ID],
+                                                                                              others[ROLE],
+                                                                                              others[SQUAD_ID],
+                                                                                              others[WING_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_FLEETS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, fleetID, role, squadID, wingID);
+  }
+
+  @Path("/fleet_info")
+  @GET
+  @ApiOperation(
+      value = "Get fleet info")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested fleet info",
+              response = FleetInfo.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getFleetInfo(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("fleetID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fleetID",
+          defaultValue = "{ any: true }",
+          value = "Fleet ID selector") AttributeSelector fleetID,
+      @QueryParam("isFreeMove") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "isFreeMove",
+          defaultValue = "{ any: true }",
+          value = "Fleet 'is free move' selector") AttributeSelector isFreeMove,
+      @QueryParam("isRegistered") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "isRegistered",
+          defaultValue = "{ any: true }",
+          value = "Fleet 'is registered' selector") AttributeSelector isRegistered,
+      @QueryParam("isVoiceEnabled") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "isVoiceEnabled",
+          defaultValue = "{ any: true }",
+          value = "Fleet 'is voice enabled' selector") AttributeSelector isVoiceEnabled,
+      @QueryParam("motd") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "motd",
+          defaultValue = "{ any: true }",
+          value = "Fleet message of the day selector") AttributeSelector motd) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CHARACTER_FLEETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<FleetInfo>() {
+
+                                                          @Override
+                                                          public List<FleetInfo> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int FLEET_ID = 0;
+                                                            final int IS_FREE_MOVE = 1;
+                                                            final int IS_REGISTERED = 2;
+                                                            final int IS_VOICE_ENABLED = 3;
+                                                            final int MOTD = 4;
+                                                            return FleetInfo.accessQuery(acct, contid,
+                                                                                         maxresults,
+                                                                                         reverse, at,
+                                                                                         others[FLEET_ID],
+                                                                                         others[IS_FREE_MOVE],
+                                                                                         others[IS_REGISTERED],
+                                                                                         others[IS_VOICE_ENABLED],
+                                                                                         others[MOTD]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_FLEETS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, fleetID, isFreeMove, isRegistered, isVoiceEnabled,
+                                                        motd);
+  }
+
+  @Path("/fleet_members")
+  @GET
+  @ApiOperation(
+      value = "Get fleet membership info")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested fleet members",
+              response = FleetMember.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getFleetMembers(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("fleetID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fleetID",
+          defaultValue = "{ any: true }",
+          value = "Fleet member fleet ID selector") AttributeSelector fleetID,
+      @QueryParam("characterID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "characterID",
+          defaultValue = "{ any: true }",
+          value = "Fleet member character ID selector") AttributeSelector characterID,
+      @QueryParam("joinTime") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "joinTime",
+          defaultValue = "{ any: true }",
+          value = "Fleet member join time selector") AttributeSelector joinTime,
+      @QueryParam("role") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "role",
+          defaultValue = "{ any: true }",
+          value = "Fleet member role selector") AttributeSelector role,
+      @QueryParam("roleName") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "roleName",
+          defaultValue = "{ any: true }",
+          value = "Fleet member role name selector") AttributeSelector roleName,
+      @QueryParam("shipTypeID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "shipTypeID",
+          defaultValue = "{ any: true }",
+          value = "Fleet member ship type ID selector") AttributeSelector shipTypeID,
+      @QueryParam("solarSystemID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "solarSystemID",
+          defaultValue = "{ any: true }",
+          value = "Fleet member solar system ID selector") AttributeSelector solarSystemID,
+      @QueryParam("squadID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "squadID",
+          defaultValue = "{ any: true }",
+          value = "Fleet member squad ID selector") AttributeSelector squadID,
+      @QueryParam("stationID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "stationID",
+          defaultValue = "{ any: true }",
+          value = "Fleet member station ID selector") AttributeSelector stationID,
+      @QueryParam("takesFleetWarp") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "takesFleetWarp",
+          defaultValue = "{ any: true }",
+          value = "Fleet member 'takes fleet warp' selector") AttributeSelector takesFleetWarp,
+      @QueryParam("wingID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "wingID",
+          defaultValue = "{ any: true }",
+          value = "Fleet member wing ID selector") AttributeSelector wingID) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CHARACTER_FLEETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<FleetMember>() {
+
+                                                          @Override
+                                                          public List<FleetMember> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int FLEET_ID = 0;
+                                                            final int CHARACTER_ID = 1;
+                                                            final int JOIN_TIME = 2;
+                                                            final int ROLE = 3;
+                                                            final int ROLE_NAME = 4;
+                                                            final int SHIP_TYPE_ID = 5;
+                                                            final int SOLAR_SYSTEM_ID = 6;
+                                                            final int SQUAD_ID = 7;
+                                                            final int STATION_ID = 8;
+                                                            final int TAKES_FLEET_WARP = 9;
+                                                            final int WING_ID = 10;
+                                                            return FleetMember.accessQuery(acct, contid,
+                                                                                           maxresults,
+                                                                                           reverse, at,
+                                                                                           others[FLEET_ID],
+                                                                                           others[CHARACTER_ID],
+                                                                                           others[JOIN_TIME],
+                                                                                           others[ROLE],
+                                                                                           others[ROLE_NAME],
+                                                                                           others[SHIP_TYPE_ID],
+                                                                                           others[SOLAR_SYSTEM_ID],
+                                                                                           others[SQUAD_ID],
+                                                                                           others[STATION_ID],
+                                                                                           others[TAKES_FLEET_WARP],
+                                                                                           others[WING_ID]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_FLEETS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, fleetID, characterID, joinTime, role, roleName,
+                                                        shipTypeID, solarSystemID, squadID, stationID,
+                                                        takesFleetWarp, wingID);
+  }
+
+  @Path("/fleet_wings")
+  @GET
+  @ApiOperation(
+      value = "Get fleet wing info")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested fleet wings",
+              response = FleetWing.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getFleetWings(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("fleetID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fleetID",
+          defaultValue = "{ any: true }",
+          value = "Fleet wing fleet ID selector") AttributeSelector fleetID,
+      @QueryParam("wingID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "wingID",
+          defaultValue = "{ any: true }",
+          value = "Fleet wing ID selector") AttributeSelector wingID,
+      @QueryParam("name") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "name",
+          defaultValue = "{ any: true }",
+          value = "Fleet wing name selector") AttributeSelector name) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CHARACTER_FLEETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<FleetWing>() {
+
+                                                          @Override
+                                                          public List<FleetWing> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int FLEET_ID = 0;
+                                                            final int WING_ID = 1;
+                                                            final int NAME = 2;
+                                                            return FleetWing.accessQuery(acct, contid,
+                                                                                         maxresults,
+                                                                                         reverse, at,
+                                                                                         others[FLEET_ID],
+                                                                                         others[WING_ID],
+                                                                                         others[NAME]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_FLEETS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, fleetID, wingID, name);
+  }
+
+  @Path("/fleet_squads")
+  @GET
+  @ApiOperation(
+      value = "Get fleet squad info")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested fleet squads",
+              response = FleetSquad.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getFleetSquads(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("fleetID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "fleetID",
+          defaultValue = "{ any: true }",
+          value = "Fleet squad fleet ID selector") AttributeSelector fleetID,
+      @QueryParam("wingID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "wingID",
+          defaultValue = "{ any: true }",
+          value = "Fleet squad wing ID selector") AttributeSelector wingID,
+      @QueryParam("squadID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "squadID",
+          defaultValue = "{ any: true }",
+          value = "Fleet squad ID selector") AttributeSelector squadID,
+      @QueryParam("name") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "name",
+          defaultValue = "{ any: true }",
+          value = "Fleet squad name selector") AttributeSelector name) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CHARACTER_FLEETS,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<FleetSquad>() {
+
+                                                          @Override
+                                                          public List<FleetSquad> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int FLEET_ID = 0;
+                                                            final int WING_ID = 1;
+                                                            final int SQUAD_ID = 2;
+                                                            final int NAME = 3;
+                                                            return FleetSquad.accessQuery(acct, contid,
+                                                                                          maxresults,
+                                                                                          reverse, at,
+                                                                                          others[FLEET_ID],
+                                                                                          others[WING_ID],
+                                                                                          others[SQUAD_ID],
+                                                                                          others[NAME]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(ESISyncEndpoint.CHAR_FLEETS,
+                                                                                        acct);
+                                                          }
+                                                        }, request, fleetID, wingID, squadID, name);
+  }
+
+  @Path("/opportunities")
+  @GET
+  @ApiOperation(
+      value = "Get opportunities")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              code = 200,
+              message = "list of requested opportunities",
+              response = Opportunity.class,
+              responseContainer = "array"),
+          @ApiResponse(
+              code = 400,
+              message = "invalid attribute selector",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 401,
+              message = "access key credential is invalid",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 403,
+              message = "access key not permitted to access the requested data, or not permitted to access the requested time in the model lifeline",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 404,
+              message = "access key not found",
+              response = ServiceError.class),
+          @ApiResponse(
+              code = 500,
+              message = "internal service error",
+              response = ServiceError.class),
+      })
+  public Response getOpportunities(
+      @Context HttpServletRequest request,
+      @QueryParam("accessKey") @ApiParam(
+          name = "accessKey",
+          required = true,
+          value = "Model access key") int accessKey,
+      @QueryParam("accessCred") @ApiParam(
+          name = "accessCred",
+          required = true,
+          value = "Model access credential") String accessCred,
+      @QueryParam("at") @DefaultValue(
+          value = "{ values: [ \"9223372036854775806\" ] }") @ApiParam(
+          name = "at",
+          defaultValue = "{ values: [ \"9223372036854775806\" ] }",
+          value = "Model lifeline selector (defaults to current live data)") AttributeSelector at,
+      @QueryParam("contid") @DefaultValue("-1") @ApiParam(
+          name = "contid",
+          defaultValue = "-1",
+          value = "Continuation ID for paged results") long contid,
+      @QueryParam("maxresults") @DefaultValue("1000") @ApiParam(
+          name = "maxresults",
+          defaultValue = "1000",
+          value = "Maximum number of results to retrieve") int maxresults,
+      @QueryParam("reverse") @DefaultValue("false") @ApiParam(
+          name = "reverse",
+          defaultValue = "false",
+          value = "If true, page backwards (results less than contid) with results in descending order (by cid)") boolean reverse,
+      @QueryParam("taskID") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "taskID",
+          defaultValue = "{ any: true }",
+          value = "Opportunity task ID selector") AttributeSelector taskID,
+      @QueryParam("completedAt") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "completedAt",
+          defaultValue = "{ any: true }",
+          value = "Opportunity 'completed at' time selector") AttributeSelector completedAt) {
+    return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
+                                                        AccountAccessMask.ACCESS_CHARACTER_SHEET,
+                                                        at, contid, maxresults, reverse,
+                                                        new AccountHandlerUtil.QueryCaller<Opportunity>() {
+
+                                                          @Override
+                                                          public List<Opportunity> getList(
+                                                              SynchronizedEveAccount acct, long contid, int maxresults,
+                                                              boolean reverse,
+                                                              AttributeSelector at,
+                                                              AttributeSelector... others) throws IOException {
+                                                            final int TASK_ID = 0;
+                                                            final int COMPLETED_AT = 1;
+                                                            return Opportunity.accessQuery(acct, contid,
+                                                                                           maxresults,
+                                                                                           reverse, at,
+                                                                                           others[TASK_ID],
+                                                                                           others[COMPLETED_AT]);
+                                                          }
+
+                                                          @Override
+                                                          public long getExpiry(SynchronizedEveAccount acct) {
+                                                            return handleStandardExpiry(
+                                                                ESISyncEndpoint.CHAR_OPPORTUNITIES,
+                                                                acct);
+                                                          }
+                                                        }, request, taskID, completedAt);
   }
 
   @Path("/skill_points")
