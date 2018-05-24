@@ -3,12 +3,13 @@ package enterprises.orbital.evekit.ws.common;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@SuppressWarnings("unused")
 @ApiModel(
     description = "EveKit Access Key Mask List")
 public class MaskList {
   @ApiModelProperty(
       value = "access account status")
-  public final long ACCESS_ACCOUNT_STATUS           = 1L << 0;
+  public final long ACCESS_ACCOUNT_STATUS           = 1L;
   @ApiModelProperty(
       value = "access account balance")
   public final long ACCESS_ACCOUNT_BALANCE          = 1L << 1;
@@ -43,6 +44,9 @@ public class MaskList {
       value = "access market orders")
   public final long ACCESS_MARKET_ORDERS            = 1L << 10;
   @ApiModelProperty(
+      value = "access mining ledger")
+  public final long ACCESS_MINING_LEDGER            = 1L << 43;
+  @ApiModelProperty(
       value = "access standings")
   public final long ACCESS_STANDINGS                = 1L << 11;
   @ApiModelProperty(
@@ -60,6 +64,9 @@ public class MaskList {
       value = "access character calendar event attendees")
   public final long ACCESS_CALENDAR_EVENT_ATTENDEES = 1L << 15;
   @ApiModelProperty(
+      value = "access character fleet information")
+  public final long ACCESS_CHARACTER_FLEETS = 1L << 44;
+  @ApiModelProperty(
       value = "access character sheet")
   public final long ACCESS_CHARACTER_SHEET          = 1L << 16;
   @ApiModelProperty(
@@ -68,6 +75,9 @@ public class MaskList {
   @ApiModelProperty(
       value = "access character contact notifications")
   public final long ACCESS_CONTACT_NOTIFICATIONS    = 1L << 17;
+  @ApiModelProperty(
+      value = "access character ship fittings")
+  public final long ACCESS_FITTINGS                     = 1L << 42;
   @ApiModelProperty(
       value = "access character mail")
   public final long ACCESS_MAIL                     = 1L << 18;
@@ -115,9 +125,10 @@ public class MaskList {
   @ApiModelProperty(
       value = "access corporation member tracking")
   public final long ACCESS_MEMBER_TRACKING          = 1L << 31;
-  @ApiModelProperty(
-      value = "access corporation output list")
-  public final long ACCESS_OUTPOST_LIST             = 1L << 32;
+  // Removed during ESI migration
+  //  @ApiModelProperty(
+  //      value = "access corporation output list")
+  //  public final long ACCESS_OUTPOST_LIST             = 1L << 32;
   @ApiModelProperty(
       value = "access corporation shareholders")
   public final long ACCESS_SHAREHOLDERS             = 1L << 34;
@@ -125,9 +136,12 @@ public class MaskList {
       value = "access corporation starbase list")
   public final long ACCESS_STARBASE_LIST            = 1L << 35;
   @ApiModelProperty(
+      value = "access corporation structures")
+  public final long ACCESS_STRUCTURES            = 1L << 45;
+  @ApiModelProperty(
       value = "access corporation titles")
   public final long ACCESS_CORPORATION_TITLES       = 1L << 37;
 
-  public MaskList() {}
+  MaskList() {}
 
 }
