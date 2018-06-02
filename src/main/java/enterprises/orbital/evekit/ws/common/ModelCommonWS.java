@@ -228,7 +228,12 @@ public class ModelCommonWS {
           value = "{ any: true }") @ApiParam(
           name = "blueprintType",
           defaultValue = "{ any: true }",
-          value = "Asset blueprint type selector") AttributeSelector blueprintType) {
+          value = "Asset blueprint type selector") AttributeSelector blueprintType,
+      @QueryParam("blueprintCopy") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "blueprintCopy",
+          defaultValue = "{ any: true }",
+          value = "Asset blueprint copy selector") AttributeSelector blueprintCopy) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_ASSETS,
                                                         at, contid, maxresults, reverse,
                                                         new AccountHandlerUtil.QueryCaller<Asset>() {
@@ -247,6 +252,7 @@ public class ModelCommonWS {
                                                             final int QUANTITY = 5;
                                                             final int SINGLETON = 6;
                                                             final int BLUEPRINT_TYPE = 7;
+                                                            final int BLUEPRINT_COPY = 8;
 
                                                             return Asset.accessQuery(acct, contid, maxresults, reverse,
                                                                                      at,
@@ -257,7 +263,8 @@ public class ModelCommonWS {
                                                                                      others[TYPE_ID],
                                                                                      others[QUANTITY],
                                                                                      others[SINGLETON],
-                                                                                     others[BLUEPRINT_TYPE]);
+                                                                                     others[BLUEPRINT_TYPE],
+                                                                                     others[BLUEPRINT_COPY]);
                                                           }
 
                                                           @Override
@@ -267,7 +274,7 @@ public class ModelCommonWS {
                                                                 acct);
                                                           }
                                                         }, request, itemID, locationID, locationType, locationFlag,
-                                                        typeID, quantity, singleton, blueprintType);
+                                                        typeID, quantity, singleton, blueprintType, blueprintCopy);
   }
 
   @Path("/blueprint")
