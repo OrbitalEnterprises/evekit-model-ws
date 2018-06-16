@@ -694,7 +694,7 @@ public class ModelCommonWS {
           value = "{ any: true }") @ApiParam(
           name = "labelID",
           defaultValue = "{ any: true }",
-          value = "Contact label mask selector") AttributeSelector labelID) {
+          value = "Contact label selector") AttributeSelector labelID) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CONTACT_LIST,
                                                         at, contid, maxresults, reverse,
                                                         new AccountHandlerUtil.QueryCaller<Contact>() {
