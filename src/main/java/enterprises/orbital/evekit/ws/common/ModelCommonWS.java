@@ -2514,6 +2514,11 @@ public class ModelCommonWS {
           name = "issued",
           defaultValue = "{ any: true }",
           value = "Market order issue date selector") AttributeSelector issued,
+      @QueryParam("issuedBy") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "issuedBy",
+          defaultValue = "{ any: true }",
+          value = "Market order issued by selector") AttributeSelector issuedBy,
       @QueryParam("minVolume") @DefaultValue(
           value = "{ any: true }") @ApiParam(
           name = "minVolume",
@@ -2581,16 +2586,17 @@ public class ModelCommonWS {
                                                             final int DURATION = 4;
                                                             final int ESCROW = 5;
                                                             final int ISSUED = 6;
-                                                            final int MIN_VOLUME = 7;
-                                                            final int ORDER_STATE = 8;
-                                                            final int PRICE = 9;
-                                                            final int ORDER_RANGE = 10;
-                                                            final int TYPE_ID = 11;
-                                                            final int VOL_ENTERED = 12;
-                                                            final int VOL_REMAINING = 13;
-                                                            final int REGION_ID = 14;
-                                                            final int LOCATION_ID = 15;
-                                                            final int IS_CORP = 16;
+                                                            final int ISSUED_BY = 7;
+                                                            final int MIN_VOLUME = 8;
+                                                            final int ORDER_STATE = 9;
+                                                            final int PRICE = 10;
+                                                            final int ORDER_RANGE = 11;
+                                                            final int TYPE_ID = 12;
+                                                            final int VOL_ENTERED = 13;
+                                                            final int VOL_REMAINING = 14;
+                                                            final int REGION_ID = 15;
+                                                            final int LOCATION_ID = 16;
+                                                            final int IS_CORP = 17;
 
                                                             return MarketOrder.accessQuery(acct, contid, maxresults,
                                                                                            reverse, at,
@@ -2601,6 +2607,7 @@ public class ModelCommonWS {
                                                                                            others[DURATION],
                                                                                            others[ESCROW],
                                                                                            others[ISSUED],
+                                                                                           others[ISSUED_BY],
                                                                                            others[MIN_VOLUME],
                                                                                            others[ORDER_STATE],
                                                                                            others[PRICE],
@@ -2620,7 +2627,7 @@ public class ModelCommonWS {
                                                                 acct);
                                                           }
                                                         }, request, orderID, walletDivision, bid, charID, duration,
-                                                        escrow, issued, minVolume, orderState, price, orderRange,
+                                                        escrow, issued, issuedBy, minVolume, orderState, price, orderRange,
                                                         typeID, volEntered, volRemaining, regionID, locationID, isCorp);
   }
 
