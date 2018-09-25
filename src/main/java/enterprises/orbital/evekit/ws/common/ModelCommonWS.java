@@ -2928,23 +2928,9 @@ public class ModelCommonWS {
                                                                 acct.isCharacterType() ? ESISyncEndpoint.CHAR_WALLET_JOURNAL : ESISyncEndpoint.CORP_WALLET_JOURNAL,
                                                                 acct);
                                                           }
-                                                        }, request,
-
-                                                        division,
-                                                        refID,
-                                                        date,
-                                                        refType,
-                                                        firstPartyID,
-                                                        secondPartyID,
-                                                        argName1,
-                                                        argID1,
-                                                        amount,
-                                                        balance,
-                                                        reason,
-                                                        taxReceiverID,
-                                                        taxAmount,
-                                                        contextID,
-                                                        contextType,
+                                                        }, request, division, refID, date, refType, firstPartyID,
+                                                        secondPartyID, argName1, argID1, amount, balance, reason,
+                                                        taxReceiverID, taxAmount, contextID, contextType,
                                                         description);
   }
 

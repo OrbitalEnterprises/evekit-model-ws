@@ -3034,8 +3034,7 @@ public class ModelCharacterWS {
                                                                 acct);
                                                           }
                                                         }, request, notificationID, type, senderID, senderType,
-                                                        sentDate,
-                                                        msgRead, text);
+                                                        sentDate, msgRead, text);
   }
 
   @Path("/channel")
