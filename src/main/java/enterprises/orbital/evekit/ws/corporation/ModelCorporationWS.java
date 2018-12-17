@@ -583,12 +583,17 @@ public class ModelCorporationWS {
           value = "{ any: true }") @ApiParam(
           name = "px128x128",
           defaultValue = "{ any: true }",
-          value = "Corporation 128x128 image URL selector") AttributeSelector px128x128,
+         value = "Corporation 128x128 image URL selector") AttributeSelector px128x128,
       @QueryParam("px256x256") @DefaultValue(
           value = "{ any: true }") @ApiParam(
           name = "px256x256",
           defaultValue = "{ any: true }",
-          value = "Corporation 256x256 image URL selector") AttributeSelector px256x256) {
+          value = "Corporation 256x256 image URL selector") AttributeSelector px256x256,
+      @QueryParam("warEligible") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "warEligible",
+          defaultValue = "{ any: true }",
+          value = "Corporation war eligible selector") AttributeSelector warEligible) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred,
                                                         AccountAccessMask.ACCESS_CORPORATION_SHEET,
                                                         at, contid, maxresults, reverse,
@@ -617,6 +622,7 @@ public class ModelCorporationWS {
                                                             final int PX64X64 = 14;
                                                             final int PX128X128 = 15;
                                                             final int PX256X256 = 16;
+                                                            final int WAR_ELIGIBLE = 17;
 
                                                             return CorporationSheet.accessQuery(acct, contid,
                                                                                                 maxresults,
@@ -637,7 +643,8 @@ public class ModelCorporationWS {
                                                                                                 others[FACTION_ID],
                                                                                                 others[PX64X64],
                                                                                                 others[PX128X128],
-                                                                                                others[PX256X256]);
+                                                                                                others[PX256X256],
+                                                                                                others[WAR_ELIGIBLE]);
                                                           }
 
                                                           @Override
@@ -648,7 +655,7 @@ public class ModelCorporationWS {
                                                         }, request, allianceID, ceoID, corporationID, corporationName,
                                                         description, memberCount, shares, stationID, taxRate, ticker,
                                                         url, dateFounded, creatorID, factionID, px64x64, px128x128,
-                                                        px256x256);
+                                                        px256x256, warEligible);
   }
 
   @Path("/title")
