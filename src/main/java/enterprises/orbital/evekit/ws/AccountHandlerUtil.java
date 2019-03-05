@@ -101,6 +101,7 @@ public class AccountHandlerUtil {
   }
 
   // Standard handling for an IO error while querying data
+  @SuppressWarnings("Duplicates")
   private static Response handleIOError(IOException e) {
     log.log(Level.WARNING, "Error retrieving values", e);
     ServiceError errMsg = new ServiceError(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Internal error retrieving value.  If this error persists, please contact the site administrator");
@@ -124,7 +125,10 @@ public class AccountHandlerUtil {
     try {
       return Math.max(def, ESIEndpointSyncTracker.getLatestFinishedTracker(acct, ep)
                                                  .getSyncEnd() + modelExpiry.get(ep) + shift);
-    } catch (IOException | TrackerNotFoundException e) {
+    } catch (TrackerNotFoundException e) {
+      // Possible for old data if we've GC'd the original trackers
+      return def;
+    } catch (IOException e) {
       // Log and return current time plus a small delta
       log.log(Level.WARNING, "Error retrieving last tracker finish time", e);
       return def;
