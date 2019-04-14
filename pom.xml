@@ -22,8 +22,14 @@
     <swagger.version>1.5.7</swagger.version>
     <hsqldb.version>2.3.3</hsqldb.version>
     <easymock.version>3.4</easymock.version>
+    <esi.client.version>1.0.0.20190325</esi.client.version>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>enterprises.orbital.eve.esi</groupId>
+      <artifactId>client</artifactId>
+      <version>${esi.client.version}</version>
+    </dependency>
     <dependency>
       <groupId>enterprises.orbital.evekit</groupId>
       <artifactId>model</artifactId>

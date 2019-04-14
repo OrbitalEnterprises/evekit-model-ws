@@ -93,7 +93,7 @@ public class AccountHandlerUtil {
                                                                       .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
   // Standard handling for an illegal selector value
-  private static Response handleIllegalSelector() {
+  public static Response handleIllegalSelector() {
     ServiceError errMsg = new ServiceError(Response.Status.BAD_REQUEST.getStatusCode(), "An attribute selector contained an illegal value");
     return Response.status(Response.Status.BAD_REQUEST)
                    .entity(errMsg)
@@ -102,7 +102,7 @@ public class AccountHandlerUtil {
 
   // Standard handling for an IO error while querying data
   @SuppressWarnings("Duplicates")
-  private static Response handleIOError(IOException e) {
+  public static Response handleIOError(IOException e) {
     log.log(Level.WARNING, "Error retrieving values", e);
     ServiceError errMsg = new ServiceError(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Internal error retrieving value.  If this error persists, please contact the site administrator");
     return Response.status(Response.Status.BAD_REQUEST)
