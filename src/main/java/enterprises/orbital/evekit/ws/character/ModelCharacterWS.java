@@ -505,7 +505,12 @@ public class ModelCharacterWS {
           value = "{ any: true }") @ApiParam(
           name = "securityStatus",
           defaultValue = "{ any: true }",
-          value = "Security status selector") AttributeSelector securityStatus) {
+          value = "Security status selector") AttributeSelector securityStatus,
+      @QueryParam("title") @DefaultValue(
+          value = "{ any: true }") @ApiParam(
+          name = "title",
+          defaultValue = "{ any: true }",
+          value = "Title selector") AttributeSelector title) {
     return AccountHandlerUtil.handleStandardListRequest(accessKey, accessCred, AccountAccessMask.ACCESS_CHARACTER_SHEET,
                                                         at, contid, maxresults, reverse,
                                                         new AccountHandlerUtil.QueryCaller<CharacterSheet>() {
@@ -528,6 +533,7 @@ public class ModelCharacterWS {
                                                             final int FACTION_ID = 9;
                                                             final int DESCRIPTION = 10;
                                                             final int SECURITY_STATUS = 11;
+                                                            final int TITLE = 12;
                                                             return CharacterSheet.accessQuery(acct, contid, maxresults,
                                                                                               reverse, at,
                                                                                               others[CHARACTER_ID],
@@ -541,7 +547,8 @@ public class ModelCharacterWS {
                                                                                               others[ALLIANCE_ID],
                                                                                               others[FACTION_ID],
                                                                                               others[DESCRIPTION],
-                                                                                              others[SECURITY_STATUS]);
+                                                                                              others[SECURITY_STATUS],
+                                                                                              others[TITLE]);
                                                           }
 
                                                           @Override
@@ -551,7 +558,7 @@ public class ModelCharacterWS {
                                                           }
                                                         }, request, characterID, name, corporationID, raceID, doB,
                                                         bloodlineID, ancestryID, gender, allianceID, factionID,
-                                                        description, securityStatus);
+                                                        description, securityStatus, title);
   }
 
   @Path("/sheet_attributes")
